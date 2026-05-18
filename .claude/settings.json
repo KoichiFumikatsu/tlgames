@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "INPUT=$(cat); SID=$(echo \"$INPUT\" | sed -n 's/.*\"session_id\":\"\\([^\"]*\\)\".*/\\1/p'); MARKER=\"/tmp/claude-mem-reminder-$SID\"; if [ -f \"$MARKER\" ]; then exit 0; fi; touch \"$MARKER\"; printf '%s' '{\"decision\":\"block\",\"reason\":\"Antes de cerrar la sesión: revisa lo aprendido durante esta conversación y actualiza los archivos correspondientes en memory/ (user.md, preferences.md, decisions.md, people.md) si hay algo nuevo o corregido. Evita duplicados: si la información ya existe, actualízala en vez de añadirla. Si no hay nada relevante que guardar, confírmalo brevemente y termina.\"}'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
