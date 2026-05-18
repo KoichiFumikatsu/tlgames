@@ -1,0 +1,52 @@
+.env
+.env.*
+!.env.example
+
+# Juegos originales y backups (binarios grandes, privados)
+proyects Game TL/
+backups/
+game/
+
+# Herramientas binarias portables (grandes, no van al repo)
+tools/AssetRipper/
+tools/BepInEx/
+tools/BepInEx-x86/
+tools/UABEA/
+tools/XUnity.AutoTranslator/
+tools/dnSpyEx/
+tools/unrpyc/
+tools/electron/
+tools/font_candidates/
+tools/_downloads/
+
+# Corpus de traducción (datos grandes y/o privados)
+_tl_work/**/*.jsonl
+_tl_work/**/*.dat
+_tl_work/**/*.xlsx
+
+# Logs
+logs/
+*.log
+compile-errors-*.txt
+*.log.txt
+
+# Cachés de traducción (regenerables)
+tools/tl/.cache/
+
+# Backups generados por el pipeline
+*.bak
+*.prestrip.bak
+*.original
+
+# Compilados Ren'Py
+*.rpyc
+*.rpymc
+*.rpyb
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporales con prefijo _tmp_
+_tmp_*.py

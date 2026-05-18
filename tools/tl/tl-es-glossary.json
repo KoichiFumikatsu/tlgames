@@ -1,0 +1,852 @@
+{
+  "_meta": {
+    "generated_from": [
+      "C:\\xampp\\htdocs\\tl\\proyects Game TL\\FromTheSin\\game\\script.rpy",
+      "C:\\xampp\\htdocs\\tl\\proyects Game TL\\FromTheSin\\game\\definitions.rpy",
+      "C:\\xampp\\htdocs\\tl\\proyects Game TL\\FromTheSin\\game\\achievements.rpy",
+      "C:\\xampp\\htdocs\\tl\\proyects Game TL\\FromTheSin\\game\\scene_trackers.rpy",
+      "C:\\xampp\\htdocs\\tl\\proyects Game TL\\FromTheSin\\game\\special_labels.rpy"
+    ],
+    "instructions": "Completa 'target' con la traduccion preferida. Deja '' para no forzar. characters: nombres propios (normalmente se mantienen igual). terms: tecnicismos que queremos traducir consistentemente."
+  },
+  "characters": {
+    "Machine": {
+      "source": "Machine",
+      "target": "Maquina",
+      "count": 81,
+      "notes": "auto (canon)"
+    },
+    "Linea": {
+      "source": "Linea",
+      "target": "Linea",
+      "count": 79,
+      "notes": "auto (canon)"
+    },
+    "Eris": {
+      "source": "Eris",
+      "target": "Eris",
+      "count": 71,
+      "notes": "auto (canon)"
+    },
+    "Cluster": {
+      "source": "Cluster",
+      "target": "Cluster",
+      "count": 66,
+      "notes": "auto (canon)"
+    },
+    "Mana": {
+      "source": "Mana",
+      "target": "Mana",
+      "count": 64,
+      "notes": "auto (canon)"
+    },
+    "Machines": {
+      "source": "Machines",
+      "target": "Maquinas",
+      "count": 58,
+      "notes": "auto (canon)"
+    },
+    "Nova": {
+      "source": "Nova",
+      "target": "Nova",
+      "count": 43,
+      "notes": "auto (canon)"
+    },
+    "Lily": {
+      "source": "Lily",
+      "target": "Lily",
+      "count": 26,
+      "notes": "auto (canon)"
+    },
+    "Silika": {
+      "source": "Silika",
+      "target": "Silika",
+      "count": 24,
+      "notes": "auto (canon)"
+    },
+    "Altra": {
+      "source": "Altra",
+      "target": "Altra",
+      "count": 15,
+      "notes": "auto (canon)"
+    },
+    "Haah": {
+      "source": "Haah",
+      "target": "Haah",
+      "count": 14,
+      "notes": "auto (canon)"
+    },
+    "Sigh": {
+      "source": "Sigh",
+      "target": "Sigh",
+      "count": 14,
+      "notes": "auto (canon)"
+    },
+    "Precept": {
+      "source": "Precept",
+      "target": "",
+      "count": 11,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Something": {
+      "source": "Something",
+      "target": "Something",
+      "count": 9,
+      "notes": ""
+    },
+    "Maybe": {
+      "source": "Maybe",
+      "target": "",
+      "count": 9,
+      "notes": ""
+    },
+    "Brigade": {
+      "source": "Brigade",
+      "target": "",
+      "count": 8,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Slurp": {
+      "source": "Slurp",
+      "target": "Slurp",
+      "count": 8,
+      "notes": "auto (canon)"
+    },
+    "Endo": {
+      "source": "Endo",
+      "target": "Endo",
+      "count": 7,
+      "notes": ""
+    },
+    "Precepts": {
+      "source": "Precepts",
+      "target": "",
+      "count": 7,
+      "notes": ""
+    },
+    "Master": {
+      "source": "Master",
+      "target": "Maestro",
+      "count": 6,
+      "notes": ""
+    },
+    "Hah": {
+      "source": "Hah",
+      "target": "Hah",
+      "count": 5,
+      "notes": "auto (canon)"
+    },
+    "Rika": {
+      "source": "Rika",
+      "target": "Rika",
+      "count": 5,
+      "notes": "auto (canon)"
+    },
+    "Don": {
+      "source": "Don",
+      "target": "Don",
+      "count": 5,
+      "notes": ""
+    },
+    "Hmmm": {
+      "source": "Hmmm",
+      "target": "Hmmm",
+      "count": 5,
+      "notes": "auto (canon)"
+    },
+    "Unit": {
+      "source": "Unit",
+      "target": "Unidad",
+      "count": 5,
+      "notes": "auto (canon)"
+    },
+    "Panting": {
+      "source": "Panting",
+      "target": "Panting",
+      "count": 4,
+      "notes": "auto (canon)"
+    },
+    "Inhale": {
+      "source": "Inhale",
+      "target": "Inhale",
+      "count": 4,
+      "notes": "auto (canon)"
+    },
+    "Wait": {
+      "source": "Wait",
+      "target": "",
+      "count": 4,
+      "notes": ""
+    },
+    "Mhm": {
+      "source": "Mhm",
+      "target": "Mhm",
+      "count": 4,
+      "notes": "auto (canon)"
+    },
+    "Lick": {
+      "source": "Lick",
+      "target": "Lick",
+      "count": 4,
+      "notes": "auto (canon)"
+    },
+    "Pant": {
+      "source": "Pant",
+      "target": "Pant",
+      "count": 4,
+      "notes": "auto (canon)"
+    },
+    "Active": {
+      "source": "Active",
+      "target": "",
+      "count": 3,
+      "notes": ""
+    },
+    "Connection": {
+      "source": "Connection",
+      "target": "",
+      "count": 3,
+      "notes": ""
+    },
+    "Attempting": {
+      "source": "Attempting",
+      "target": "",
+      "count": 3,
+      "notes": ""
+    },
+    "Unstable": {
+      "source": "Unstable",
+      "target": "",
+      "count": 3,
+      "notes": ""
+    },
+    "Catalyst": {
+      "source": "Catalyst",
+      "target": "",
+      "count": 3,
+      "notes": ""
+    },
+    "Warning": {
+      "source": "Warning",
+      "target": "",
+      "count": 3,
+      "notes": ""
+    },
+    "Cetia": {
+      "source": "Cetia",
+      "target": "Cetia",
+      "count": 3,
+      "notes": "auto (canon)"
+    },
+    "Look": {
+      "source": "Look",
+      "target": "",
+      "count": 3,
+      "notes": ""
+    },
+    "Blessing": {
+      "source": "Blessing",
+      "target": "",
+      "count": 3,
+      "notes": ""
+    },
+    "Helix": {
+      "source": "Helix",
+      "target": "",
+      "count": 3,
+      "notes": ""
+    },
+    "Hooray": {
+      "source": "Hooray",
+      "target": "Hooray",
+      "count": 3,
+      "notes": "auto (canon)"
+    },
+    "Fuuu": {
+      "source": "Fuuu",
+      "target": "Fuuu",
+      "count": 3,
+      "notes": "auto (canon)"
+    },
+    "Time": {
+      "source": "Time",
+      "target": "",
+      "count": 3,
+      "notes": ""
+    },
+    "Rinoa": {
+      "source": "Rinoa",
+      "target": "Rinoa",
+      "count": 3,
+      "notes": "auto (canon)"
+    },
+    "Ghn": {
+      "source": "Ghn",
+      "target": "Ghn",
+      "count": 3,
+      "notes": "auto (canon)"
+    },
+    "Yurei": {
+      "source": "Yurei",
+      "target": "Yurei",
+      "count": 3,
+      "notes": "auto (canon)"
+    },
+    "Gasp": {
+      "source": "Gasp",
+      "target": "Gasp",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Right": {
+      "source": "Right",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Every": {
+      "source": "Every",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Giggle": {
+      "source": "Giggle",
+      "target": "Giggle",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Perhaps": {
+      "source": "Perhaps",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Error": {
+      "source": "Error",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Hmmmm": {
+      "source": "Hmmmm",
+      "target": "Hmmmm",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Unresponsive": {
+      "source": "Unresponsive",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Though": {
+      "source": "Though",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Oooh": {
+      "source": "Oooh",
+      "target": "Oooh",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Finally": {
+      "source": "Finally",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Nice": {
+      "source": "Nice",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Aaand": {
+      "source": "Aaand",
+      "target": "Aaand",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Hmmmmmm": {
+      "source": "Hmmmmmm",
+      "target": "Hmmmmmm",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "However": {
+      "source": "However",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Hehehe": {
+      "source": "Hehehe",
+      "target": "Hehehe",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Units": {
+      "source": "Units",
+      "target": "Unidades",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Adventurers": {
+      "source": "Adventurers",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Elemental": {
+      "source": "Elemental",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Blessings": {
+      "source": "Blessings",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Crystal": {
+      "source": "Crystal",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Does": {
+      "source": "Does",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Haaah": {
+      "source": "Haaah",
+      "target": "Haaah",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Heeey": {
+      "source": "Heeey",
+      "target": "Heeey",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Data": {
+      "source": "Data",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Giggles": {
+      "source": "Giggles",
+      "target": "Giggles",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Kironomiya": {
+      "source": "Kironomiya",
+      "target": "Kironomiya",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Abyss": {
+      "source": "Abyss",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Rod": {
+      "source": "Rod",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Sniff": {
+      "source": "Sniff",
+      "target": "Sniff",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Ngh": {
+      "source": "Ngh",
+      "target": "Ngh",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Hgn": {
+      "source": "Hgn",
+      "target": "Hgn",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Cough": {
+      "source": "Cough",
+      "target": "Cough",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Whatever": {
+      "source": "Whatever",
+      "target": "",
+      "count": 2,
+      "notes": ""
+    },
+    "Zell": {
+      "source": "Zell",
+      "target": "Zell",
+      "count": 0,
+      "notes": "auto (canon, manual)"
+    },
+    "Ada": {
+      "source": "Ada",
+      "target": "Ada",
+      "count": 0,
+      "notes": "auto (canon, manual)"
+    },
+    "Cibbon": {
+      "source": "Cibbon",
+      "target": "Cibbon",
+      "count": 0,
+      "notes": "auto (canon, manual)"
+    }
+  },
+  "terms": {
+    "CEU": {
+      "source": "CEU",
+      "target": "CEU",
+      "count": 6,
+      "notes": "auto (canon)"
+    },
+    "THE": {
+      "source": "THE",
+      "target": "",
+      "count": 6,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "COMING": {
+      "source": "COMING",
+      "target": "",
+      "count": 4,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "WHY": {
+      "source": "WHY",
+      "target": "POR QUE",
+      "count": 3,
+      "notes": "auto (canon)"
+    },
+    "SOOO": {
+      "source": "SOOO",
+      "target": "TAAAN",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "ANNOYING": {
+      "source": "ANNOYING",
+      "target": "",
+      "count": 2,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "CAREFUL": {
+      "source": "CAREFUL",
+      "target": "CUIDADO",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "BREATHE": {
+      "source": "BREATHE",
+      "target": "RESPIRA",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "HIGH": {
+      "source": "HIGH",
+      "target": "",
+      "count": 2,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "PRESENCE": {
+      "source": "PRESENCE",
+      "target": "PRESENCIA",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "BOWED": {
+      "source": "BOWED",
+      "target": "",
+      "count": 2,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "GUESS": {
+      "source": "GUESS",
+      "target": "",
+      "count": 2,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "WHO": {
+      "source": "WHO",
+      "target": "QUIEN",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "ELEVATED": {
+      "source": "ELEVATED",
+      "target": "",
+      "count": 2,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "ADA": {
+      "source": "ADA",
+      "target": "ADA",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "KNEW": {
+      "source": "KNEW",
+      "target": "",
+      "count": 2,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "AAAAAAGGHH": {
+      "source": "AAAAAAGGHH",
+      "target": "AAAAAAGGHH",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "IMPOSSIBLE": {
+      "source": "IMPOSSIBLE",
+      "target": "IMPOSIBLE",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "MOONS": {
+      "source": "MOONS",
+      "target": "LUNAS",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "FALLING": {
+      "source": "FALLING",
+      "target": "",
+      "count": 2,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "UPON": {
+      "source": "UPON",
+      "target": "",
+      "count": 2,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "HUH": {
+      "source": "HUH",
+      "target": "EH",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "STOP": {
+      "source": "STOP",
+      "target": "DETENTE",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "WHAT": {
+      "source": "WHAT",
+      "target": "QUE",
+      "count": 2,
+      "notes": "auto (canon)"
+    },
+    "Precept": {
+      "source": "Precept",
+      "target": "",
+      "count": 0,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Precepts": {
+      "source": "Precepts",
+      "target": "",
+      "count": 0,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Catalyst": {
+      "source": "Catalyst",
+      "target": "",
+      "count": 0,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Brigade": {
+      "source": "Brigade",
+      "target": "",
+      "count": 0,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Mana": {
+      "source": "Mana",
+      "target": "Mana",
+      "count": 0,
+      "notes": "auto (canon, manual)"
+    },
+    "Crystal": {
+      "source": "Crystal",
+      "target": "",
+      "count": 0,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Helix": {
+      "source": "Helix",
+      "target": "",
+      "count": 0,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Abyss": {
+      "source": "Abyss",
+      "target": "",
+      "count": 0,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Elemental": {
+      "source": "Elemental",
+      "target": "",
+      "count": 0,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Blessing": {
+      "source": "Blessing",
+      "target": "",
+      "count": 0,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Blessings": {
+      "source": "Blessings",
+      "target": "",
+      "count": 0,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Adventurers": {
+      "source": "Adventurers",
+      "target": "",
+      "count": 0,
+      "notes": "cleared (depende de genero/numero, MT con contexto)"
+    },
+    "Third Precept": {
+      "source": "Third Precept",
+      "target": "Tercer Precepto",
+      "count": 0,
+      "notes": "auto (canon, manual)"
+    },
+    "Unit A.D.A. Type-00": {
+      "source": "Unit A.D.A. Type-00",
+      "target": "Unidad A.D.A. Tipo-00",
+      "count": 0,
+      "notes": "auto (canon, manual)"
+    },
+    "Eris and Linea": {
+      "source": "Eris and Linea",
+      "target": "Eris y Linea",
+      "count": 0,
+      "notes": "auto (canon, manual)"
+    }
+  },
+  "placeholders": {
+    "icon_1": {
+      "count": 133,
+      "preserve": true
+    },
+    "msg_Thinking_Normal": {
+      "count": 105,
+      "preserve": true
+    },
+    "msg_Thinking_Question1": {
+      "count": 62,
+      "preserve": true
+    },
+    "emote_Lover": {
+      "count": 38,
+      "preserve": true
+    },
+    "msg_Thinking_Exclamation1": {
+      "count": 14,
+      "preserve": true
+    },
+    "emote_Beating_Heart": {
+      "count": 14,
+      "preserve": true
+    },
+    "emote_Bedazzled": {
+      "count": 14,
+      "preserve": true
+    },
+    "emote_Lover_Fire": {
+      "count": 13,
+      "preserve": true
+    },
+    "emote_Angry": {
+      "count": 9,
+      "preserve": true
+    },
+    "msg_Thinking_Exclamation3": {
+      "count": 7,
+      "preserve": true
+    },
+    "msg_Thinking_Question3": {
+      "count": 5,
+      "preserve": true
+    },
+    "emote_Sleepy": {
+      "count": 5,
+      "preserve": true
+    },
+    "emote_Lover_Fire2": {
+      "count": 5,
+      "preserve": true
+    },
+    "emote_Flame_Of_Death1": {
+      "count": 5,
+      "preserve": true
+    },
+    "emote_Flame_Of_Death3": {
+      "count": 4,
+      "preserve": true
+    },
+    "icon_2": {
+      "count": 3,
+      "preserve": true
+    },
+    "icon_3": {
+      "count": 3,
+      "preserve": true
+    },
+    "emote_Cookie": {
+      "count": 3,
+      "preserve": true
+    },
+    "emote_Temperature_Warm": {
+      "count": 2,
+      "preserve": true
+    },
+    "emote_HurryUp_Rushing": {
+      "count": 2,
+      "preserve": true
+    },
+    "msg_Flashback": {
+      "count": 1,
+      "preserve": true
+    },
+    "emote_Flame_Of_Death2": {
+      "count": 1,
+      "preserve": true
+    },
+    "emote_Lover100": {
+      "count": 1,
+      "preserve": true
+    },
+    "emote_Big_Brain": {
+      "count": 1,
+      "preserve": true
+    }
+  }
+}

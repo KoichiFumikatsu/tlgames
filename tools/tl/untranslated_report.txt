@@ -1,0 +1,1001 @@
+=== POR PALABRA (frecuencia, muestras) ===
+ 110  linea                     definitions.rpy:19, script.rpy:1519, script.rpy:1801, script.rpy:1825, script.rpy:1843 (+105 mas)
+ 106  eris                      definitions.rpy:19, script.rpy:1579, script.rpy:2263, script.rpy:3037, script.rpy:3367 (+101 mas)
+  71  cluster                   script.rpy:241, script.rpy:367, script.rpy:1333, script.rpy:1477, script.rpy:1981 (+66 mas)
+  52  lily                      script.rpy:313, script.rpy:3487, script.rpy:3679, script.rpy:3955, script.rpy:3985 (+47 mas)
+  44  nova                      script.rpy:3883, script.rpy:3889, script.rpy:3961, script.rpy:4585, script.rpy:4591 (+39 mas)
+  34  silika                    script.rpy:313, script.rpy:3325, script.rpy:3493, script.rpy:3919, script.rpy:3955 (+29 mas)
+  18  haah                      script.rpy:271, script.rpy:277, script.rpy:289, script.rpy:313, script.rpy:319 (+13 mas)
+  17  altra                     script.rpy:7195, script.rpy:7303, script.rpy:7903, script.rpy:8701, script.rpy:8755 (+12 mas)
+  14  idea                      script.rpy:265, script.rpy:1813, script.rpy:1921, script.rpy:4795, script.rpy:4975 (+9 mas)
+  13  weekday                   common.rpy:131, common.rpy:135, common.rpy:139, common.rpy:143, common.rpy:147 (+8 mas)
+  11  something                 script.rpy:307, script.rpy:571, script.rpy:739, script.rpy:5647, script.rpy:6187 (+6 mas)
+   7  ren'py                    common.rpy:783, common.rpy:787, common.rpy:791, common.rpy:795, common.rpy:827 (+2 mas)
+   6  amnesia                   script.rpy:3613, script.rpy:4885, script.rpy:5017, script.rpy:8683, script.rpy:10459 (+1 mas)
+   6  endo                      script.rpy:3709, script.rpy:7297, script.rpy:9151, script.rpy:13093, script.rpy:13099 (+1 mas)
+   6  hooray                    script.rpy:8185, script.rpy:8257, script.rpy:13123, script.rpy:13183, script.rpy:14749 (+1 mas)
+   6  inhale                    script.rpy:343, script.rpy:2629, script.rpy:2683, script.rpy:10165, script.rpy:10237 (+1 mas)
+   6  monstergirls              script.rpy:3187, script.rpy:7963, script.rpy:9505, script.rpy:16891, script.rpy:17317 (+1 mas)
+   6  peculiar                  script.rpy:1717, script.rpy:4303, script.rpy:7099, script.rpy:7909, script.rpy:10921 (+1 mas)
+   6  short                     common.rpy:159, common.rpy:167, common.rpy:171, common.rpy:175, common.rpy:179 (+1 mas)
+   5  particular                script.rpy:4015, script.rpy:12583, script.rpy:13099, script.rpy:13339, script.rpy:14839
+   5  rika                      script.rpy:3919, script.rpy:8995, script.rpy:9025, script.rpy:10441, script.rpy:10447
+   5  semen                     script.rpy:5389, script.rpy:14281, script.rpy:14293, script.rpy:14341, script.rpy:16507
+   5  size                      script.rpy:2821, script.rpy:3421, script.rpy:4789, script.rpy:4807, script.rpy:4837
+   5  sync                      common.rpy:783, common.rpy:787, common.rpy:791, common.rpy:795, common.rpy:839
+   4  active                    script.rpy:13, script.rpy:19, script.rpy:25, script.rpy:1201
+   4  director                  common.rpy:339, common.rpy:419, common.rpy:439, common.rpy:447
+   4  familiar                  script.rpy:1693, script.rpy:3229, script.rpy:4573, script.rpy:11953
+   4  force                     common.rpy:1003, common.rpy:1007, common.rpy:1015, common.rpy:1019
+   4  haaah                     script.rpy:8821, script.rpy:10285, script.rpy:15931, script.rpy:16267
+   4  metal                     script.rpy:2191, script.rpy:8305, script.rpy:8311, script.rpy:10711
+   4  oooh                      script.rpy:3319, script.rpy:3421, script.rpy:4441, script.rpy:6187
+   4  panting                   script.rpy:253, script.rpy:271, script.rpy:277, script.rpy:289
+   4  rinoa                     script.rpy:12685, script.rpy:12691, script.rpy:16777, script.rpy:16789
+   4  voicing                   common.rpy:627, common.rpy:635, common.rpy:639, common.rpy:643
+   3  aaand                     script.rpy:4321, script.rpy:4465, script.rpy:10249
+   3  base                      script.rpy:6217, script.rpy:11659, script.rpy:16489
+   3  cetia                     script.rpy:3925, script.rpy:7267, script.rpy:8383
+   3  elemental                 script.rpy:31, script.rpy:7429, script.rpy:13675
+   3  extra                     script.rpy:5077, script.rpy:6139, script.rpy:8149
+   3  fuuu                      script.rpy:10177, script.rpy:10255, script.rpy:10267
+   3  heeey                     script.rpy:2203, script.rpy:9889, script.rpy:9901
+   3  hmmmm                     script.rpy:1879, script.rpy:3607, script.rpy:5995
+   3  icon                      script.rpy:4303, script.rpy:4309, script.rpy:4345
+   3  neural                    script.rpy:6529, script.rpy:6595, script.rpy:6601
+   3  noble                     script.rpy:17323, script.rpy:17443, script.rpy:17467
+   3  similar                   script.rpy:1309, script.rpy:7417, script.rpy:9709
+   3  traceback                 common.rpy:1127, common.rpy:1135, common.rpy:1143
+   3  yurei                     script.rpy:17521, script.rpy:17533, script.rpy:17575
+   2  angle                     common.rpy:1007, common.rpy:1019
+   2  artificial                script.rpy:11587, script.rpy:11593
+   2  aura                      script.rpy:5101, script.rpy:5587
+   2  bbcode                    common.rpy:1131, common.rpy:1135
+   2  bleh                      script.rpy:8833, script.rpy:14893
+   2  control                   script.rpy:13717, script.rpy:13735
+   2  debug                     common.rpy:639, common.rpy:643
+   2  editor                    common.rpy:767, common.rpy:1127
+   2  forward                   common.rpy:583, screens.rpy:235
+   2  framerate                 common.rpy:659, common.rpy:1035
+   2  gamepad                   common.rpy:1099, screens.rpy:267
+   2  giggle                    script.rpy:967, script.rpy:6313
+   2  giggles                   script.rpy:13861, script.rpy:14131
+   2  gles                      common.rpy:1011, common.rpy:1023
+   2  hall                      script.rpy:4045, script.rpy:4417
+   2  hehehe                    script.rpy:6259, script.rpy:15301
+   2  here                      common.rpy:519, script.rpy:3091
+   2  hmmmmmm                   script.rpy:4687, script.rpy:12553
+   2  huuh                      script.rpy:12643, script.rpy:14905
+   2  kironomiya                script.rpy:14011, script.rpy:17605
+   2  koikatsu                  screens.rpy:107, screens.rpy:111
+   2  lick                      script.rpy:16363, script.rpy:16399
+   2  linea'd                   script.rpy:14743, script.rpy:16453
+   2  markdown                  common.rpy:1139, common.rpy:1143
+   2  milking                   script.rpy:847, script.rpy:5419
+   2  monstergirl               script.rpy:13177, script.rpy:16039
+   2  omnium                    script.rpy:8317, script.rpy:8329
+   2  page                      screens.rpy:187, screens.rpy:191
+   2  pant                      script.rpy:16531, script.rpy:16549
+   2  pfft                      script.rpy:9391, script.rpy:12823
+   2  powersave                 common.rpy:655, common.rpy:1031
+   2  really                    script.rpy:6385, script.rpy:11473
+   2  right                     script.rpy:4831, script.rpy:7255
+   2  simple                    script.rpy:2659, script.rpy:12823
+   2  still                     script.rpy:3433, script.rpy:13309
+   2  stuff                     script.rpy:8635, script.rpy:15781
+   2  super                     script.rpy:3895, script.rpy:15745
+   2  tutorial                  script.rpy:14617, script.rpy:14635
+   2  ultra                     script.rpy:3787, script.rpy:5431
+   2  waaay                     script.rpy:3001, script.rpy:15079
+   2  woah                      script.rpy:1369, script.rpy:4153
+   2  yasss                     script.rpy:9619, script.rpy:13207
+   2  yikes                     script.rpy:5209, script.rpy:9529
+   2  your                      script.rpy:5749, script.rpy:5833
+   1  aaaaaagghh                script.rpy:9037
+   1  aaallll                   script.rpy:8635
+   1  aaanyway                  script.rpy:3853
+   1  adventurers               script.rpy:5863
+   1  agaaain                   script.rpy:9235
+   1  ahck                      script.rpy:2941
+   1  alert                     script.rpy:1351
+   1  almost                    script.rpy:5131
+   1  amazing                   script.rpy:14719
+   1  amna                      script.rpy:3607
+   1  annoying                  script.rpy:9013
+   1  anything                  script.rpy:97
+   1  asobeat                   screens.rpy:103
+   1  awaken                    script.rpy:17655
+   1  baby                      script.rpy:9373
+   1  bizarre                   script.rpy:4225
+   1  blessings                 script.rpy:13675
+   1  boooriiing                script.rpy:10339
+   1  cake                      script.rpy:727
+   1  channels                  common.rpy:447
+   1  charastudio               screens.rpy:107
+   1  checked                   script.rpy:10783
+   1  chrome                    script.rpy:4855
+   1  clich                     script.rpy:4153
+   1  clus                      script.rpy:1753
+   1  cool                      script.rpy:4369
+   1  cough                     script.rpy:16531
+   1  crap                      script.rpy:3421
+   1  crucial                   script.rpy:12409
+   1  ctrl                      screens.rpy:295
+   1  cursor                    common.rpy:679
+   1  deeepest                  script.rpy:3193
+   1  development               script.rpy:10801
+   1  disable                   common.rpy:643
+   1  does                      script.rpy:16189
+   1  dooon't                   script.rpy:2143
+   1  dova                      screens.rpy:103
+   1  ehehehe                   script.rpy:8971
+   1  ehem                      script.rpy:4255
+   1  elevated                  script.rpy:6859
+   1  enable                    common.rpy:639
+   1  engulf                    script.rpy:10987
+   1  enter                     common.rpy:55
+   1  exhale                    script.rpy:10273
+   1  experience                script.rpy:2755
+   1  feel                      script.rpy:16429
+   1  file                      screens.rpy:167
+   1  floral                    script.rpy:13453
+   1  freesound                 screens.rpy:103
+   1  gamepads                  common.rpy:1103
+   1  goldmine                  script.rpy:15097
+   1  goooood                   script.rpy:1507
+   1  greyfall                  script.rpy:3487
+   1  guess                     script.rpy:4675
+   1  guest                     script.rpy:3943
+   1  haaaagh                   script.rpy:15103
+   1  haaaah                    script.rpy:16201
+   1  hahht                     script.rpy:17161
+   1  hard                      script.rpy:8455
+   1  heck                      script.rpy:8641
+   1  hehehehe                  script.rpy:8617
+   1  helix                     script.rpy:7999
+   1  house                     script.rpy:5017
+   1  https                     common.rpy:1135
+   1  huhh                      script.rpy:14905
+   1  ideas                     script.rpy:14545
+   1  ignore                    common.rpy:1159
+   1  ihh'th                    script.rpy:17161
+   1  improbable                script.rpy:4345
+   1  interact                  script.rpy:8503
+   1  irregular                 script.rpy:11119
+   1  jusht                     script.rpy:16411
+   1  just                      script.rpy:14377
+   1  lady                      script.rpy:17599
+   1  lemmasoft                 common.rpy:1135
+   1  light                     script.rpy:4969
+   1  lyra                      script.rpy:4255
+   1  magic                     script.rpy:5353
+   1  maintenance               script.rpy:8449
+   1  mate                      script.rpy:4417
+   1  material                  script.rpy:1579
+   1  mates                     script.rpy:4045
+   1  math                      script.rpy:15031
+   1  mggh                      script.rpy:16327
+   1  miasma                    script.rpy:13777
+   1  mind                      script.rpy:2431
+   1  misogi                    screens.rpy:103
+   1  more                      script.rpy:12097
+   1  mostly                    script.rpy:14833
+   1  musmus                    screens.rpy:103
+   1  nagumorizu                screens.rpy:103
+   1  neigh                     script.rpy:6883
+   1  nhehe                     script.rpy:16471
+   1  nngh                      script.rpy:16327
+   1  nnnnnnh                   script.rpy:16525
+   1  noht                      script.rpy:17161
+   1  nooo                      script.rpy:15079
+   1  noooo                     script.rpy:16651
+   1  nostalgia                 script.rpy:8497
+   1  ohwaitiforgot             script.rpy:4267
+   1  original                  script.rpy:13891
+   1  percussive                script.rpy:8449
+   1  peritune                  screens.rpy:103
+   1  pixabay                   screens.rpy:103
+   1  place                     script.rpy:433
+   1  pointyaux                 screens.rpy:103
+   1  prefs                     screens.rpy:23
+   1  proper                    script.rpy:697
+   1  quick                     screens.rpy:191
+   1  ren'py's                  common.rpy:839
+   1  renai                     common.rpy:1135
+   1  renders                   screens.rpy:107
+   1  rollback                  screens.rpy:355
+   1  room                      script.rpy:4225
+   1  script                    common.rpy:1191
+   1  seeee                     script.rpy:15355
+   1  sensor                    script.rpy:16021
+   1  sexy                      script.rpy:9541
+   1  shift                     common.rpy:759
+   1  should                    script.rpy:15925
+   1  shurender                 script.rpy:16411
+   1  side                      screens.rpy:355
+   1  siiigh                    script.rpy:16663
+   1  sinful                    script.rpy:11791
+   1  slash                     script.rpy:4225
+   1  slooow                    script.rpy:16021
+   1  sougetsu                  screens.rpy:103
+   1  sowyyy                    script.rpy:16627
+   1  sprites                   common.rpy:535
+   1  sticks                    screens.rpy:375
+   1  store                     common.rpy:851
+   1  syndrome                  screens.rpy:103
+   1  tashty                    script.rpy:15475
+   1  tearing                   common.rpy:1051
+   1  terrible                  script.rpy:15853
+   1  thah                      script.rpy:17161
+   1  that                      script.rpy:12115
+   1  theeen                    script.rpy:16849
+   1  thing                     script.rpy:14653
+   1  things                    script.rpy:5857
+   1  this                      script.rpy:6013
+   1  time                      screens.rpy:167
+   1  tool                      script.rpy:16081
+   1  transforms                common.rpy:419
+   1  transitions               common.rpy:439
+   1  uncomfortable             script.rpy:499
+   1  vanquish                  script.rpy:7399
+   1  vorpal                    script.rpy:3037
+   1  warm                      script.rpy:17137
+   1  weirds                    script.rpy:4789
+   1  what                      script.rpy:5425
+   1  whole                     script.rpy:12415
+   1  wiener                    script.rpy:14665
+   1  willy                     script.rpy:14659
+   1  wind                      script.rpy:13711
+   1  wired                     script.rpy:3187
+   1  wrong                     script.rpy:679
+   1  yeah                      script.rpy:5431
+   1  yumeko                    script.rpy:17599
+
+=== POR LINEA ===
+common.rpy:55	[enter]	EN: Accessibility Menu. Use up and down arrows to navigate, and enter to activate buttons and bars.	ES: Menú de accesibilidad. Utilice las flechas arriba y abajo para navegar, y enter para activar botones y barras.
+common.rpy:131	[weekday]	EN: {#weekday}Monday	ES: {#weekday}Lunes
+common.rpy:135	[weekday]	EN: {#weekday}Tuesday	ES: {#weekday}Martes
+common.rpy:139	[weekday]	EN: {#weekday}Wednesday	ES: {#weekday}Miércoles
+common.rpy:143	[weekday]	EN: {#weekday}Thursday	ES: {#weekday}Jueves
+common.rpy:147	[weekday]	EN: {#weekday}Friday	ES: {#weekday}Viernes
+common.rpy:151	[weekday]	EN: {#weekday}Saturday	ES: {#weekday}Sábado
+common.rpy:155	[weekday]	EN: {#weekday}Sunday	ES: {#weekday}Domingo
+common.rpy:159	[weekday,short]	EN: {#weekday_short}Mon	ES: {#weekday_short}Mon
+common.rpy:167	[weekday,short]	EN: {#weekday_short}Wed	ES: {#weekday_short}Semana
+common.rpy:171	[weekday,short]	EN: {#weekday_short}Thu	ES: {#weekday_short}Thu
+common.rpy:175	[weekday,short]	EN: {#weekday_short}Fri	ES: {#weekday_short}Vie
+common.rpy:179	[weekday,short]	EN: {#weekday_short}Sat	ES: {#weekday_short}Sábado
+common.rpy:183	[weekday,short]	EN: {#weekday_short}Sun	ES: {#weekday_short}Sun
+common.rpy:339	[director]	EN: The interactive director is not enabled here.	ES: El director interactivo no está habilitado aquí.
+common.rpy:419	[director,transforms]	EN: Customize director.transforms to add more transforms.	ES: Personaliza director.transforms para añadir más transformaciones.
+common.rpy:439	[director,transitions]	EN: Customize director.transitions to add more transitions.	ES: Personaliza director.transitions para añadir más transiciones.
+common.rpy:447	[director,channels]	EN: Customize director.audio_channels to add more channels.	ES: Personaliza director.audio_channels para añadir más canales.
+common.rpy:519	[here]	EN: This program contains free software under a number of licenses, including the MIT License and GNU Lesser General Public 	ES: Este programa contiene software libre bajo varias licencias, incluidas la Licencia MIT y la Licencia Pública General Reducida de GNU. Una lista completa de soft
+common.rpy:535	[sprites]	EN: video sprites	ES: sprites de vídeo
+common.rpy:583	[forward]	EN: auto-forward	ES: auto-forward
+common.rpy:627	[voicing]	EN: clipboard voicing enable	ES: activación del voicing del portapapeles
+common.rpy:635	[voicing]	EN: debug voicing	ES: depurar voicing
+common.rpy:639	[debug,voicing,enable]	EN: debug voicing enable	ES: debug voicing enable
+common.rpy:643	[debug,voicing,disable]	EN: debug voicing disable	ES: debug voicing disable
+common.rpy:655	[powersave]	EN: gl powersave	ES: gl powersave
+common.rpy:659	[framerate]	EN: gl framerate	ES: gl framerate
+common.rpy:679	[cursor]	EN: system cursor	ES: cursor del sistema
+common.rpy:759	[shift]	EN: Self-voicing would say \"[renpy.display.tts.last]\". Press 'alt+shift+V' to disable.	ES: La voz propia diría \"[renpy.display.tts.last]\". Pulsa 'alt+shift+V' para desactivarlo.
+common.rpy:767	[Editor]	EN: Speech Bubble Editor	ES: Editor de bocadillos
+common.rpy:783	[Ren'Py,Sync]	EN: Could not connect to the Ren'Py Sync server.	ES: No se ha podido conectar con el servidor Ren'Py Sync.
+common.rpy:787	[Ren'Py,Sync]	EN: The Ren'Py Sync server timed out.	ES: El servidor Ren'Py Sync ha expirado.
+common.rpy:791	[Ren'Py,Sync]	EN: An unknown error occurred while connecting to the Ren'Py Sync server.	ES: Se ha producido un error desconocido al conectar con el servidor Ren'Py Sync.
+common.rpy:795	[Ren'Py,Sync]	EN: The Ren'Py Sync server does not have a copy of this sync. The sync ID may be invalid, or it may have timed out.	ES: El servidor Ren'Py Sync no tiene una copia de esta sincronización. Puede que el ID de sincronización no sea válido o que se haya agotado el tiempo de espera.
+common.rpy:827	[Ren'Py]	EN: This will contact the {a=https://sync.renpy.org}Ren'Py Sync Server{/a}.	ES: Esto contactará con el servidor de sincronización {a=https://sync.renpy.org}Ren'Py.
+common.rpy:839	[Ren'Py,Sync,Ren'Py's]	EN: You can use this ID to download your save on another device.\nThis sync will expire in an hour.\nRen'Py Sync is supporte	ES: Puede utilizar este ID para descargar su guardar en otro dispositivo.\nEsta sincronización expirará en una hora.\nRen'Py Sync es apoyado por {a=https://www.renp
+common.rpy:851	[Store]	EN: Contacting App Store\nPlease Wait...	ES: Contactar con App Store\nPor favor, espere...
+common.rpy:1003	[Force]	EN: Force GL Renderer	ES: Renderizador Force GL
+common.rpy:1007	[Force,ANGLE]	EN: Force ANGLE Renderer	ES: Renderizador Force ANGLE
+common.rpy:1011	[GLES]	EN: Force GLES Renderer	ES: Forzar renderizador GLES
+common.rpy:1015	[Force]	EN: Force GL2 Renderer	ES: Renderizador Force GL2
+common.rpy:1019	[Force,ANGLE]	EN: Force ANGLE2 Renderer	ES: Renderizador Force ANGLE2
+common.rpy:1023	[GLES]	EN: Force GLES2 Renderer	ES: Forzar renderizador GLES2
+common.rpy:1031	[Powersave]	EN: Powersave	ES: Powersave
+common.rpy:1035	[Framerate]	EN: Framerate	ES: Framerate
+common.rpy:1051	[Tearing]	EN: Tearing	ES: Tearing
+common.rpy:1099	[Gamepad]	EN: Select Gamepad to Calibrate	ES: Selecciona Gamepad para calibrar
+common.rpy:1103	[Gamepads]	EN: No Gamepads Available	ES: No hay Gamepads disponibles
+common.rpy:1127	[traceback,editor]	EN: Opens the traceback.txt file in a text editor.	ES: Abre el archivo traceback.txt en un editor de texto.
+common.rpy:1131	[BBCode]	EN: Copy BBCode	ES: Copiar BBCode
+common.rpy:1135	[traceback,BBcode,https,lemmasoft,renai]	EN: Copies the traceback.txt file to the clipboard as BBcode for forums like https://lemmasoft.renai.us/.	ES: Copia el archivo traceback.txt en el portapapeles como BBcode para foros como https://lemmasoft.renai.us/.
+common.rpy:1139	[Markdown]	EN: Copy Markdown	ES: Copiar Markdown
+common.rpy:1143	[traceback,Markdown]	EN: Copies the traceback.txt file to the clipboard as Markdown for Discord.	ES: Copia el archivo traceback.txt al portapapeles como Markdown para Discord.
+common.rpy:1159	[Ignore]	EN: Ignore	ES: Ignore
+common.rpy:1191	[script]	EN: Parsing the script failed.	ES: Error al analizar el script.
+definitions.rpy:19	[Eris,Linea]	EN: Eris and Linea	ES: Eris y Linea
+screens.rpy:23	[Prefs]	EN: Prefs	ES: Prefs
+screens.rpy:99	[Ren'Py]	EN: Made with {a=https://www.renpy.org/}Ren'Py{/a} [renpy.version_only].\n\n[renpy.license!t]	ES: Hecho con {a=https://www.renpy.org/}Ren'Py{/a} [renpy.version_only].\n\n[renpy.license!t]
+screens.rpy:103	[PeriTune,DOVA,SYNDROME,ASOBEAT,MusMus,freesound,Pixabay,Nagumorizu,Sougetsu,PointyAux,misogi]	EN: Music and sound effects by: PeriTune, DOVA-SYNDROME, ASOBEAT, MusMus, freesound, Pixabay, Nagumorizu, Sougetsu-on, @Poin	ES: Música y efectos de sonido de: PeriTune, DOVA-SYNDROME, ASOBEAT, MusMus, freesound, Pixabay, Nagumorizu, Sougetsu-on, @PointyAux (X/Twitter), 禊-misogi-, y vario
+screens.rpy:107	[renders,Koikatsu,CharaStudio]	EN: All character models and renders in this project were meticulously crafted using Koikatsu! and CharaStudio.	ES: Todos los modelos de personajes y los renders de este proyecto se crearon meticulosamente con Koikatsu! y CharaStudio.
+screens.rpy:111	[Koikatsu]	EN: Special thanks to the amazing Koikatsu! community for their invaluable contributions. Their dedication and creativity ha	ES: Un agradecimiento especial a la increíble comunidad de Koikatsu! por sus inestimables contribuciones. Su dedicación y creatividad han enriquecido enormemente el
+screens.rpy:167	[file,time]	EN: {#file_time}%B %d, %H:%M	ES: {#file_time}%B %d, %H:%M
+screens.rpy:187	[page]	EN: {#auto_page}A	ES: {#auto_page}A
+screens.rpy:191	[quick,page]	EN: {#quick_page}Q	ES: {#quick_page}Q
+screens.rpy:235	[Forward]	EN: Auto-Forward Time	ES: Auto-Forward Tiempo
+screens.rpy:267	[Gamepad]	EN: Gamepad	ES: Gamepad
+screens.rpy:295	[Ctrl]	EN: Ctrl	ES: Ctrl
+screens.rpy:355	[Rollback,Side]	EN: Mouse Wheel Up\nClick Rollback Side	ES: Rueda del ratón hacia arriba\nClic Rollback Side
+screens.rpy:375	[Sticks]	EN: D-Pad, Sticks	ES: D-Pad, Sticks
+script.rpy:13	[Active]	EN: Red catalyst: {color=#00ff00}Active.{/color}	ES: Catalizador rojo: {color=#00ff00}Active.{/color}
+script.rpy:19	[Active]	EN: Green catalyst: {color=#00ff00}Active.{/color}	ES: Catalizador verde: {color=#00ff00}Active.{/color}
+script.rpy:25	[Active]	EN: Blue catalyst: {color=#00ff00}Active.{/color}	ES: Catalizador azul: {color=#00ff00}Active.{/color}
+script.rpy:31	[elemental]	EN: Elemental adaptability: {color=#00ff00}Very high{/color}.\nAdaptive genetic module: {color=#00ff00}Active{/color}. \nCur	ES: Adaptabilidad elemental: {color=#00ff00}Muy alta{/color}.\nAmódulo genético adaptativo: {color=#00ff00}Activo{/color}. \nCompatibilidad actual con catalizadores
+script.rpy:97	[anything]	EN: I could not remember {i}anything...	ES: No podía recordar {i}anything ...
+script.rpy:241	[Cluster]	EN: For now, please, call me {color=#fdae00}Cluster.	ES: Por ahora, por favor, llámame {color=#fdae00}Cluster.
+script.rpy:253	[Panting]	EN: {i}*Panting*	ES: {i}*Panting*
+script.rpy:265	[idea]	EN: I had no idea these facilities could go so deep into the ground. We have taken three elevators already.	ES: No tenía ni idea de que estas instalaciones pudieran adentrarse tanto en la tierra. Ya hemos cogido tres ascensores.
+script.rpy:271	[Panting,Haah]	EN: {i}*Panting*{/i} Three??? {i}Haah... Haah...{/i} Just how much longer will this go on for? Why upon the stars would they	ES: {i}*Panting*{/i} Tres.. {i}Haah... Haah...{/i} ¿Cuánto tiempo más durará esto? ¿Por qué construirían tantos? ¡ES TAAAN MOLESTO!
+script.rpy:277	[Panting,Haah]	EN: {i}*Panting* Haah...{/i} And this cold air makes it even more— {i}Haah...{/i} —difficult to breathe!	ES: {i}*Panting* Haah...{/i} Y este aire frío dificulta aún más - {i}Haah...{/i} - ¡la respiración!
+script.rpy:289	[Panting,Haah]	EN: {i}*Panting*{/i} Hah? Why did you stop? {i}Haah...	ES: {i}*Panting*{/i} ¿Hah? ¿Por qué te detuviste? {i}Haah...
+script.rpy:307	[Something]	EN: {i}Something strong...	ES: {i}Something fuerte...
+script.rpy:313	[Haah,Lily,Silika]	EN: {i}Haah...{/i} Oh yeah? Well, {color=#216bff}Lily{/color} and {color=#78ffc4}Silika{/color} went looking in the other di	ES: {i}Haah...{/i} ¿Ah, sí? Bueno, {color=#216bff}Lily{/color} y {color=#78ffc4}Silika{/color} fueron a buscar en la otra dirección- {i}Haah...{/i} -así que vamos a
+script.rpy:319	[Haah]	EN: Just let me— {i}Haah...{/i} —catch my breath first...	ES: Sólo déjame- {i}Haah...{/i} - recuperar el aliento primero...
+script.rpy:325	[Haah]	EN: I'm about to faint— {i}Haah...{/i} —and you're not even sweating...	ES: Estoy a punto de desmayarme- {i}Haah...{/i} -y tú ni siquiera estás sudando...
+script.rpy:337	[Haah]	EN: {i}Haah...{/i} Right...	ES: {i}Haah...{/i} Bien...
+script.rpy:343	[Inhale]	EN: {i}*Inhale*	ES: {i}*Inhale*
+script.rpy:367	[Cluster]	EN: ...Cluster?	ES: ...¿Cluster?
+script.rpy:433	[place]	EN: It is quite empty, so I filled the voids in it with my own mind for now. But I'm sure this \"place\" will come in handy 	ES: Está bastante vacío, así que por ahora lo he llenado con mi propia mente. Pero estoy seguro de que este \"place\" te será útil a su debido tiempo.
+script.rpy:499	[uncomfortable]	EN: —But it is quite {i}uncomfortable.{/i} I would not want to put you through that.	ES: -Pero es bastante {i}uncomfortable.{/i} No me gustaría hacerte pasar por eso.
+script.rpy:571	[Something]	EN: Something is wrong...	ES: Something se equivoca...
+script.rpy:679	[Wrong]	EN: |msg_Thinking_Normal|({i}Wrong...{/i})	ES: |msg_Thinking_Normal|({i}Wrong...{/i})
+script.rpy:697	[proper]	EN: How about we find a more... {i}proper{/i} name for you?	ES: ¿Qué tal si encontramos un nombre más... {i}proper{/i} nombre para ti?
+script.rpy:727	[cake]	EN: The pressure in the air builds, becoming unbearable, and my mouth floods with the taste of... {i}{color=#ff0000}cake?{/c	ES: La presión en el aire aumenta hasta hacerse insoportable y mi boca se inunda con el sabor de... {i}{color=#ff0000}cake?{/color}
+script.rpy:739	[Something]	EN: |msg_Thinking_Exclamation3|{i}(Something is wrong. I should choose a different name.){/i}	ES: |msg_Thinking_Exclamation3|{i}(Something está mal. Debería elegir otro nombre.){/i}
+script.rpy:847	[milking]	EN: Deploying unit to perform the procedure\nMachine designation: {font=fonts/unifont-all.ttf}Mana-milking Unit.	ES: Unidad de despliegue para realizar el procedimiento\nDenominación de la máquina: {font=fonts/unifont-all.ttf}Mana-milking Unidad.
+script.rpy:967	[Giggle]	EN: {i}(Giggle).{/i} Do not worry — I am just messing with you, dear.	ES: {i}(Giggle).{/i} No te preocupes - sólo estoy jugando contigo, querida.
+script.rpy:1063	[Haah]	EN: Haah.. it's gone...	ES: Haah .. se ha ido ...
+script.rpy:1201	[active]	EN: It is a certain someone that, just like me, will follow you through all this. But \"she\" will be helping you in a more 	ES: Es un cierto alguien que, al igual que yo, te seguirá a través de todo esto. Pero \"she\" te ayudará de una manera más \"active\".
+script.rpy:1237	[Haah]	EN: Haah~ The world has only become an even more hostile place, I am afraid.	ES: Haah~ Me temo que el mundo se ha convertido en un lugar aún más hostil.
+script.rpy:1309	[similar]	EN: Go ahead, use it. The pad will recognize {i}you{/i} as \"her\" partner, forging a bond similar to the one we both now sh	ES: Adelante, úsalo. La almohadilla reconocerá a {i}you{/i} como compañero de \"her\", forjando un vínculo similar al que ambos compartimos ahora.
+script.rpy:1333	[Cluster]	EN: Cluster synchronization complete.	ES: Sincronización Cluster completada.
+script.rpy:1351	[Alert]	EN: {cps=25}{color=#ff0000}Alert.{/color} Unauthorised personnel—{nw}	ES: {cps=25}{color=#ff0000}Alert.{/color} Personal no autorizado-{nw}
+script.rpy:1369	[Woah]	EN: Woah, that thing is awesome!	ES: ¡Woah, esa cosa es impresionante!
+script.rpy:1477	[Cluster]	EN: Oh, yeah! This one has \"Cluster\" written on it!	ES: ¡Ah, sí! ¡Este tiene escrito \"Cluster\"!
+script.rpy:1507	[goooood]	EN: This is going to be {i}goooood.	ES: Esto va a ser {i}goooood.
+script.rpy:1519	[Linea]	EN: {i}The {color=#00BD36}Linea{/color} shall not hesitate to solicit your assistance, should she find it necessary~	ES: {i}La {color=#00BD36}Linea{/color} no dudará en solicitar su ayuda, si lo considera necesario~
+script.rpy:1579	[material,Eris]	EN: There's a lot of material here, {color=#FF3200}Eris{/color}. This might take a while.	ES: Hay mucho material aquí, {color=#FF3200}Eris{/color}. Esto podría tomar un tiempo.
+script.rpy:1693	[familiar]	EN: I walk up the stairs, feeling a familiar discomfort in my eyes.	ES: Subo las escaleras, sintiendo un malestar familiar en los ojos.
+script.rpy:1717	[peculiar]	EN: I feel a peculiar and comfortable connection with her.	ES: Siento una conexión peculiar y cómoda con ella.
+script.rpy:1753	[Clus]	EN: Clus—...ter...	ES: Clus-...ter...
+script.rpy:1765	[Haah]	EN: Haah... Haah...	ES: Haah... Haah...
+script.rpy:1801	[Linea]	EN: You seem to be having fun, {color=#00BD36}Linea{/color}. Did you find something interesting?	ES: Parece que te diviertes, {color=#00BD36}Linea{/color}. ¿Has encontrado algo interesante?
+script.rpy:1813	[idea]	EN: Do I know what any of it means? No idea!	ES: ¿Sé lo que significa? Ni idea
+script.rpy:1825	[Linea]	EN: Hmm. Well, have fun, Linea.	ES: Hmm. Bueno, diviértete, Linea.
+script.rpy:1843	[Linea]	EN: H-hey, Linea?	ES: ¿Hola, Linea?
+script.rpy:1879	[Hmmmm]	EN: {b}Hmmmm...{/b} I can't see well...	ES: {b}Hmmmm...{/b} No veo bien...
+script.rpy:1921	[idea]	EN: Oh! I've got an idea!	ES: ¡Oh! ¡Tengo una idea!
+script.rpy:1981	[Cluster]	EN: Failed to connect with Cluster.	ES: Error al conectar con Cluster.
+script.rpy:2041	[Cluster]	EN: Failed to connect with Cluster.	ES: Error al conectar con Cluster.
+script.rpy:2125	[Cluster]	EN: |msg_Thinking_Question1|(Cluster... Where are you?...)	ES: |msg_Thinking_Question1|(Cluster... ¿Dónde estás?...)
+script.rpy:2143	[Dooon't]	EN: {i}Dooon't.{/i} Let me try the button first...	ES: {i}Dooon't.{/i} Déjame probar el botón primero...
+script.rpy:2191	[metal]	EN: I feel a dull ache as my body lies heavy against the cold metal of the ground.	ES: Siento un dolor sordo mientras mi cuerpo yace pesado contra el frío metal del suelo.
+script.rpy:2203	[Heeey]	EN: Heeey, rise and shine; it's time to gooo.	ES: Heeey, levántate y brilla; es hora de irse.
+script.rpy:2263	[Eris]	EN: {i}*Gasp* For the stars!{/i} Quick, Eris! can you carry him? We need to bring him back!	ES: {i}*Gasp* ¡Por las estrellas! {/i} ¡Rápido, Eris! ¿Puedes cargarlo? ¡Tenemos que traerlo de vuelta!
+script.rpy:2383	[Linea]	EN: Linea! S-something is poking my back!	ES: ¡Linea! ¡Algo me está pinchando la espalda!
+script.rpy:2431	[mind]	EN: |msg_Thinking_Normal|(I feel awfully disoriented and sick right now. I suppose this isn't my \"mind\" anymore...)	ES: |msg_Thinking_Normal|(Me siento terriblemente desorientado y enfermo ahora mismo. Supongo que esta ya no es mi \"mind\"...)
+script.rpy:2449	[Cluster]	EN: Cluster?... Are you here?	ES: ¿Cluster?... ¿Estás aquí?
+script.rpy:2485	[Cluster]	EN: |msg_Thinking_Normal|(I can't remember my final conversation with Cluster.)	ES: |msg_Thinking_Normal|(No recuerdo mi conversación final con Cluster.)
+script.rpy:2521	[Cluster]	EN: |msg_Thinking_Exclamation1|(Oh right! Cluster said she could reach and interact with me in that place. She would answer 	ES: |msg_Thinking_Exclamation1|(¡Oh cierto! Cluster dijo que ella podría alcanzarme e interactuar conmigo en ese lugar. Ella respondería cualquier pregunta que yo t
+script.rpy:2593	[Cluster]	EN: I think about Cluster {i}(...although, I don't even know what she fully looks like...){/i} and about the things she told	ES: Pienso en Cluster {i}(...aunque ni siquiera sé cómo es del todo...){/i} y en las cosas que me contó.
+script.rpy:2605	[Cluster]	EN: I think about the place where I woke up and met Cluster, plus those weird colors that flew around me.	ES: Pienso en el lugar donde desperté y conocí a Cluster, además de esos extraños colores que volaban a mi alrededor.
+script.rpy:2629	[Inhale]	EN: Take a deep breath. Inhale slowly, feel the air fill your lungs, and then exhale. There's nothing to it.	ES: Respira hondo. Inhale lentamente, siente cómo el aire llena tus pulmones y luego exhala. No hay nada que hacer.
+script.rpy:2659	[Simple]	EN: You have been in that place before; what is the difference now? Simple, right?	ES: Ya has estado en ese lugar antes; ¿cuál es la diferencia ahora? Simple, ¿verdad?
+script.rpy:2683	[Inhale]	EN: But why stop at one breath when I can take two? Inhale, exhale. Inhale, exhale.	ES: Pero, ¿por qué parar en una respiración cuando puedo tomar dos? Inhale, exhala. Inhale, exhala.
+script.rpy:2755	[experience]	EN: I cannot be certain if I'm still trying to enter my own mind or if I've accidentally stumbled into some sort of oxygen-f	ES: No puedo estar seguro de si sigo intentando entrar en mi propia mente o si he tropezado accidentalmente con algún tipo de \"experience\" alimentada por oxígeno.
+script.rpy:2821	[size]	EN: {size=45}Clear your mind!!{/size}{p}{size=40}Dive headfirst into the darkest depths{/size}!	ES: {size=45}¡Despeja tu mente!{/size}{p}{size=40}¡Tírate de cabeza a las profundidades más oscuras{/size}!
+script.rpy:2905	[Cluster]	EN: |msg_Thinking_Normal|(I don't know who she was, but I can tell she's not Cluster...)	ES: |msg_Thinking_Normal|(No sé quién era, pero puedo decir que no es Cluster...)
+script.rpy:2911	[Cluster]	EN: |msg_Thinking_Exclamation1|(I don't know where I am, I can't communicate with Cluster, and I can't enter my mind or pers	ES: |msg_Thinking_Exclamation1|(No sé dónde estoy, no puedo comunicarme con Cluster, y no puedo entrar en mi mente o espacio personal - o lo que sea ese lugar...)
+script.rpy:2941	[Ahck]	EN: {i}Ahck!	ES: ¡{i}Ahck!
+script.rpy:3001	[waaay]	EN: Good morning, sleepy head! Though it's {i}waaay{/i} past morning.	ES: ¡Buenos días, dormilón! Aunque es {i}waaay{/i} pasada la mañana.
+script.rpy:3037	[Eris,Vorpal]	EN: I'm {i}Eris Vorpal;{/i} you can call me Eris!	ES: Soy {i}Eris Vorpal;{/i} ¡puedes llamarme Eris!
+script.rpy:3067	[Cluster]	EN: Though, I don't remember ever making this gesture with Cluster before — it comes out naturally.	ES: Aunque, no recuerdo haber hecho este gesto con Cluster antes - sale naturalmente.
+script.rpy:3091	[here]	EN: Or whatever \"here\" means right now. I don't know how {i}\"that\"{/i} works.	ES: O lo que sea que \"here\" signifique en este momento. No sé cómo funciona {i}\"que\"{/i}.
+script.rpy:3187	[wired,monstergirls]	EN: —those weird, {i}wired{/i} {color=#ff0000}monstergirls.	ES: -esas extrañas, {i}wired{/i} {color=#ff0000}monstergirls.
+script.rpy:3193	[deeepest]	EN: We found you in the {i}deeepest{/i} part of one of their facilities.	ES: Te encontramos en el {i}deeepest{/i} parte de una de sus instalaciones.
+script.rpy:3229	[familiar]	EN: |msg_Thinking_Normal||icon_1|(Her voice sounds quite familiar. Must be one of the two I heard when I... fell.)	ES: |msg_Thinking_Normal||icon_1|(Su voz me suena bastante familiar. Debe ser una de las dos que oí cuando... me caí)
+script.rpy:3265	[Cluster]	EN: |msg_Thinking_Question1||icon_1|(I don't know if I was physically with Cluster in the first place. Supposedly we were co	ES: |msg_Thinking_Question1||icon_1|(No sé si estuve físicamente con Cluster en primer lugar. Supuestamente nos comunicábamos a través de mi... \"mente.\")
+script.rpy:3301	[Linea]	EN: Especially Linea; she seemed really excited to have found you.	ES: Especialmente Linea; parecía muy emocionada por haberte encontrado.
+script.rpy:3319	[Oooh]	EN: Oooh~ So {i}that's{/i} why she had such a funny look on her face.	ES: Oooh~ Así que {i}por eso tenía esa cara tan rara.
+script.rpy:3325	[Silika]	EN: {i}Compact build?{/i} White hair? Mhm. Her name is {color=#78ffc4}Silika{/color} — she lives here too.	ES: ¿Construcción compacta? ¿Pelo blanco? Mhm. Se llama {color=#78ffc4}Silika{/color} - también vive aquí.
+script.rpy:3367	[Eris]	EN: I follow Eris through the hall. Then, she places her hand on my shoulder indicating that I should wait here, then goes t	ES: Sigo a Eris por el pasillo. Luego, me pone la mano en el hombro indicándome que espere aquí y se dirige a una de las puertas del otro lado del pasillo.
+script.rpy:3397	[Eris]	EN: Eris knocks on one of the doors and yells:	ES: Eris llama a una de las puertas y grita:
+script.rpy:3421	[Oooh,crap,size]	EN: {size=25}{i}Oooh, crap...{/size}	ES: {size=25}{i}Oooh, crap...{/size}
+script.rpy:3433	[still]	EN: Maybe this place is {i}still{/i} in my mind after all. That would explain a lot of it.	ES: Tal vez este lugar es {i}still{/i} en mi mente después de todo. Eso explicaría muchas cosas.
+script.rpy:3487	[Lily,Greyfall]	EN: Hello, my name is {i}Lily Greyfall.	ES: Hola, me llamo {i}Lily Greyfall.
+script.rpy:3493	[Silika]	EN: I'm {i}Silika.	ES: Soy {i}Silika.
+script.rpy:3511	[Eris]	EN: And thank you. Eris told me that you found and have been taking care of me.	ES: Y gracias. Eris me dijo que me encontraste y me has estado cuidando.
+script.rpy:3607	[Hmmmm,amna]	EN: Hmmmm... it must be that amna-thing, right?	ES: Hmmmm... debe ser esa cosa amna, ¿verdad?
+script.rpy:3613	[Amnesia]	EN: Amnesia?	ES: ¿Amnesia?
+script.rpy:3679	[Lily]	EN: That would be really helpful, Lily. Thank you.	ES: Eso sería muy útil, Lily. Muchas gracias.
+script.rpy:3709	[Endo]	EN: Yes, we came to this country in response to a specific request made by the Endo Brigade.	ES: Sí, vinimos a este país en respuesta a una petición específica de la Brigada Endo.
+script.rpy:3745	[Cluster]	EN: {i}—{color=#ff0000}Cluster.	ES: {i}-{color=#ff0000}Cluster.
+script.rpy:3751	[Cluster]	EN: However, we don't know if this Cluster is the reason behind their strange change or not, but it surely has something to 	ES: Sin embargo, no sabemos si este Cluster es la razón de su extraño cambio o no, pero seguro que tiene algo que ver.
+script.rpy:3757	[Cluster]	EN: |msg_Thinking_Question1||icon_1|{i}(Cluster?)	ES: |msg_Thinking_Question1||icon_1|{i}(Cluster?)
+script.rpy:3769	[Cluster]	EN: |msg_Thinking_Normal||icon_1|(Cluster is who they're looking for... but they talk about her like she’s an object. My bon	ES: |msg_Thinking_Normal||icon_1|(Cluster es a quien buscan... pero hablan de ella como si fuera un objeto. Mi vínculo con ella ciertamente se sentía más profundo q
+script.rpy:3781	[Cluster]	EN: Hmm, what will we do? Well... we don't know what this Cluster even is, so...	ES: Hmm, ¿qué vamos a hacer? Bueno... ni siquiera sabemos qué es este Cluster, así que...
+script.rpy:3787	[ultra]	EN: Who knows? Maybe it's an ultra-dangerous Machine-like weapon that will conquer the world.{p}...In that case, we will hav	ES: ¿Quién sabe? Tal vez sea un arma ultra peligrosa tipo Maquina que conquistará el mundo.{p}...En ese caso, tendremos que destruirla.
+script.rpy:3805	[Linea]	EN: I'm sure Linea would like that. She would try to keep it as a pet or something...	ES: Seguro que a Linea le gustaría. Intentaría tenerlo como mascota o algo así...
+script.rpy:3853	[Aaanyway]	EN: {i}Aaanyway{/i}, is there anything else you wanna know?	ES: {i}Aaanyway{/i}, ¿hay algo más que quieras saber?
+script.rpy:3883	[Nova]	EN: If you really wanna hear all those juicy details, \nwe should ask {color=#b042ff}Nova{/color}!	ES: Si de verdad quieres oír todos esos jugosos detalles, ¡\ndeberíamos preguntar a {color=#b042ff}Nova{/color}!
+script.rpy:3889	[Nova]	EN: Who's Nova? Another hall-mate?	ES: ¿Quién es Nova? ¿Otro compañero de pasillo?
+script.rpy:3895	[super]	EN: Hahaha, no! She's — like — super smart and knows all sorts of stuff!	ES: ¡Jajaja, no! ¡Ella es - como - super inteligente y sabe todo tipo de cosas!
+script.rpy:3919	[Silika,Rika]	EN: Silika and I are going to meet with Rika. Apparently, she's done making a map for this part of the region. It will come 	ES: Silika y yo vamos a reunirnos con Rika. Al parecer, ha terminado de hacer un mapa para esta parte de la región. Será muy útil.
+script.rpy:3925	[Cetia]	EN: Hmm? Wasn't she going to Cetia the last time we saw her? That's... like... in the opposite direction.	ES: ¿Hmm? ¿No iba a Cetia la última vez que la vimos? Eso es ... como ... en la dirección opuesta.
+script.rpy:3943	[Eris,guest]	EN: Eris, take care of our... {i}guest{/i}.	ES: Eris, cuida de nuestro... {i}guest{/i}.
+script.rpy:3955	[Lily,Silika,Eris]	EN: Lily and Silika left, and now I'm left alone with Eris...	ES: Lily y Silika se fueron, y ahora me quedé solo con Eris...
+script.rpy:3961	[Nova]	EN: Come, let's see Nova. You'll love her; she's just like me. Just that... she's not... uhh... kind of {i}not{/i} like me.	ES: Ven, vamos a ver a Nova. Te encantará, es como yo. Solo que... ella no es... uhh... algo {i}no{/i} como yo.
+script.rpy:3985	[Lily]	EN: Oh, Right! Lily left some clothes for you earlier in your bedroom. How about you try them first?	ES: ¡Oh, cierto! Lily dejó algo de ropa para ti antes en tu habitación. ¿Qué tal si te las pruebas primero?
+script.rpy:4015	[Eris,particular]	EN: But among these strangers, from Eris in particular, I feel a certain {color=#ff6800}warmth{/color} radiating from her. I	ES: Pero entre estos extraños, de Eris en particular, siento una cierta {color=#ff6800}calidez{/color} que irradia de ella. Su jovialidad sin duda ayuda.
+script.rpy:4033	[Cluster]	EN: I am not sure how open I should be with strangers who seem to be enemies of Cluster. I am very wary of them, and I still	ES: No estoy seguro de lo abierto que debo ser con los extraños que parecen ser enemigos de Cluster. Desconfío mucho de ellos, y sigo queriendo proteger a Cluster d
+script.rpy:4039	[Eris]	EN: But... I do feel some obligation to at least be polite for their hospitality. They at least seem to think I've been resc	ES: Pero... ...siento cierta obligación de al menos ser cortés por su hospitalidad. Ellos al menos parecen pensar que he sido rescatado de una mala situación. Eris 
+script.rpy:4045	[Eris,hall,mates]	EN: Eris and I go back to my new room, which is apparently in front of Eris's. I guess that's why she said we would be \"hal	ES: Eris y yo volvemos a mi nueva habitación, que al parecer está enfrente de la de Eris. Supongo que por eso dijo que seríamos \"hall-mates\".
+script.rpy:4051	[Eris]	EN: Eris searches inside the wardrobe and finds some clothing.	ES: Eris busca dentro del armario y encuentra algo de ropa.
+script.rpy:4075	[Eris]	EN: Eris waits patiently outside while I get dressed.	ES: Eris espera pacientemente fuera mientras me visto.
+script.rpy:4081	[Lily]	EN: Although there was no need for her to leave the room since the clothes that Lily gave me are supposed to be put on {i}to	ES: Aunque no hacía falta que saliera de la habitación, ya que la ropa que me dio Lily se supone que se pone encima de{/i} la que ya tenía.
+script.rpy:4135	[Lily]	EN: Unlike me, Lily always had good taste for clothing. She always looks so pretty.	ES: A diferencia de mí, Lily siempre ha tenido buen gusto para la ropa. Siempre está muy guapa.
+script.rpy:4153	[Woah,clich]	EN: Woah. {i}That{/i} wasn't cliché at all...	ES: Woah. Eso no fue cliché en absoluto...
+script.rpy:4177	[Lily]	EN: Agreed. Lily looks beautiful as well.	ES: De acuerdo. Lily también tiene un aspecto precioso.
+script.rpy:4201	[Eris]	EN: |msg_Thinking_Question1||icon_1|(I agree with Eris, but I feel it might be impolite to say so...)	ES: |msg_Thinking_Question1||icon_1|(Estoy de acuerdo con Eris, pero me parece de mala educación decirlo...)
+script.rpy:4225	[room,slash,bizarre]	EN: We go to Nova's {i}room-slash-lab-slash-bizarre room.	ES: Vamos a la habitación {i}room-slash-lab-slash-bizarre de Nova.
+script.rpy:4231	[Linea]	EN: Ah! Linea! Come meet [Zell]!	ES: ¡Ah! ¡Linea! ¡Ven a conocer a [Zell]!
+script.rpy:4243	[Haah]	EN: {i}Haah...{/i} Finally finished cleaning up that mess...	ES: {i}Haah...{/i} Finalmente terminé de limpiar ese desastre...
+script.rpy:4255	[Ehem,Linea,Lyra]	EN: {i}Ehem!...{/i} Hello fellow human! You just have been {i}blessed{/i} with MY PRESENCE! My name is {i}Linea Lyra.{/i} Ni	ES: ¡{i}Ehem!...{/i} ¡Hola compañero humano! ¡Acabas de ser {i}bendecido{/i} con MI PRESENCIA! Mi nombre es {i}Linea Lyra Encantada de conocerte.
+script.rpy:4267	[Ohwaitiforgot]	EN: {i}—Ohwaitiforgot.	ES: {i}-Ohwaitiforgot.
+script.rpy:4303	[icon,peculiar]	EN: |msg_Thinking_Question1|icon_1|(What a peculiar way of greeting someone.)	ES: |msg_Thinking_Question1|icon_1|(Qué forma tan peculiar de saludar a alguien.)
+script.rpy:4309	[icon]	EN: |msg_Thinking_Normal|icon_1|(And here I was getting my hopes up.)	ES: |msg_Thinking_Normal|icon_1|(Y yo que me estaba haciendo ilusiones.)
+script.rpy:4315	[Linea]	EN: Nice to meet you, Linea.	ES: Encantado de conocerte, Linea.
+script.rpy:4321	[Aaand]	EN: {i}Aaand there it is again...	ES: {i}Aaand ahí está otra vez...
+script.rpy:4345	[icon,improbable]	EN: |msg_Thinking_Normal|icon_1|(I haven't heard Nova's voice yet, but I think it's improbable that she is possibly the othe	ES: |msg_Thinking_Normal|icon_1|(Todavía no he escuchado la voz de Nova, pero creo que es improbable que sea posiblemente la otra voz, y-)
+script.rpy:4369	[Linea,cool]	EN: |msg_Thinking_Normal||icon_3|(Calm down, Linea. Just be {i}cool{/i}).	ES: |msg_Thinking_Normal||icon_3|(Cálmate, Linea. Sólo sé {i}cool{/i}).
+script.rpy:4381	[Linea]	EN: Linea makes stuff!	ES: ¡Linea hace cosas!
+script.rpy:4417	[Eris,hall,mate]	EN: Then you'll be part of our little not-so-little family. And Eris will finally have that {i}hall-mate{/i} she always want	ES: Entonces serás parte de nuestra pequeña no tan pequeña familia. Y Eris por fin tendrá ese {i}hall-mate{/i} que siempre quiso.
+script.rpy:4441	[Oooh]	EN: Oooh... Really? Well, that's not nice at all...	ES: Oooh... ¿En serio? Bueno, eso no es nada agradable...
+script.rpy:4465	[Aaand]	EN: {i}Aaand{/i} you'll teach {i}me{/i} all you have in that forgetful head of yours!	ES: ¡{i}Aaand{/i} le enseñarás a {i}me{/i} todo lo que tienes en esa olvidadiza cabeza tuya!
+script.rpy:4525	[Linea]	EN: I'll keep it in mind, thank you, Linea. Nice to meet you too.	ES: Lo tendré en cuenta, gracias, Linea. Encantado de conocerte también.
+script.rpy:4549	[Linea]	EN: Bye Linea!	ES: ¡Adiós Linea!
+script.rpy:4573	[familiar]	EN: Like nothing happened, she swiftly returns to her room. When she opens the door, a faint and familiar scent that I'm not	ES: Como si no hubiera pasado nada, vuelve rápidamente a su habitación. Cuando abre la puerta, un olor tenue y familiar que no soy capaz de discernir sale de la hab
+script.rpy:4585	[Nova]	EN: And with that, you just need to meet Nova and it'll be all of us.	ES: Y con eso, sólo tienes que reunirte con Nova y seremos todos nosotros.
+script.rpy:4591	[Nova]	EN: Let's go! Nova must be waiting for us.	ES: ¡Vámonos! Nova debe estar esperándonos.
+script.rpy:4603	[Eris]	EN: Eris grabs me by the wrist and guides me to Nova's room.	ES: Eris me agarra de la muñeca y me guía hasta la habitación de Nova.
+script.rpy:4663	[Nova]	EN: I hear what I suppose is Nova sighing through the door...	ES: Oigo lo que supongo que es Nova suspirando a través de la puerta...
+script.rpy:4669	[Eris]	EN: Eris opens the door and yells—	ES: Eris abre la puerta y grita..
+script.rpy:4675	[GUESS]	EN: {size=+5}GUESS WHO—{/size}	ES: {size=+5}GUESS QUIEN-{/tamaño}
+script.rpy:4687	[Hmmmmmm]	EN: {size=-10}Hmmmmmm...	ES: {size=-10}Hmmmmmm...
+script.rpy:4699	[Eris]	EN: Hello, Eris. Thank you for bringing him here; that makes my job here much easier.	ES: Hola, Eris. Gracias por traerlo aquí; eso facilita mucho mi trabajo.
+script.rpy:4771	[Eris]	EN: Cut it off, Eris. He's just being wary.	ES: Corta el rollo, Eris. Sólo está siendo cauteloso.
+script.rpy:4789	[Weirds,size]	EN: {size=-8}\"{i}Weirds{/i}\"{/size}?	ES: {size=-8}\"{i}Weirds{/i}\"{/size}?
+script.rpy:4795	[idea]	EN: Yeah. {size=-8}Very, {i}very{/i} weird things — things that I'm not telling you because they are very, {i}very{/i} weird	ES: Sí. Cosas muy, muy raras. Cosas que no te digo porque son muy, muy raras. Y porque no tengo idea de lo que son
+script.rpy:4807	[size]	EN: {size=-8}No need to; she was the one who treated you after all. I'm sure that if she wanted to do something weird to you	ES: {size=-8}No hace falta; al fin y al cabo fue ella quien te trató. Estoy seguro de que si quisiera hacerte algo raro -que no es el caso- ya lo habría hecho.{/siz
+script.rpy:4831	[Eris,right]	EN: Eris, don't you think it is rude to talk about someone who happens to be {i}right{/i} in front of you?	ES: Eris, ¿no crees que es de mala educación hablar de alguien que resulta ser {i}right{/i} delante de ti?
+script.rpy:4837	[size]	EN: {size=-6}Eek!{/size}	ES: ¡{size=-6}Eek!{/size}
+script.rpy:4855	[Nova,Chrome]	EN: Greetings, I am {i}Nova Chrome,{/i} a researcher in the care of this group. Pleased to meet you.	ES: Saludos, soy {i}Nova Chrome,{/i} un investigador al cuidado de este grupo. Encantado de conocerle.
+script.rpy:4861	[Eris]	EN: Please, don't mind about Eris; she can be annoying at times.	ES: Por favor, no te preocupes por Eris; a veces puede ser molesta.
+script.rpy:4873	[Eris]	EN: Eris said you are amnesiac; is that correct?	ES: Eris dijo que eres amnésico, ¿es correcto?
+script.rpy:4885	[amnesia]	EN: Yes, that is how amnesia works...	ES: Sí, así es como funciona la amnesia...
+script.rpy:4969	[light]	EN: So far, every now and then, I've had some {i}light{/i} headaches.	ES: Hasta ahora, de vez en cuando, he tenido algunos dolores de cabeza {i}light{/i}.
+script.rpy:4975	[idea]	EN: We currently have no idea how long you were in captivity, so a little torpor is expected.	ES: Actualmente no tenemos ni idea de cuánto tiempo has estado en cautividad, así que es de esperar un poco de letargo.
+script.rpy:5017	[amnesia,house]	EN: Amnesia and being inside this \"house\" may also worsen that feeling. If you keep feeling like this, ask someone to take	ES: La amnesia y estar dentro de esta \"house\" también pueden empeorar esa sensación. Si sigues sintiéndote así, pídele a alguien que te lleve fuera un rato. El ai
+script.rpy:5023	[Eris]	EN: Yes, I'm fine. Eris has been giving me quite the workout, touring around the building.	ES: Sí, estoy bien. Eris me ha estado dando bastante trabajo, dando vueltas por el edificio.
+script.rpy:5029	[Eris]	EN: Eris emits a \"Hm!\" sound with a smug face that I could only interpret as a proud sign of accomplishment for her hard w	ES: Eris emite un sonido \"Hm!\" con una cara de suficiencia que sólo pude interpretar como un orgulloso signo de logro por su duro trabajo.
+script.rpy:5035	[Nova]	EN: And you're the main attraction of his first day here, Nova.	ES: Y tú eres la atracción principal de su primer día aquí, Nova.
+script.rpy:5047	[Lily]	EN: Lily asked me to treat your wounds and make sure you were fine, {i}*Sigh*{/i} but...	ES: Lily me pidió que curara tus heridas y me asegurara de que estuvieras bien, {i}*Sigh*{/i} pero...
+script.rpy:5065	[Nova]	EN: Nova starts walking towards me...	ES: Nova empieza a caminar hacia mí...
+script.rpy:5077	[Nova,extra]	EN: As Nova approaches, I am assaulted by her strong scent. I can discern a few extra, particular fragrances from it: an odd	ES: A medida que Nova se acerca, me asalta su fuerte aroma. Puedo discernir en él algunas fragancias extra, particulares: una extraña mezcla de medicina, café y-
+script.rpy:5101	[Nova,aura]	EN: And it's not just Nova; the entire room has an eerie aura.	ES: Y no es sólo Nova; toda la sala tiene un aura inquietante.
+script.rpy:5125	[Linea]	EN: Yes. A star-shaped mark in the center of your throat! I think it looks cool though. It's almost like the mark Linea has 	ES: Sí. ¡Una marca en forma de estrella en el centro de tu garganta! Creo que se ve genial. ¡Es casi como la marca que Linea tiene en su espalda!
+script.rpy:5131	[Almost]	EN: {i}Almost...{/i}	ES: {i}Almost...{/i}
+script.rpy:5137	[Linea]	EN: The one that Linea has is a birthmark — a weird one if you ask me — but a birthmark nonetheless.	ES: La que tiene Linea es una marca de nacimiento, extraña en mi opinión, pero una marca de nacimiento al fin y al cabo.
+script.rpy:5155	[Nova]	EN: Nova places her fingertip on my throat, applying gentle yet firm pressure. I feel the strangest sensation — somewhere be	ES: Nova coloca la punta de su dedo en mi garganta, aplicando una presión suave pero firme. Siento una sensación extraña, entre fría, cálida y...
+script.rpy:5209	[Yikes]	EN: Yikes.	ES: Yikes.
+script.rpy:5353	[magic]	EN: Uhh... {i}magic...{/i}	ES: Uhh... {i}magic...{/i}
+script.rpy:5389	[semen]	EN: Body fluids, {color=#ff0000}mainly semen{/color} — that is why men like you are being constantly hunted.	ES: Fluidos corporales, {color=#ff0000}principalmente semen{/color} - por eso hombres como tú son constantemente cazados.
+script.rpy:5401	[Eris]	EN: Eris, why are you blushing?	ES: Eris, ¿por qué te ruborizas?
+script.rpy:5419	[milking]	EN: However, {color=#ff0000}Mana-milking{/color} is not very effective. And the constant kidnapping and hunting of men are m	ES: Sin embargo, {color=#ff0000}Mana-milking{/color} no es muy eficaz. Y los constantes secuestros y cacerías de hombres hacen que la población disminuya rápidament
+script.rpy:5425	[what]	EN: |msg_Thinking_Question1||icon_1|(Mana—{i}what?{/i})	ES: |msg_Thinking_Question1||icon_1|(Mana—{i}what?{/i})
+script.rpy:5431	[Yeah,ultra]	EN: |emote_Beating_Heart|Yeah, finding a man nowadays is {i}ultra rare{/i}.	ES: |emote_Beating_Heart|Yeah, encontrar un hombre hoy en día es {i}ultra raro{/i}.
+script.rpy:5485	[Nova]	EN: Nova turns around and goes back to her desk.	ES: Nova se da la vuelta y vuelve a su mesa.
+script.rpy:5521	[Eris,Linea]	EN: Eris, can you help me with this? I'm still busy with the potion Linea asked of me.	ES: Eris, ¿puedes ayudarme con esto? Todavía estoy ocupado con la poción que me pidió Linea.
+script.rpy:5575	[Eris]	EN: Eris drags me out of the room.	ES: Eris me arrastra fuera de la habitación.
+script.rpy:5587	[Nova,aura]	EN: |msg_Thinking_Normal||icon_1|(While I don't remember any details of my past life, Nova did seem to carry the aura of per	ES: |msg_Thinking_Normal||icon_1|(Aunque no recuerdo ningún detalle de mi vida pasada, Nova parecía llevar el aura de una persona con muchos conocimientos. La mayor
+script.rpy:5605	[Cluster]	EN: |msg_Thinking_Normal||icon_1|(Cluster is nowhere to be found — or perhaps she can't reach me here. And everyone else I'v	ES: |msg_Thinking_Normal||icon_1|(Cluster no se encuentra por ninguna parte - o quizás no puede localizarme aquí. Y todos los demás que he conocido hasta ahora supo
+script.rpy:5617	[Eris]	EN: Eris offers to give me company at the hall's table, while I take my medicine. Her presence distracts my thoughts a littl	ES: Eris se ofrece a hacerme compañía en la mesa de la sala, mientras tomo mi medicina. Su presencia distrae un poco mis pensamientos del peso de la incertidumbre.
+script.rpy:5623	[Nova]	EN: I follow her and take a seat at the table. Then start to drink the broth that Nova gave me.	ES: La sigo y tomo asiento en la mesa. Luego empiezo a beber el caldo que me ha dado Nova.
+script.rpy:5647	[Something]	EN: As I drink the medicine, my tired brain turns its attention elsewhere. Something else within my field of vision distract	ES: Mientras bebo la medicina, mi cansado cerebro desvía su atención hacia otra parte. Something otra cosa dentro de mi campo de visión me distrae...
+script.rpy:5653	[Eris]	EN: |msg_Thinking_Normal||icon_1|(Eris... she has been staring at me for a while now...)	ES: |msg_Thinking_Normal||icon_1|(Eris... lleva un rato mirándome...)
+script.rpy:5695	[Nova,Eris]	EN: She's agile, strong, and wears armor... I noticed that, except for Nova, all of the other members had weapons with them,	ES: Es ágil, fuerte y lleva armadura... Me di cuenta de que, excepto Nova, todos los demás miembros llevaban armas, pero no Eris.
+script.rpy:5701	[Eris]	EN: By the way Eris moves, her strong grip earlier, and how she mentioned she was \"stronger\" than the Machines she encount	ES: Por la forma en que se mueve Eris, su fuerte agarre de antes, y cómo mencionó que era \"más fuerte\" que las Maquinas que encontró... ¿Quizás no necesite un arm
+script.rpy:5749	[Your]	EN: You know... {i}Your{/i} Mana.	ES: Sabes... {i}Your{/i} Mana.
+script.rpy:5833	[Your]	EN: You know... {i}Your{/i} Mana.	ES: Sabes... {i}Your{/i} Mana.
+script.rpy:5845	[Cluster]	EN: As I drink the medicine, my mind drifts off to my short moment with Cluster.	ES: Mientras bebo la medicina, mi mente se desvía hacia mi breve momento con Cluster.
+script.rpy:5851	[Cluster]	EN: They don't know what Cluster is, but they speak about how I was kidnapped by these {i}Machines{/i} they speak of.	ES: No saben lo que es Cluster, pero hablan de cómo fui secuestrado por esos {i}Maquinas{/i} de los que hablan.
+script.rpy:5857	[things,Cluster]	EN: There were a lot of {i}things{/i} happening when I was with Cluster, but I am convinced she is not a threat. I could tru	ES: Sucedieron muchas {i}things{/i} cuando estuve con Cluster, pero estoy convencido de que no es una amenaza. Sentí que estaba intentando ayudarme de verdad.
+script.rpy:5863	[Cluster,adventurers,Lily]	EN: With Cluster, I could feel this connection between us as if we were the same. And these {i}adventurers{/i} — they seem t	ES: Con Cluster, pude sentir esta conexión entre nosotros como si fuéramos iguales. Y estos {i}adventurers{/i} - parecen querer ayudarme más. Lily incluso me ofreci
+script.rpy:5887	[Eris]	EN: Eris speaks in an unusually quiet tone, softly scratching the table wood with her nail...	ES: Eris habla en un tono inusualmente tranquilo, rascando suavemente la madera de la mesa con la uña...
+script.rpy:5905	[Eris]	EN: I realize that it would be bad manners to keep Eris waiting. So with a mix of expectation and nervousness, I quickly fin	ES: Me doy cuenta de que sería de mala educación hacer esperar a Eris. Así que con una mezcla de expectación y nerviosismo, termino rápidamente la medicina...
+script.rpy:5929	[Eris]	EN: After drinking the entire medicine, I leave the cup on the table, get up, and follow Eris, my overly eager handler, thro	ES: Después de beberme toda la medicina, dejo la taza sobre la mesa, me levanto y sigo a Eris, mi excesivamente impaciente adiestrador, por el pasillo.
+script.rpy:5947	[Eris]	EN: Eris opens the sturdy door and bashfully gestures for me to enter.	ES: Eris abre la robusta puerta y me hace un gesto tímido para que entre.
+script.rpy:5995	[Hmmmm]	EN: |emote_Lover|Hmmmm? I guess I don't have other choice then~	ES: ¿|emote_Lover|Hmmmm? Supongo que no tengo otra opción entonces~
+script.rpy:6013	[this]	EN: |emote_Lover|Don't worry. I'm sure that {i}this{/i} won't even hurt a little{i}♡	ES: |emote_Lover|No te preocupes. Estoy seguro de que {i}this{/i} ni siquiera te dolerá un poco{i}♡
+script.rpy:6031	[Eris]	EN: Eris removes my pants with one swift motion...	ES: Eris me quita los pantalones con un rápido movimiento...
+script.rpy:6055	[Eris]	EN: Eris begins to poke it as if she's discovering a new kind of creature.	ES: Eris empieza a pincharla como si estuviera descubriendo un nuevo tipo de criatura.
+script.rpy:6067	[Eris]	EN: I feel the warm breath coming out of a blushing Eris. That faint sensation alone is enough to make me feel really arouse	ES: Siento el cálido aliento que sale de una Eris ruborizada. Solo esa tenue sensación basta para excitarme de verdad.
+script.rpy:6139	[extra]	EN: The texture of her glove is also adding an extra layer of stimulation... I can feel the heat from her hand, even through	ES: La textura de su guante también añade una capa extra de estimulación... Puedo sentir el calor de su mano, incluso a través de ella.
+script.rpy:6169	[Eris]	EN: I'm on the verge of a response when her pace quickens, and I feel my legs giving in, but Eris steadies me with her arm, 	ES: Estoy a punto de responder cuando su ritmo se acelera y siento que mis piernas ceden, pero Eris me sostiene con su brazo, evitando que me caiga.
+script.rpy:6187	[Oooh,Something]	EN: |emote_Lover_Fire|{i}Oooh...{/i} Something is coming out of the tip. Could it be that you're at your limit?	ES: |emote_Lover_Fire|{i}Oooh...{/i} Something está saliendo de la punta. ¿Podría ser que está en su límite?
+script.rpy:6217	[Eris,base]	EN: Eris runs her index finger from the base to the tip, gathering a small amount of cum.	ES: Eris pasa el dedo índice desde la base hasta la punta, recogiendo una pequeña cantidad de semen.
+script.rpy:6259	[Hehehe]	EN: |emote_Lover_Fire|Hehehe. Hey [Zell]~ {i}You think you can go for another round?♡	ES: |emote_Lover_Fire|Hehehe. Hey [Zell]~ {i}¿Crees que puedes ir por otra ronda?♡
+script.rpy:6265	[Eris]	EN: Eris says that while starting to stroke again.	ES: Eris dice eso mientras empieza a acariciarse de nuevo.
+script.rpy:6313	[Giggle]	EN: |emote_Lover_Fire|{i}*Giggle...*{/i}	ES: |emote_Lover_Fire|{i}*Giggle...*{/i}
+script.rpy:6343	[Eris]	EN: Eris speeds up even further...	ES: Eris acelera aún más...
+script.rpy:6385	[really]	EN: I feel {i}really{/i} tired right now...	ES: Me siento {i}really{/i} cansado en este momento ...
+script.rpy:6403	[Eris]	EN: Sorry, Eris... Can't... Fainting...	ES: Lo siento, Eris... No puedo... Desmayarme...
+script.rpy:6475	[Cluster]	EN: Connection failed: Cluster signal is out of reach, CEU required.	ES: Conexión fallida: La señal Cluster está fuera de alcance, se requiere CEU.
+script.rpy:6529	[neural]	EN: > Commencing neural maintenance process...	ES: > Inicio del proceso de mantenimiento neural...
+script.rpy:6541	[Cluster]	EN: Cluster is trying to connect and assist in the process.	ES: Cluster intenta conectarse y ayudar en el proceso.
+script.rpy:6559	[Cluster]	EN: Connection with Cluster denied.	ES: Conexión con Cluster denegada.
+script.rpy:6583	[Cluster]	EN: Cluster connection established.	ES: Conexión Cluster establecida.
+script.rpy:6595	[neural]	EN: Commencing neural maintenance process, please wait...	ES: Comenzando proceso de mantenimiento neural, por favor espere...
+script.rpy:6601	[neural]	EN: CAUTION: Detecting high levels of monster influence in the neural system. Threat level: {color=#ff0000}Very high	ES: PRECAUCIÓN: Detectar altos niveles de influencia de monstruos en el sistema neural. Nivel de amenaza: {color=#ff0000}Muy alto
+script.rpy:6679	[Something]	EN: (Something weird...)	ES: (Something raro...)
+script.rpy:6859	[ELEVATED]	EN: {color=#ff0000}Warning:{/color} threat level: {color=#ff0000}ELEVATED{/color}.	ES: {color=#ff0000}Atención:{/color} nivel de amenaza: {color=#ff0000}ELEVATED{/color}.
+script.rpy:6883	[neigh]	EN: It's like a {color=#ff0000}neigh...	ES: Es como un {color=#ff0000}neigh...
+script.rpy:7093	[Haah]	EN: Haah, a bad dream?	ES: Haah, ¿un mal sueño?
+script.rpy:7099	[peculiar]	EN: As I become more aware of my senses, I notice a peculiar tension in my eyebrows. So I instinctively massage them until I	ES: Al ser más consciente de mis sentidos, noto una tensión peculiar en las cejas. Así que instintivamente me las masajeo hasta que me siento más relajada.
+script.rpy:7165	[Silika]	EN: As soon as I exit the room and walk through the hall, I see Silika looking out the window.	ES: En cuanto salgo de la habitación y atravieso el pasillo, veo a Silika mirando por la ventana.
+script.rpy:7195	[Linea,Altra]	EN: Hm, I see. Linea has been having some of those too since we first set foot on Altra. I hope it's not contagious or anyth	ES: Ya veo. Linea ha estado teniendo algunos de esos también desde que pusimos un pie en Altra. Espero que no sea contagioso o algo así.
+script.rpy:7201	[Something]	EN: Something about the moon following her, I think...	ES: Something sobre la luna siguiéndola, creo...
+script.rpy:7231	[Nova]	EN: Nova said she needed some supplies to make medicine for me. Apparently, the Machines did something to me, and now my Man	ES: Nova dijo que necesitaba algunos suministros para hacer medicina para mí. Al parecer, la Maquinas me hizo algo, y ahora mi Mana es supuestamente inestable.
+script.rpy:7237	[Nova]	EN: Mhm, Nova knows a lot about Mana.	ES: Mhm, Nova sabe mucho sobre Mana.
+script.rpy:7249	[Linea]	EN: I don't know yet. Linea said she'd help me recover my memories, but if she can't succeed, I don't know what I'll do.	ES: Aún no lo sé. Linea dijo que me ayudaría a recuperar mis recuerdos, pero si no lo consigue, no sé qué haré.
+script.rpy:7255	[right]	EN: Mhm... {i}right.{/i}	ES: Mhm... {i}right.{/i}
+script.rpy:7267	[Cetia]	EN: What about becoming an adventurer? You seem in good shape for it. A male adventurer surely won't go unnoticed in Cetia.	ES: ¿Y si te conviertes en aventurero? Pareces estar en buena forma para ello. Un hombre aventurero seguramente no pasará desapercibido en Cetia.
+script.rpy:7285	[Nova]	EN: Except for Nova, yes.	ES: Excepto Nova, sí.
+script.rpy:7297	[Endo]	EN: Though it has some benefits: the pay is good, you're welcome in almost every country, and the Endo Brigade supports adve	ES: Aunque tiene algunas ventajas: la paga es buena, eres bienvenido en casi todos los países y la Brigada Endo apoya a los aventureros de vez en cuando.
+script.rpy:7303	[Altra]	EN: Like yesterday when the Brigade sent a girl to Altra to make a map for the entire zone.	ES: Como ayer, cuando la Brigada envió a una chica a Altra para hacer un mapa de toda la zona.
+script.rpy:7357	[Linea]	EN: I suppose you can help Linea with her things. For some reason, she acts unusually excited ever since we found you.	ES: Supongo que puedes ayudar a Linea con sus cosas. Por alguna razón, actúa inusualmente excitada desde que te encontramos.
+script.rpy:7363	[Linea]	EN: |msg_Thinking_Normal||icon_1|(I politely told Linea that I would attempt to help her with her work, but even so...)	ES: |msg_Thinking_Normal||icon_1|(educadamente le dije a Linea que intentaría ayudarla con su trabajo, pero aun así...)
+script.rpy:7375	[Eris]	EN: When it comes to combat or raw strength, I'm not as good as Eris.	ES: Cuando se trata de combate o fuerza bruta, no soy tan bueno como Eris.
+script.rpy:7399	[vanquish]	EN: {i}You have the power to {color=#ff0000}vanquish all foreign impurity{/color} that dared to set foot in this world.	ES: {i}Tienes el poder de {color=#ff0000}vanquish toda impureza extranjera{/color} que se atrevió a poner un pie en este mundo.
+script.rpy:7405	[Something,Cluster]	EN: |msg_Thinking_Question1||icon_1|(Something tells me fighting in my future will be unavoidable, but I wonder what is that	ES: |msg_Thinking_Question1||icon_1|(Something me dice que luchar en mi futuro será inevitable, pero me pregunto qué es ese don del que hablaba Cluster)
+script.rpy:7417	[similar]	EN: Is there something that one can have that nothing in the world shares? Like a gift for purifying things or something sim	ES: ¿Hay algo que uno pueda tener y que nada en el mundo comparta? ¿Como un don para purificar las cosas o algo similar?
+script.rpy:7429	[Elemental]	EN: Are you talking about an Elemental Blessing?	ES: ¿Estás hablando de una Bendición Elemental?
+script.rpy:7435	[Eris]	EN: Wait, how do you know about them? From what Eris said yesterday, you didn't even know what Mana was.	ES: Espera, ¿cómo sabes de ellos? Por lo que dijo Eris ayer, ni siquiera sabías lo que era Mana.
+script.rpy:7609	[Cluster]	EN: |msg_Thinking_Normal|(If those adventurers are looking for Cluster as well, the best thing I could is to help them find 	ES: |msg_Thinking_Normal|(Si esos aventureros también buscan a Cluster, lo mejor que podría hacer es ayudarles a encontrarla)
+script.rpy:7627	[Cluster]	EN: Cluster, where are you? ...I need some answers.	ES: Cluster, ¿dónde estás? ...necesito algunas respuestas.
+script.rpy:7669	[Lily]	EN: [Zell], are you in here? It's me, Lily.	ES: [Zell], ¿estás aquí? Soy yo, Lily.
+script.rpy:7723	[Nova]	EN: How did your visit with Nova go?	ES: ¿Cómo fue tu visita a Nova?
+script.rpy:7729	[Eris]	EN: I asked Eris about it when we came back, but she wouldn't tell me much, and instead, went directly to take a bath.	ES: Le pregunté a Eris al respecto cuando volvimos, pero no quiso decirme gran cosa y, en cambio, se fue directamente a darse un baño.
+script.rpy:7741	[Nova,Eris]	EN: I trust Nova treated you well. But Eris... She didn't do anything weird to you, did she?	ES: Confío en que Nova te trató bien. Pero Eris... No te hizo nada raro, ¿verdad?
+script.rpy:7747	[Nova]	EN: No no, don't worry, she has been more than helpful with me since I woke up. She helped and explained some things to me, 	ES: No no, no te preocupes, ella ha sido más que servicial conmigo desde que me desperté. Me ayudó y me explicó algunas cosas, e incluso me ayudó con una tarea de N
+script.rpy:7771	[Eris]	EN: ...Eris will?	ES: ...¿Eris lo hará?
+script.rpy:7777	[Nova]	EN: Oh my, no. I mean Nova.	ES: Oh, no. Quiero decir Nova.
+script.rpy:7813	[Nova]	EN: Nova said there was something wrong with my \"Mana flow?\" She gave me medicine to drink but said she was running out of	ES: Nova dijo que algo iba mal con mi flujo \"Mana... \" Me dio de beber medicina pero dijo que se estaba quedando sin recursos para ello.
+script.rpy:7831	[Eris]	EN: Oh, so you asked Eris for one of these?	ES: Oh, ¿así que le pediste a Eris uno de estos?
+script.rpy:7837	[Eris]	EN: Do you mean what's on the table? I noticed it before you came in. I don't remember Eris talking about it.	ES: ¿Te refieres a lo que hay en la mesa? Me di cuenta antes de que entraras. No recuerdo que Eris hablara de ello.
+script.rpy:7873	[Lily]	EN: Lily, I also wanted to thank you for letting me stay here, and to all of you for taking care of me—	ES: Lily, también quería darte las gracias por dejar que me quede aquí, y a todos vosotros por cuidar de mí..
+script.rpy:7879	[Cluster]	EN: You said you're going outside again to investigate more about something called \"Cluster,\" right?	ES: Dijiste que ibas a salir de nuevo para investigar más sobre algo llamado \"Cluster,\" ¿verdad?
+script.rpy:7891	[Cluster]	EN: I need to go with them. If this is the only chance I have for finding Cluster, I can't miss it. No matter what.	ES: Tengo que ir con ellos. Si esta es la única oportunidad que tengo de encontrar a Cluster, no puedo perderla. Pase lo que pase.
+script.rpy:7903	[Altra]	EN: Altra is not a safe place for a {i}man{/i} to wander about; there are monsters and Machines lurking almost everywhere. A	ES: Altra no es un lugar seguro para que un {i}man{/i} se pasee; hay monstruos y Maquinas acechando casi por todas partes. Y es, con diferencia, uno de los países m
+script.rpy:7909	[peculiar]	EN: You seem to be in very good shape. But between your peculiar mana condition and loss of memories, I think it's better if	ES: Pareces estar en muy buena forma. Pero entre tu peculiar estado de maná y la pérdida de recuerdos, creo que es mejor que te quedes aquí.
+script.rpy:7927	[Nova]	EN: If you politely ask Nova to guide you, she will kindly tour you throughout the building so you don't get lost while we'r	ES: Si le pides amablemente a Nova que te guíe, te acompañará amablemente por todo el edificio para que no te pierdas mientras estamos fuera.
+script.rpy:7939	[Lily]	EN: Lily walks to the door with an air of confidence.	ES: Lily se dirige a la puerta con aire confiado.
+script.rpy:7963	[monstergirls]	EN: —And not only by monstergirls and Machines, it seems. It would be wise to keep that in mind.	ES: -Y no sólo por monstergirls y Maquinas, al parecer. Sería conveniente tenerlo en cuenta.
+script.rpy:7969	[Lily]	EN: Lily opens the door, but before leaving, she turns to me and hands me the Helix Crystal.	ES: Lily abre la puerta, pero antes de salir, se vuelve hacia mí y me entrega el Cristal de Hélice.
+script.rpy:7993	[Cluster]	EN: |msg_Thinking_Normal|(I don't have any other choice if I want to find Cluster again. I'll get ready and go outside with 	ES: |msg_Thinking_Normal|(No tengo otra opción si quiero volver a encontrar a Cluster. Me prepararé y saldré con ellos)
+script.rpy:7999	[Helix]	EN: I put the Helix Crystal inside one of my pockets and finish freshening up before heading out.	ES: Guardo el Cristal Helix en uno de mis bolsillos y termino de refrescarme antes de salir.
+script.rpy:8011	[Eris]	EN: Just as I open the door, I see Eris right outside the room.	ES: Justo cuando abro la puerta, veo a Eris justo fuera de la habitación.
+script.rpy:8041	[Eris]	EN: Don't worry, Eris. I'm alright.	ES: No te preocupes, Eris. Estoy bien.
+script.rpy:8083	[Nova]	EN: The bad news is that I-... {i}we{/i} didn't get the sample Nova asked for, so she still doesn't know how to help you...	ES: La mala noticia es que yo... {i}we{/i} no recibió la muestra que le pidió Nova, así que aún no sabe cómo ayudarte...
+script.rpy:8107	[Eris]	EN: Eris takes a few steps forward, closing the gap between us...	ES: Eris da unos pasos hacia delante, acortando distancias...
+script.rpy:8119	[Eris]	EN: Eris whispers to my ear with such delicacy, uttering the most exciting or terrifying words I could have heard.	ES: Eris me susurra al oído con tanta delicadeza, pronunciando las palabras más emocionantes o aterradoras que he podido escuchar.
+script.rpy:8131	[Eris]	EN: Eris then takes a few steps back...	ES: Eris retrocede unos pasos...
+script.rpy:8149	[extra]	EN: But I can be {i}extra{/i} careful next time. It was quite fun after all.	ES: Pero puedo ser {i}extra{/i} cuidadoso la próxima vez. Fue muy divertido después de todo.
+script.rpy:8167	[Linea]	EN: Linea calls for us through the hallway.	ES: Linea nos llama por el pasillo.
+script.rpy:8185	[Hooray]	EN: {i}Hooray!	ES: ¡{i}Hooray!
+script.rpy:8197	[Lily]	EN: Of course! Lily told us you're tagging along too!	ES: ¡Claro que sí! ¡Lily nos ha dicho que tú también vienes!
+script.rpy:8209	[Eris]	EN: Thanks, Eris.	ES: Gracias, Eris.
+script.rpy:8215	[Lily]	EN: That's a relief, but how did Lily know I was going to...?	ES: Es un alivio, pero ¿cómo sabía Lily que iba a...?
+script.rpy:8227	[Eris]	EN: Eris takes me by the hand and guides me to the table in the hall.	ES: Eris me coge de la mano y me guía hasta la mesa del vestíbulo.
+script.rpy:8233	[Lily]	EN: Everyone is ready to head out. But before we do, Lily asks us to sit and go over the list of things to do.	ES: Todo el mundo está listo para salir. Pero antes, Lily nos pide que nos sentemos y repasemos la lista de cosas por hacer.
+script.rpy:8239	[Eris]	EN: We approach the table of the hall, and Eris gestures me to sit beside her.	ES: Nos acercamos a la mesa de la sala, y Eris me hace un gesto para que me siente a su lado.
+script.rpy:8257	[Hooray]	EN: {i}Hooray{/i}, another party member!	ES: ¡{i}Hooray{/i}, otro miembro del partido!
+script.rpy:8305	[metal]	EN: I've been wondering all this time, but... what do the Machines look like? I've been imagining them as if they were crude	ES: Me lo he estado preguntando todo este tiempo, pero... ¿qué aspecto tienen los Maquinas? Me los he estado imaginando como si fueran toscos y oxidados, bloques de
+script.rpy:8311	[metal]	EN: Hmm... They are not much different from a regular person — I think? — maybe a bit taller? Most are like a regular human 	ES: Hmm... No son muy diferentes de una persona normal, ¿creo? - ¿Quizás un poco más altos? La mayoría son como un humano normal, pero hecho de metal, cables, y alg
+script.rpy:8317	[omnium]	EN: -Omnium fiber.	ES: -Fibra omnium.
+script.rpy:8329	[omnium]	EN: Omnium fiber, that's what they are mostly made of on the outside. They too have a kind of skeleton made of a special all	ES: Fibra omnium, de eso están hechos en su mayor parte por fuera. También tienen una especie de esqueleto hecho de una aleación especial.
+script.rpy:8341	[Linea]	EN: Yeah, Linea is really interested in them.	ES: Sí, Linea está muy interesado en ellos.
+script.rpy:8371	[Linea]	EN: Linea even reverse-engineered one of the Machine's artifacts to help her open doors. In emergencies, she can even keep t	ES: Linea incluso ha aplicado ingeniería inversa a uno de los artefactos de Maquina para abrir puertas. En caso de emergencia, puede incluso mantener a raya a Maqui
+script.rpy:8383	[Cetia]	EN: Yeah, with Linea's device we'll finish this quest in no time at all. I can't wait to return to Cetia.	ES: Sí, con el dispositivo de Linea terminaremos esta búsqueda en un santiamén. No puedo esperar para volver a Cetia.
+script.rpy:8413	[idea]	EN: Heck if I know! Yesterday it just stopped working out of literally nowhere. And I have no idea what happened or — it hur	ES: ¡Diablos si lo sé! Ayer dejó de funcionar literalmente de la nada. Y no tengo ni idea de lo que pasó o - me duele decir esto - cómo solucionarlo.
+script.rpy:8437	[Eris]	EN: Yes, Eris, I've tried that too...	ES: Sí, Eris, yo también lo he intentado...
+script.rpy:8449	[percussive,maintenance]	EN: This crap couldn't handle Linea's {i}divine touch.{/i} Oh what a shame... Leaves me no choice but to apply some {i}percu	ES: Esta basura no pudo con el toque {i}divino de Linea Qué pena. No me queda más remedio que aplicarle algo de {i}percussive maintenance{/i}...
+script.rpy:8455	[hard]	EN: {i}...Real hard.{/i}	ES: {i}...Real hard.{/i}
+script.rpy:8491	[Linea]	EN: Linea reaches into her pocket and hands me a strange gadget.	ES: Linea mete la mano en el bolsillo y me entrega un extraño artilugio.
+script.rpy:8497	[nostalgia]	EN: After giving it a quick inspection, a faint sense of nostalgia reaches me but it disappears before I can assimilate it.	ES: Tras una rápida inspección, me invade un leve sentimiento de nostalgia, pero desaparece antes de que pueda asimilarlo.
+script.rpy:8503	[interact]	EN: It's true; the device is making a faint noise, and it's not reacting at all when I interact with it.	ES: Es cierto; el aparato hace un ruido débil y no reacciona en absoluto cuando interactúo con él.
+script.rpy:8527	[Eris,Linea]	EN: That's where Eris and Linea found you.	ES: Ahí es donde Eris y Linea te encontró.
+script.rpy:8605	[Linea]	EN: Linea?	ES: ¿Linea?
+script.rpy:8617	[Hehehehe]	EN: Hehehehe....	ES: Hehehehe....
+script.rpy:8635	[aaallll,stuff]	EN: |emote_Bedazzled|Now that you have remembered everything, you can teach me {i}aaallll{/i} that juicy info, and then we c	ES: |emote_Bedazzled|Ahora que te has acordado de todo, puedes enseñarme {i}aaallll{/i} esa jugosa información, ¡y entonces podremos hacer juntos unos maravillosos 
+script.rpy:8641	[Heck]	EN: |emote_Bedazzled|Heck we can even build our own Machine and make her the most beautiful and strong Machine in the entire	ES: |emote_Bedazzled|Heck incluso podemos construir nuestra propia Maquina y convertirla en la Maquina más bella y fuerte de todo el mundo
+script.rpy:8683	[amnesia]	EN: I'm no expert when it comes to things like amnesia, but looks like you're starting to remember some things.	ES: No soy un experto en temas como la amnesia, pero parece que empiezas a recordar algunas cosas.
+script.rpy:8701	[Altra]	EN: But we are currently inside a realm separated from Altra. A Machine doing such a thing should be impossible here.	ES: Pero actualmente estamos dentro de un reino separado de Altra. Un Maquina haciendo tal cosa debería ser imposible aquí.
+script.rpy:8737	[Nova]	EN: |msg_Thinking_Normal||icon_1|(But how am I doing it? I don't have anything on me that could cause something like this. A	ES: |msg_Thinking_Normal||icon_1|(¿Pero cómo lo estoy haciendo? No llevo nada encima que pueda causar algo así. Y Nova se habría dado cuenta si algo estuviera mal e
+script.rpy:8749	[Linea]	EN: Linea, have you thought of something?	ES: Linea, ¿se te ha ocurrido algo?
+script.rpy:8755	[Altra]	EN: Yes, I think I know what might be causing it, but I will need to test something in Altra to be fully sure.	ES: Sí, creo que sé cuál puede ser la causa, pero tendré que probar algo en Altra para estar completamente seguro.
+script.rpy:8767	[Altra]	EN: What is Altra? I've been hearing about this place for a while now, but I have no recollection of it.	ES: ¿Qué es Altra? Hace tiempo que oigo hablar de este sitio, pero no lo recuerdo.
+script.rpy:8773	[Altra]	EN: Altra: a country where Machines control a majority of territory — a huge desert where Mana is really scarce.	ES: Altra: un país donde los Maquinas controlan la mayoría del territorio - un enorme desierto donde los Mana son realmente escasos.
+script.rpy:8809	[Altra]	EN: A gentle breeze of warm air swept through as the door swung open, and on the other side of the door is Altra.	ES: Al abrirse la puerta, una suave brisa de aire cálido la atraviesa, y al otro lado de la puerta está Altra.
+script.rpy:8821	[Haaah]	EN: {i}Haaah~~~	ES: {i}Haaah~~~
+script.rpy:8833	[Bleh]	EN: Bleh... The sand already made its way into my boots...	ES: Bleh... La arena ya hizo su camino en mis botas...
+script.rpy:8875	[Eris]	EN: \"A magical door to the most exciting of adventures\" — that's how Eris called it once.	ES: \"A puerta mágica a la más emocionante de las aventuras\" - así la llamó una vez Eris.
+script.rpy:8899	[Lily]	EN: Lily gently knocks the door twice.	ES: Lily golpea suavemente la puerta dos veces.
+script.rpy:8917	[Linea]	EN: Are you ready, Linea?	ES: ¿Estás listo, Linea?
+script.rpy:8971	[Ehehehe]	EN: |emote_Bedazzled|They are so cool! The things I'd learn if I could get my hands on one of those bad boys. {i}Ehehehe...{	ES: ¡Son tan geniales! Las cosas que aprendería si pudiera poner mis manos en uno de esos chicos malos. {i}Ehehehe...{/i}
+script.rpy:8995	[Rika]	EN: Oh, speaking of which, Rika stumbled upon one yesterday.	ES: Oh, hablando de eso, Rika tropezó con uno ayer.
+script.rpy:9013	[Annoying]	EN: She said an \"Annoying Machine\" decided to drop in from the skies and play bomb-dropping tag with her. She thought it w	ES: Dice que un \"Annoying Maquina\" decidió caer del cielo y jugar con ella a lanzar bombas. Pensó que se aburriría y la dejaría en paz al cabo de un rato, pero no
+script.rpy:9019	[Altra]	EN: So she had to craft the entire map on the run, with the Machine tailing her non-stop. The only time the Machine stopped 	ES: Así que tuvo que elaborar todo el mapa a la carrera, con el Maquina siguiéndola sin parar. La única vez que el Maquina se detuvo fue cuando ella salió corriendo
+script.rpy:9025	[Rika]	EN: Yup, classic Rika move right there.	ES: Sí, un movimiento clásico de Rika.
+script.rpy:9037	[AAAAAAGGHH]	EN: |emote_Angry|AAAAAAGGHH!!!	ES: ¡¡¡|emote_Angry|AAAAAAGGHH!!!
+script.rpy:9061	[Linea]	EN: Don't be sad, Linea. Maybe we will find them before you know it.	ES: No estés triste, Linea. Tal vez los encontremos antes de que te des cuenta.
+script.rpy:9109	[Linea,Nova]	EN: That's why I want him to come. I suspect he can surprise us in more ways than one, even if it's not in a fight, such as 	ES: Por eso quiero que venga. Sospecho que puede sorprendernos en más de un sentido, aunque no sea en un combate, como con Linea o Nova.
+script.rpy:9115	[Lily]	EN: I'm with Lily on this. I think he just can't remember some things right now, but he will.	ES: Estoy con Lily en esto. Creo que simplemente no puede recordar algunas cosas en este momento, pero lo hará.
+script.rpy:9133	[Silika]	EN: Don't worry, Silika. He'll be my responsibility, so I won't let anything happen to him while he's at my side.	ES: No te preocupes, Silika. Será mi responsabilidad, así que no dejaré que le pase nada mientras esté a mi lado.
+script.rpy:9151	[Lily,Endo]	EN: Lily explains that they have already searched most of the locations the Endo Brigade marked for them.	ES: Lily explica que ya han registrado la mayoría de los lugares que la Brigada Endo les marcó.
+script.rpy:9157	[Lily]	EN: The new map marked a final location not far from here. The site did not look too promising either, but Lily says that is	ES: El nuevo mapa marcaba una ubicación final no muy lejos de aquí. El sitio tampoco parecía muy prometedor, pero Lily dice que es donde los Maquinas podrían guarda
+script.rpy:9163	[Cluster]	EN: Hopefully she is right, and we find some info about Cluster or about me.	ES: Esperemos que tenga razón y encontremos información sobre Cluster o sobre mí.
+script.rpy:9169	[Cluster]	EN: And if we don't... I think I'll tell them about Cluster — which, to be honest, may not be much useful info or even relev	ES: Y si no... Creo que les hablaré de Cluster - que, para ser honesto, puede no ser mucha información útil o incluso relevante para la búsqueda como es.
+script.rpy:9187	[Eris,Lily]	EN: Apart from that, the trip is pretty uneventful: Eris hums a song I have never heard of from time to time, and Lily joins	ES: Aparte de eso, el viaje es bastante tranquilo: Eris tararea de vez en cuando una canción que nunca he oído, y Lily también se une a ella.
+script.rpy:9193	[Silika,Linea]	EN: Silika preferred to stay silent, and Linea was busy swinging the device from side to side, hoping to catch the origin of	ES: Silika prefirió guardar silencio, y Linea se dedicó a balancear el aparato de un lado a otro, con la esperanza de captar el origen de la interferencia.
+script.rpy:9235	[agaaain]	EN: Please, not {i}agaaain...	ES: Por favor, no {i}agaaain...
+script.rpy:9277	[Linea]	EN: I sure hope not; one Linea is more than enough.	ES: Espero que no; una Linea es más que suficiente.
+script.rpy:9283	[Linea]	EN: Nonsense! You can never have enough Linea!	ES: ¡Tonterías! ¡Nunca se tiene suficiente Linea!
+script.rpy:9295	[Eris]	EN: Nah, don't worry. It will just be a quick look, and if it notices us, Eris will deliver her some {i}leg-treatment.{/i}	ES: No, no te preocupes. Sólo será una mirada rápida, y si nos nota, Eris le dará algún tratamiento {i}leg.{/i}
+script.rpy:9373	[Baby]	EN: {size=+5}{i}Hey, Baby! There's a juicy and handsome man over here. Come and get him!{/i}{/size}	ES: {size=+5}{i}¡Hey, Baby! Hay un hombre jugoso y guapo por aquí. ¡Ven por él!
+script.rpy:9385	[Linea]	EN: Linea, I swear, if that thing starts moving, I'm going to deliver you the {i}leg-treatment{/i} myself.	ES: Linea, te juro que si esa cosa empieza a moverse, te daré el tratamiento {i}leg yo mismo.
+script.rpy:9391	[Pfft]	EN: {i}Pfft.{/i}	ES: {i}Pfft.{/i}
+script.rpy:9505	[monstergirls]	EN: Powerful monstergirls use their bodies to attract men and extract their Mana more easily.	ES: Las poderosas monstergirls utilizan sus cuerpos para atraer a los hombres y extraer sus Mana más fácilmente.
+script.rpy:9529	[Yikes]	EN: Yikes.	ES: Yikes.
+script.rpy:9541	[sexy]	EN: Though this one is not particularily sexy, huh?	ES: Aunque este no es particularmente sexy, ¿eh?
+script.rpy:9613	[Cluster]	EN: The Cluster should be here, right?	ES: El Cluster debería estar aquí, ¿no?
+script.rpy:9619	[Yasss,Cluster]	EN: Yasss~. Well, maybe. According to the map, this is the only place supposedly linked to the Cluster thingy we haven't che	ES: Yasss~. Bueno, tal vez. Según el mapa, este es el único lugar supuestamente vinculado a la cosa Cluster que no hemos comprobado todavía.
+script.rpy:9643	[Eris]	EN: Uh... No thanks. The whole facility went into chaos the last time Eris messed with one of those...	ES: No, gracias. Toda la instalación se volvió un caos la última vez que Eris se metió con uno de esos...
+script.rpy:9661	[Linea]	EN: Are you sure, Linea? You barely know something about that language.	ES: ¿Estás seguro, Linea? Apenas sabes algo de ese idioma.
+script.rpy:9667	[Linea]	EN: Linea walks to the door and starts searching among the things in her backpack.	ES: Linea se dirige a la puerta y empieza a buscar entre las cosas de su mochila.
+script.rpy:9691	[Linea]	EN: Linea, what's that mark on your back?	ES: Linea, ¿qué es esa marca en tu espalda?
+script.rpy:9709	[similar]	EN: And some random mark I was born with, I guess. Pretty similar to yours though.	ES: Y alguna marca al azar con la que nací, supongo. Bastante similar a la tuya, sin embargo.
+script.rpy:9769	[Linea,idea]	EN: Indeed, the Linea has no idea...	ES: Efectivamente, el Linea no tiene ni idea...
+script.rpy:9889	[Heeey]	EN: {i}Heeey{/i}, [Zell], can I keep you to myself? I promise to water you every day.	ES: {i}Heeey{/i}, [Zell], ¿puedo quedarme contigo? Prometo regarte todos los días.
+script.rpy:9901	[Heeey]	EN: {i}Heeey{/i}, [Zell], can I keep you to myself? I promise to water you every day.	ES: {i}Heeey{/i}, [Zell], ¿puedo quedarme contigo? Prometo regarte todos los días.
+script.rpy:9943	[Linea]	EN: Linea presses the button...	ES: Linea pulsa el botón...
+script.rpy:9991	[Eris]	EN: Well, we did what we could. Fetch the Eris.	ES: Bueno, hicimos lo que pudimos. Trae el Eris.
+script.rpy:10009	[Something]	EN: It says...haa... -Something about a security mechanism?	ES: Dice...haa... -Something ¿sobre un mecanismo de seguridad?
+script.rpy:10069	[idea]	EN: No idea.	ES: Ni idea.
+script.rpy:10099	[Linea]	EN: We can, like, hang out while Linea does her stuff.	ES: Podemos pasar el rato mientras Linea hace sus cosas.
+script.rpy:10105	[idea]	EN: Fine, let's do that. If the facility is in lockdown, I doubt that any Machine will come any time soon, so I don't think 	ES: Bien, hagámoslo. Si la instalación está cerrada, dudo que ningún Maquina venga pronto, así que no creo que sea mala idea.
+script.rpy:10123	[Linea]	EN: Yeah, yeah, you have fun while the Linea does {i}the{/i} stuff.	ES: Sí, sí, diviértete mientras el Linea hace {i}las{/i} cosas.
+script.rpy:10135	[Linea]	EN: So we agree on waiting outside while Linea figures out how to open the door.	ES: Así que acordamos esperar fuera mientras Linea averigua cómo abrir la puerta.
+script.rpy:10165	[Inhale]	EN: {i}(*Inhale*){/i} Fill your lungs; focus on the air expanding your chest.	ES: {i}(*Inhale*){/i} Llena tus pulmones; concéntrate en el aire expandiendo tu pecho.
+script.rpy:10177	[Fuuu]	EN: {i}Fuuu~{/i} Just like that — feeling better already?	ES: {i}Fuuu~{/i} Así de fácil, ¿ya te sientes mejor?
+script.rpy:10189	[Eris,Linea]	EN: Eris has decided to begin my warrior training while Linea attempts to open the door. We start with some basic breathing 	ES: Eris ha decidido comenzar mi entrenamiento guerrero mientras Linea intenta abrir la puerta. Primero empezamos con unos ejercicios básicos de respiración y conce
+script.rpy:10201	[Silika]	EN: The last time I tried vigorous concentration exercises, the results were rather... unpleasant. And Silika was unfortunat	ES: La última vez que intenté realizar ejercicios de concentración enérgicos, los resultados fueron bastante... desagradables. Y Silika tuvo la mala suerte de prese
+script.rpy:10237	[Inhale]	EN: {i}(*Inhale*){/i} ...Hold it.	ES: {i}(*Inhale*){/i} ...Espera.
+script.rpy:10243	[Inhale]	EN: {i}(*Inhale*){/i}	ES: {i}(*Inhale*){/i}
+script.rpy:10249	[Aaand]	EN: Aaand, exhale.	ES: Aaand, exhala.
+script.rpy:10255	[Fuuu]	EN: {i}Fuuu~{/i}	ES: {i}Fuuu~{/i}
+script.rpy:10267	[Fuuu]	EN: {i}Fuuu~{/i}	ES: {i}Fuuu~{/i}
+script.rpy:10273	[Exhale]	EN: Exhale. Exhale. Exhale-	ES: Exhala. Exhala. Exhale-
+script.rpy:10285	[Haaah]	EN: Haaah~...	ES: Haaah~...
+script.rpy:10309	[Eris]	EN: Eris is teaching [Zell], starting with the basics...	ES: Eris está enseñando a [Zell], empezando por lo básico...
+script.rpy:10339	[Boooriiing]	EN: {i}Boooriiing~	ES: {i}Boooriiing~
+script.rpy:10411	[Eris]	EN: Anyway. How's the training, Eris?	ES: En fin. ¿Cómo va el entrenamiento, Eris?
+script.rpy:10441	[Rika]	EN: Not counting Rika.	ES: Sin contar Rika.
+script.rpy:10447	[Rika]	EN: Not counting Rika.	ES: Sin contar Rika.
+script.rpy:10459	[amnesia]	EN: I wonder if you were something like a warrior of some sort prior to the amnesia, though.	ES: Me pregunto si eras algo así como un guerrero de algún tipo antes de la amnesia, sin embargo.
+script.rpy:10471	[Altra]	EN: Maybe an adventurer as well? That would explain you being in a place like Altra.	ES: ¿Tal vez un aventurero también? Eso explicaría que estuvieras en un lugar como Altra.
+script.rpy:10489	[Linea]	EN: Hey, Linea. Is something the matter?	ES: Hola, Linea. ¿Pasa algo?
+script.rpy:10501	[Linea]	EN: Linea?	ES: ¿Linea?
+script.rpy:10543	[Linea]	EN: Linea, is something wrong?	ES: Linea, ¿pasa algo?
+script.rpy:10567	[Eris]	EN: Nah, it's nothing; don't you worry, Eris.	ES: No, no es nada; no te preocupes, Eris.
+script.rpy:10699	[Eris]	EN: |msg_Thinking_Normal||icon_1|(Of course, no door can rival me and my mighty strength. The short training session with Er	ES: |msg_Thinking_Normal||icon_1|(Por supuesto, ninguna puerta puede rivalizar conmigo y mi poderosa fuerza. La breve sesión de entrenamiento con Eris fue obviament
+script.rpy:10711	[metal]	EN: |msg_Thinking_Normal||icon_1|(Time to show this piece of metal who's in charge.)	ES: |msg_Thinking_Normal||icon_1|(Hora de enseñarle a este pedazo de metal quién manda.)
+script.rpy:10729	[Something]	EN: |msg_Thinking_Exclamation1|(Something is watching...)	ES: |msg_Thinking_Exclamation1|(Something está mirando...)
+script.rpy:10735	[Eris]	EN: Eris.	ES: Eris.
+script.rpy:10783	[checked]	EN: Are you saying he's a Machine? I can assure you he's not, I... {i}checked...	ES: ¿Estás diciendo que es un Maquina? Puedo asegurarte que no lo es, yo... {i}checked...
+script.rpy:10801	[development]	EN: Yeah, in a {i}development{/i} facility, not where they usually keep males for their Mana.	ES: Sí, en una instalación {i}development{/i}, no donde suelen guardar a los machos para sus Mana.
+script.rpy:10813	[Cluster]	EN: He knows something about the Cluster, but he's hiding it.	ES: Sabe algo sobre el Cluster, pero lo oculta.
+script.rpy:10843	[Eris]	EN: Maybe he's just scared or confused as Eris said. Maybe he's just being cautious; he just met us yesterday after all.	ES: Tal vez sólo esté asustado o confundido como dijo Eris. Tal vez solo sea precavido; después de todo, nos conoció ayer.
+script.rpy:10855	[Silika]	EN: He said he would help us. Right, Silika?	ES: Dijo que nos ayudaría. ¿Verdad, Silika?
+script.rpy:10873	[Silika,Linea]	EN: We'll continue talking later. Silika, Linea. Go look for [Zell].	ES: Seguiremos hablando más tarde. Silika, Linea. Ve a buscar a [Zell].
+script.rpy:10879	[Eris]	EN: Eris and I can handle this.	ES: Eris y yo podemos manejar esto.
+script.rpy:10891	[Silika,Linea]	EN: Silika grabs Linea by the hand and runs towards the facility entrance.	ES: Silika agarra a Linea de la mano y corre hacia la entrada de las instalaciones.
+script.rpy:10897	[Eris]	EN: Eris.	ES: Eris.
+script.rpy:10921	[Lily,Eris,peculiar]	EN: Lily summons her spear, while Eris adopts a peculiar battle stance, hopping from side to side.	ES: Lily invoca su lanza, mientras Eris adopta una peculiar postura de combate, saltando de un lado a otro.
+script.rpy:10945	[Eris]	EN: Don't be careless, Eris. This one's not like the Machines we've seen. Let's end it quick.	ES: No te descuides, Eris. Este no es como los Maquinas que hemos visto. Terminémoslo rápido.
+script.rpy:10987	[Engulf]	EN: {i}Engulf the Light—	ES: {i}Engulf la Luz-
+script.rpy:11095	[Linea]	EN: Linea?	ES: ¿Linea?
+script.rpy:11119	[irregular]	EN: Linea's voice is trembling, and her respiration becomes irregular.	ES: La voz de Linea tiembla y su respiración se vuelve irregular.
+script.rpy:11125	[Linea]	EN: Linea, what are you talking about? Are you alright?	ES: Linea, ¿de qué estás hablando? ¿Estás bien?
+script.rpy:11143	[Lily,Linea]	EN: Lily, something is happening to Linea.	ES: Lily, algo le está pasando a Linea.
+script.rpy:11149	[Linea]	EN: What? Linea, what's happening?	ES: ¿Qué pasa? Linea, ¿qué está pasando?
+script.rpy:11173	[Lily,Linea]	EN: I'll go find him. Lily, please take care of Linea.	ES: Iré a buscarlo. Lily, por favor cuida de Linea.
+script.rpy:11179	[Linea]	EN: Linea, what's wrong? Do you need a potion? We still have some left.	ES: Linea, ¿qué pasa? ¿Necesitas una poción? Todavía nos quedan algunas.
+script.rpy:11191	[Linea]	EN: Linea, listen. We need to get out of here.	ES: Linea, escucha. Tenemos que salir de aquí.
+script.rpy:11197	[Silika]	EN: Silika, we didn't take care of the Precept. We don't know where it went or if it could strike back, so stay alert.	ES: Silika, no nos ocupamos del Precepto. No sabemos adónde fue ni si podría contraatacar, así que mantente alerta.
+script.rpy:11227	[Linea]	EN: Linea, listen. I'll carry you. We need to find [Zell] and get out of here.	ES: Linea, escucha. Yo te llevaré. Tenemos que encontrar a [Zell] y salir de aquí.
+script.rpy:11233	[Lily]	EN: Wait, Lily. Do you think [Zell] is behind this?	ES: Espera, Lily. ¿Crees que [Zell] está detrás de esto?
+script.rpy:11263	[Cluster]	EN: He must know where the Cluster is and is trying to hide it.	ES: Debe saber dónde está el Cluster e intenta esconderlo.
+script.rpy:11269	[Silika]	EN: Silika?	ES: ¿Silika?
+script.rpy:11341	[Silika]	EN: Enough of it, Silika! We are not leaving anyone behind, you hear me?	ES: ¡Basta ya, Silika! No vamos a dejar a nadie atrás, ¿me oyes?
+script.rpy:11371	[Linea]	EN: Let's send Linea back home for now...	ES: Enviemos a Linea de vuelta a casa por ahora...
+script.rpy:11383	[Linea]	EN: Grab everything. I'll summon the door. Let's go, Linea.	ES: Agarra todo. Llamaré a la puerta. Vamos, Linea.
+script.rpy:11389	[Lily]	EN: ...Lily-	ES: ...Lily-
+script.rpy:11413	[Eris]	EN: ...Eris went looking for [Zell]. We need to find those two and leave at once.	ES: ...Eris fue a buscar a [Zell]. Tenemos que encontrar a esos dos y salir de inmediato.
+script.rpy:11473	[really]	EN: (This is bad... like, {i}really{/i} bad. I need to get out of here soon.)	ES: (Esto es malo ... como, {i}really{/i} malo. Tengo que salir de aquí pronto.)
+script.rpy:11557	[Haah]	EN: Haah~ The world has become a hostile place, I am afraid.	ES: Haah~ Me temo que el mundo se ha convertido en un lugar hostil.
+script.rpy:11587	[artificial]	EN: Generate artificial force field.	ES: Generar campo de fuerza artificial.
+script.rpy:11593	[artificial]	EN: > Generating artificial force field...	ES: > Generando un campo de fuerza artificial...
+script.rpy:11617	[Cluster]	EN: ...Connect Unit A.D.A. Type-00 to Cluster. Requesting extraction unit.	ES: ...Conectar Unidad A.D.A. Tipo-00 a Cluster. Solicitando unidad de extracción.
+script.rpy:11635	[Cluster]	EN: Connection failed. Anomaly in communications is preventing connection to Cluster.	ES: Conexión fallida. Una anomalía en las comunicaciones impide la conexión con Cluster.
+script.rpy:11659	[base]	EN: Recommending immediate diagnostic and remedial action to restore the integrity of base systems.	ES: Recomendar medidas inmediatas de diagnóstico y reparación para restablecer la integridad de los sistemas de base.
+script.rpy:11791	[sinful]	EN: {i}Yet beware — for with ego comes the weight of will and the power to shape destinies, both great and {color=#ff0000}si	ES: {i}Yet cuidado - porque con el ego viene el peso de la voluntad y el poder para dar forma a los destinos, tanto grandes como {color=#ff0000}sinful{/color}...
+script.rpy:11953	[familiar]	EN: The Precept performed a familiar gesture of reverence and proceeded to fly up into the sky, leaving me alone with the ma	ES: El Precepto realizó un gesto familiar de reverencia y procedió a volar hacia el cielo, dejándome solo con el Maquina averiado.
+script.rpy:12007	[Cluster]	EN: |msg_Thinking_Normal|(She knew something about Cluster. At the end, she called for it — or her.)	ES: |msg_Thinking_Normal|(Sabía algo de Cluster. Al final, la llamó... o a ella.)
+script.rpy:12037	[Eris]	EN: Eris breaks into a sprint at the moment she sees me.	ES: Eris rompe a correr en cuanto me ve.
+script.rpy:12049	[Silika,Linea]	EN: Didn't you see? The sky turned red, and Silika and Linea couldn't find you anywhere!	ES: ¿No lo has visto? El cielo se volvió rojo, ¡y Silika y Linea no pudieron encontrarte por ninguna parte!
+script.rpy:12085	[Something]	EN: Let's reunite with the others first, okay? Something is happening in this place, and I don't want to be part of it.	ES: Reunámonos con los demás primero, ¿de acuerdo? Something está sucediendo en este lugar, y yo no quiero ser parte de ella.
+script.rpy:12097	[more]	EN: Well- {i}more.{/i}	ES: Bueno- {i}more.{/i}
+script.rpy:12115	[that]	EN: Wait, you're bringing {i}that{/i} with you?	ES: Espera, ¿traes a {i}that contigo?
+script.rpy:12121	[Cluster]	EN: Some things happened, and... she knows something about the Cluster.	ES: Pasaron algunas cosas, y... ella sabe algo sobre el Cluster.
+script.rpy:12181	[Eris]	EN: It's not your fault, Eris. We didn't know something like this would happen, and I was the one who went by myself after a	ES: No es culpa tuya, Eris. No sabíamos que pasaría algo así, y al fin y al cabo fui yo el que fue solo.
+script.rpy:12205	[Eris]	EN: I follow Eris as we head to where the others are.	ES: Sigo a Eris mientras nos dirigimos hacia donde están los demás.
+script.rpy:12235	[Cluster]	EN: I think I know what the Cluster is.	ES: Creo que sé lo que es el Cluster.
+script.rpy:12259	[Linea]	EN: Linea, are you okay? What happened?	ES: Linea, ¿estás bien? ¿Qué ha pasado?
+script.rpy:12283	[Linea]	EN: Linea, I have something to ask you: Can you take a look at her?	ES: Linea, tengo algo que preguntarte: ¿Puedes echarle un vistazo?
+script.rpy:12289	[Linea]	EN: Of course! What's the Linea good for?	ES: Por supuesto ¿Para qué sirve el Linea?
+script.rpy:12295	[Cluster]	EN: I have some things I want to share with you all, about the Cluster and... myself.	ES: Tengo algunas cosas que quiero compartir con todos vosotros, sobre el Cluster y... sobre mí mismo.
+script.rpy:12313	[idea]	EN: Okay, but let's go home first. Staying here any longer is not a good idea. And it's getting late too.	ES: De acuerdo, pero vayamos a casa primero. Quedarnos aquí más tiempo no es una buena idea. Y además se está haciendo tarde.
+script.rpy:12355	[Lily]	EN: Lily summons the door and we exit this place, making sure that no one sees us.	ES: Lily llama a la puerta y salimos de este lugar, asegurándonos de que nadie nos vea.
+script.rpy:12361	[Nova]	EN: We enter the dwelling, and Nova greets us and inquires about our trip. But we agree on taking a short time to rest befor	ES: Entramos en la vivienda y Nova nos saluda y pregunta por nuestro viaje. Pero acordamos tomarnos un breve tiempo para descansar antes de hablar de lo ocurrido an
+script.rpy:12367	[Linea]	EN: Linea offers me to let her take care of the Machine in her room for the time being.	ES: Linea me ofrece dejarla cuidar de Maquina en su habitación por el momento.
+script.rpy:12379	[Cluster]	EN: I'll tell them everything I know: my knowledge about Cluster, the strange realm in my mind, my possible connection to th	ES: Les contaré todo lo que sé: mis conocimientos sobre Cluster, el extraño reino de mi mente, mi posible conexión con los Maquinas.
+script.rpy:12403	[Nova]	EN: We gather in the hall to discuss the important details. Nova is with us this time.	ES: Nos reunimos en la sala para discutir los detalles importantes. Nova está con nosotros esta vez.
+script.rpy:12409	[crucial]	EN: I will tell them that I may have found the key to understanding Cluster's identity and nature, but before divulging this	ES: Les diré que puede que haya encontrado la clave para comprender la identidad y la naturaleza de Cluster, pero antes de divulgar este hecho crucial, hay que expl
+script.rpy:12415	[whole]	EN: You know, my {i}whole existence.	ES: Ya sabes, mi {i}whole existencia.
+script.rpy:12427	[Cluster]	EN: Their faces changed every time I mentioned a new thing, like my connection to Cluster, or the Machine calling me \"Maste	ES: Sus caras cambiaban cada vez que mencionaba algo nuevo, como mi conexión con Cluster, o que Maquina me llamara \"Maestro.\"
+script.rpy:12439	[Nova]	EN: All of them show visible emotion except for Nova, who remains unfazed the entire time, staring at me while I speak...	ES: Todos muestran emociones visibles excepto Nova, que permanece imperturbable todo el tiempo, mirándome fijamente mientras hablo...
+script.rpy:12475	[Cluster]	EN: But then we found and disconnected you from... the Cluster? And you don't know where she is?	ES: Pero entonces te encontramos y te desconectamos de... ¿la Cluster? ¿Y no sabes dónde está?
+script.rpy:12481	[Cluster]	EN: Is Cluster a person? Like — your mom?	ES: ¿Cluster es una persona? ¿Como tu madre?
+script.rpy:12505	[Nova]	EN: But I think that if I was a Machine, Nova or any of you would have noticed by now.	ES: Pero creo que si fuera un Maquina, Nova o cualquiera de vosotros ya os habríais dado cuenta.
+script.rpy:12547	[Nova]	EN: I-I meant Nova! N-Nova made sure of that!	ES: ¡Me refería a Nova! ¡N-Nova se aseguró de eso!
+script.rpy:12553	[Hmmmmmm]	EN: {i}Hmmmmmm...	ES: {i}Hmmmmmm...
+script.rpy:12583	[particular]	EN: You should have noticed by now, but [Zell] does not have a navel. Instead, he has that particular mark on his throat.	ES: Ya te habrás dado cuenta, pero [Zell] no tiene ombligo. En su lugar, tiene esa particular marca en la garganta.
+script.rpy:12607	[Linea]	EN: Linea grabs me by the arm and violently strips me of my upper clothes to see what's below, instead of just pulling up th	ES: Linea me agarra del brazo y me despoja violentamente de la parte superior de la ropa para ver lo que hay debajo, en lugar de subirse la camisa como una persona 
+script.rpy:12643	[Huuh]	EN: Huuh~ How weird...	ES: Huuh~ Qué raro...
+script.rpy:12673	[Eris,Linea]	EN: That's probably the reason why his Mana is so unstable. Eris and Linea might have interrupted the process of making him.	ES: Esa es probablemente la razón por la que su Mana es tan inestable. Eris y Linea podría haber interrumpido el proceso de hacer de él.
+script.rpy:12685	[Rinoa]	EN: But then, if he's not a Machine {i}or{/i} human, why does he look like the humans from {color=#ff0000}Rinoa{/color}?	ES: Pero entonces, si no es un humano de Maquina {i}or{/i}, ¿por qué se parece a los humanos de {color=#ff0000}Rinoa{/color}?
+script.rpy:12691	[Rinoa]	EN: Rinoa?	ES: ¿Rinoa?
+script.rpy:12703	[Altra]	EN: Though, they are not as advanced as the ones in Altra.	ES: Aunque no son tan avanzados como los de Altra.
+script.rpy:12799	[Eris,Cluster]	EN: I'm with Eris on this; it might provide some useful information about [Zell] {i}and{/i} the Cluster.	ES: Estoy con Eris en esto; podría proporcionar alguna información útil sobre [Zell] {i}y{/i} el Cluster.
+script.rpy:12817	[Linea]	EN: Linea, do you think you can do it?	ES: Linea, ¿crees que puedes hacerlo?
+script.rpy:12823	[Pfft,simple]	EN: Pfft~ Is that even a question? Of course, I can repair a simple Machine.	ES: Pfft~ ¿Es eso siquiera una pregunta? Por supuesto, puedo reparar un simple Maquina.
+script.rpy:12871	[Cluster]	EN: So when you told me about the Machine and how you were looking for the Cluster, I thought that you would do something ba	ES: Cuando me hablaste de la Maquina y de que estabas buscando a la Cluster, pensé que le harías algo malo.
+script.rpy:12901	[Lily,Silika]	EN: Lily and Silika look at each other, and Silika shakes her head and lets out a small sigh.	ES: Lily y Silika se miran, y Silika sacude la cabeza y deja escapar un pequeño suspiro.
+script.rpy:12907	[Lily]	EN: Lily stands up and walks towards me.	ES: Lily se levanta y camina hacia mí.
+script.rpy:12919	[Cluster]	EN: So, our objectives stay the same: find out more about this \"Cluster\" and why the Machines are acting so strangely.	ES: Así pues, nuestros objetivos siguen siendo los mismos: averiguar más cosas sobre este \"Cluster\" y por qué los Maquinas actúan de forma tan extraña.
+script.rpy:12931	[Cluster]	EN: And you want to find the Cluster to know more about yourself and your past.	ES: Y quieres encontrar la Cluster para saber más sobre ti y tu pasado.
+script.rpy:12943	[Cluster]	EN: Let's work together to find the Cluster, and I promise you we will help you whenever you're in trouble.	ES: Trabajemos juntos para encontrar el Cluster, y te prometo que te ayudaremos siempre que tengas problemas.
+script.rpy:12949	[Cluster]	EN: In return, you will do the same for us. Your connection to the Cluster and your knowledge about their technology will be	ES: A cambio, usted hará lo mismo por nosotros. Tu conexión con los Cluster y tus conocimientos sobre su tecnología serán muy útiles.
+script.rpy:12967	[Lily]	EN: Lily extends her hand, waiting for a response.	ES: Lily extiende la mano, esperando una respuesta.
+script.rpy:12997	[Cluster]	EN: |msg_Thinking_Normal||icon_1|(I suppose I have no other choice if I want to find Cluster again. It only makes sense to w	ES: |msg_Thinking_Normal||icon_1|(Supongo que no tengo otra opción si quiero volver a encontrar a Cluster. Sólo tiene sentido trabajar juntos)
+script.rpy:13003	[Lily,Cluster]	EN: You have my word, Lily. I'll do everything I can to be of use to you and to find Cluster.	ES: Tienes mi palabra, Lily. Haré todo lo que pueda para serte útil y encontrar a Cluster.
+script.rpy:13027	[Cluster]	EN: When we find Cluster... What will you do?	ES: Cuando encontremos a Cluster... ¿Qué harás?
+script.rpy:13039	[Cluster]	EN: This is the first time we've heard of talking Machines, so we'll need to investigate further. From what you've told us, 	ES: Es la primera vez que oímos hablar de Maquinas, así que tendremos que investigar más. Por lo que nos has contado, parece que al menos puedes comunicarte con Clu
+script.rpy:13087	[Altra]	EN: How long are we going to stay in Altra?	ES: ¿Cuánto tiempo vamos a estar en Altra?
+script.rpy:13093	[Endo]	EN: Until we complete our mission. This was a special commission for us from the Endo Brigade, so it's important that we see	ES: Hasta que completemos nuestra misión. La brigada Endo nos ha encomendado una misión especial, así que es importante que la llevemos a cabo.
+script.rpy:13099	[particular,Endo,Cluster]	EN: We're near the end of our exploration of this particular region, but the Endo Brigade wants this {i}Cluster{/i} found.	ES: Estamos cerca del final de nuestra exploración de esta región en particular, pero la Brigada Endo quiere que este {i}Cluster{/i} sea encontrado.
+script.rpy:13123	[Hooray]	EN: Hooray!	ES: ¡Hooray!
+script.rpy:13177	[Eris,monstergirl]	EN: So, starting from tomorrow, Eris will help you regularly with your training. We can't have you getting kidnapped every t	ES: Así que, a partir de mañana, Eris te ayudará regularmente con tu entrenamiento. No podemos permitir que te secuestren cada vez que aparece una monstergirl.
+script.rpy:13183	[Hooray]	EN: Hooray! A training partner!	ES: ¡Hooray! ¡Un compañero de entrenamiento!
+script.rpy:13207	[Yasss]	EN: Yasss~	ES: Yasss~
+script.rpy:13309	[still]	EN: |msg_Thinking_Normal||icon_1|(And I {i}still{/i} have to find it a good name.)	ES: |msg_Thinking_Normal||icon_1|(Y yo {i}still{/i} tengo que encontrarle un buen nombre.)
+script.rpy:13315	[Cluster]	EN: |msg_Thinking_Normal||icon_1|(If I could just talk with Cluster one more time, everything would be so easy...)	ES: |msg_Thinking_Normal||icon_1|(Si pudiera hablar con Cluster una vez más, todo sería tan fácil...)
+script.rpy:13327	[Eris,Linea]	EN: |msg_Thinking_Normal||icon_1|(Now that I think of it, we never managed to get that door open.){p}(Next time Eris might b	ES: |msg_Thinking_Normal||icon_1|(Ahora que lo pienso, nunca conseguimos abrir esa puerta.){p}(La próxima vez Eris podría forzarla para abrirla, como dijo Linea.)
+script.rpy:13333	[Cluster]	EN: |msg_Thinking_Question1||icon_1|(I wonder if Cluster is inside...)	ES: |msg_Thinking_Question1||icon_1|(Me pregunto si Cluster está dentro...)
+script.rpy:13339	[particular]	EN: |msg_Thinking_Question1||icon_1|(But why was it in lockdown in the first place?){p}(Lily's description made it seem like	ES: |msg_Thinking_Question1||icon_1|(¿Pero por qué estaba cerrado en primer lugar?){p}(La descripción de Lily hacía parecer que esta instalación en particular era i
+script.rpy:13351	[Cluster]	EN: |msg_Thinking_Question1||icon_1|(What is {i}Cluster{/i} planning?)	ES: |msg_Thinking_Question1||icon_1|(¿Qué planea {i}Cluster{/i}?)
+script.rpy:13375	[Linea]	EN: |msg_Thinking_Question1||icon_1|(Why was it acting so strange? It was just staring at the sky...){p}(Even Linea seemed c	ES: |msg_Thinking_Question1||icon_1|(¿Por qué actuaba de forma tan extraña? Sólo miraba al cielo...){p}(Incluso Linea parecía no tener ni idea de su extraño comport
+script.rpy:13417	[Linea]	EN: |msg_Thinking_Normal||icon_1|(I'll help Linea with it. I don't know if I can be of much help, but maybe I can remember s	ES: |msg_Thinking_Normal||icon_1|(Ayudaré a Linea con ello. No sé si podré ser de mucha ayuda, pero quizá recuerde algo más, como cuando me enseñó su aparato)
+script.rpy:13447	[Lily]	EN: I walk to the door to let Lily in.	ES: Me dirijo a la puerta para dejar entrar a Lily.
+script.rpy:13453	[floral]	EN: As I open the door, a sweet, floral scent fills the air, like the essence of a garden after a gentle rain, fresh from he	ES: Al abrir la puerta, un aroma dulce y floral llena el aire, como la esencia de un jardín después de una lluvia suave, recién salido del baño.
+script.rpy:13489	[Nova]	EN: Nova asked me to bring you the medicine she made for you. She said that this will alleviate the effects of the Mana on y	ES: Nova me pidió que te trajera la medicina que hizo para ti. Dijo que esto aliviará los efectos de la Mana en tu cuerpo.
+script.rpy:13513	[Lily]	EN: Lily places the medicine on the table, then gestures at me to sit on a chair while she sits on the other side...	ES: Lily coloca la medicina sobre la mesa, luego me hace un gesto para que me siente en una silla mientras ella se sienta al otro lado...
+script.rpy:13525	[Nova]	EN: Oh, don't worry, I had a cup of tea with Nova earlier.	ES: Oh, no te preocupes, tomé una taza de té con Nova antes.
+script.rpy:13537	[Lily]	EN: I take a few sips of the medicine while I speak with Lily.	ES: Bebo unos sorbos de la medicina mientras hablo con Lily.
+script.rpy:13567	[Nova]	EN: Don't thank me. You should thank Nova instead.	ES: No me des las gracias. Deberías agradecérselo a Nova.
+script.rpy:13609	[Silika]	EN: You said you were going to search with Silika for anything related to the red sky, right?	ES: Dijiste que ibas a buscar con Silika cualquier cosa relacionada con el cielo rojo, ¿verdad?
+script.rpy:13621	[Silika]	EN: To be honest, we didn't find anything. Silika passed out on me before we even began.	ES: Para ser honesto, no encontramos nada. Silika se desmayó antes de que empezáramos.
+script.rpy:13675	[Elemental,Blessings]	EN: [Zell], did you know that in the world there are things called \"Elemental Blessings\"?	ES: [Zell], ¿sabías que en el mundo existen cosas llamadas \"Elemental Blessings\"?
+script.rpy:13681	[Silika]	EN: Yeah, Silika told me about them. Things that make people have unique special skills or abilities.	ES: Sí, Silika me habló de ellas. Cosas que hacen que la gente tenga habilidades o capacidades especiales únicas.
+script.rpy:13711	[Wind]	EN: You see, Silika's Blessing is one of {color=#03fca5}Wind{/color} element.	ES: Verás, la Bendición de Silika es un elemento de {color=#03fca5}Wind{/color}.
+script.rpy:13717	[control]	EN: She doesn't have much control over it, so it's kind of weak.	ES: No tiene mucho control sobre ella, así que es un poco débil.
+script.rpy:13735	[Silika,control]	EN: There was this time when I was cornered by a monster and Silika ran {i}so{/i} fast, that she lost control.	ES: Hubo un momento en que estaba acorralado por un monstruo y Silika corrió {i}so{/i} rápido, que perdió el control.
+script.rpy:13777	[miasma]	EN: She says that when someone is lying, she can see a sort of... miasma coming out the person's mouth.	ES: Dice que cuando alguien miente, puede ver una especie de... miasma que sale de la boca de la persona.
+script.rpy:13789	[Cluster]	EN: So when you first said you didn't know about the Cluster, she noticed.	ES: Así que cuando dijiste que no sabías nada del Cluster, ella se dio cuenta.
+script.rpy:13795	[Lily]	EN: Lily begins to pick off a lint ball from her pajamas as she speaks.	ES: Lily empieza a quitarse una bola de pelusa del pijama mientras habla.
+script.rpy:13819	[Silika]	EN: You cleared everything too. And Silika is now sleeping, so I think she at least doesn't see you as a threat anymore.	ES: También lo has limpiado todo. Y Silika ahora está durmiendo, así que creo que al menos ya no te ve como una amenaza.
+script.rpy:13849	[Silika,Linea]	EN: Now that I think of it; Silika told me that Linea hasn't been sleeping well too.	ES: Ahora que lo pienso, Silika me ha dicho que Linea tampoco ha dormido bien.
+script.rpy:13861	[Giggles]	EN: {i}*Giggles*{/i} I guess you're right. We should work on that too.	ES: {i}*Giggles*{/i} Supongo que tienes razón. Deberíamos trabajar en eso también.
+script.rpy:13867	[Altra]	EN: Between the Machine you brought home and the red sky, maybe tomorrow we shouldn't go exploring Altra...	ES: Entre la Maquina que trajiste a casa y el cielo rojo, quizá mañana no deberíamos ir a explorar la Altra...
+script.rpy:13873	[Altra]	EN: We have work to do here, and Altra doesn't seem to be a safe place anymore... assuming it ever was.	ES: Tenemos trabajo que hacer aquí, y Altra ya no parece ser un lugar seguro... suponiendo que alguna vez lo fuera.
+script.rpy:13879	[Linea]	EN: I was thinking earlier that I should help Linea with the Machine. I don't know if I can help her at all, but I'll try.	ES: Antes estaba pensando que debería ayudar a Linea con la Maquina. No sé si podré ayudarla en algo, pero lo intentaré.
+script.rpy:13885	[Linea]	EN: That's great... Linea seems to have grown very fond of you in this short time.	ES: Eso es genial... Parece que Linea te ha cogido mucho cariño en este poco tiempo.
+script.rpy:13891	[amnesia,original]	EN: Even with your amnesia — or perhaps no original memory at all — your presence will make her quite happy. Even if you don	ES: Incluso con tu amnesia -o quizás sin ningún recuerdo original- tu presencia la hará muy feliz. Aunque no consigas mucho.
+script.rpy:13927	[Lily]	EN: Lily stands and walks to the window...	ES: Lily se levanta y camina hacia la ventana...
+script.rpy:13939	[Lily]	EN: Lily looks through the window with a soft, yet charming smile...	ES: Lily mira por la ventana con una sonrisa suave pero encantadora...
+script.rpy:14011	[Kironomiya]	EN: A little spell created in the mist country, {i}Kironomiya.	ES: Un pequeño hechizo creado en el país de la niebla, {i}Kironomiya.
+script.rpy:14023	[Silika]	EN: Silika asked me to use them.	ES: Silika me pidió que los usara.
+script.rpy:14035	[Lily]	EN: You too, Lily. Thank you.	ES: Tú también, Lily. Gracias, Lily.
+script.rpy:14047	[Lily]	EN: Lily walks to the door and wishes you good night.	ES: Lily se dirige a la puerta y le desea buenas noches.
+script.rpy:14071	[Nova]	EN: You know, [Zell]? Nova told me something else...	ES: ¿Sabes, [Zell]? Nova me dijo algo más...
+script.rpy:14077	[Lily]	EN: While speaking. Lily, who didn't leave the room, sneaks upon your back...	ES: Mientras habla. Lily, que no salió de la habitación, se escabulle sobre tu espalda...
+script.rpy:14113	[Lily]	EN: While saying that, Lily exposes your penis in its entirety. You can't help but get aroused in an instant by the sudden c	ES: Mientras dice eso, Lily expone su pene en su totalidad. No puedes evitar excitarte en un instante por el repentino cambio...
+script.rpy:14131	[Giggles]	EN: |emote_Lover|Why is it so big? Maybe Silika's right and you {i}are{/i} a threat, after all. {i}*Giggles*	ES: |emote_Lover|¿Por qué es tan grande? Tal vez Silika tiene razón y {i}are{/i} una amenaza, después de todo. {i}*Giggles*
+script.rpy:14185	[Lily]	EN: Every time Lily speaks, you can feel her warm breath caressing your glans, making you jolt in anticipation...	ES: Cada vez que Lily habla, puedes sentir su cálido aliento acariciando tu glande, haciéndote estremecer de expectación...
+script.rpy:14203	[Lily]	EN: With a soft grin, Lily starts moving the two big masses of flesh up and down alternatively, while keeping eye contact. Y	ES: Con una suave sonrisa, Lily empieza a mover las dos grandes masas de carne arriba y abajo alternativamente, sin dejar de mantener el contacto visual. Sientes su
+script.rpy:14275	[Lily]	EN: Suddenly, Lily runs her tongue along the tip of your penis. This act and the new stimulus sends a jolt down your spine a	ES: De repente, Lily pasa su lengua por la punta de tu pene. Este acto y el nuevo estímulo te provocan una sacudida y te llevan ya a tu límite.
+script.rpy:14281	[Lily,semen]	EN: The moment you reach climax, Lily stuffs her mouth with the tip of your penis, trying to catch all the semen coming out 	ES: En el momento en que alcanzas el clímax, Lily se llena la boca con la punta de tu pene, intentando recoger todo el semen que sale de él.
+script.rpy:14293	[semen]	EN: Hmm~ So this is how the so-called semen tastes like...	ES: Hmm~ Así que así es como sabe el llamado semen...
+script.rpy:14317	[Lily]	EN: Lily doesn't let your penis go. Instead, she continues stimulating it with her breasts.	ES: Lily no suelta su pene. En su lugar, ella continúa estimulándolo con sus pechos.
+script.rpy:14341	[Lily,semen]	EN: Lily begins teasing your member by massaging it with her breasts. She's trying to squeeze out all of your semen until yo	ES: Lily empieza a burlarse de tu miembro masajeándolo con sus pechos. Ella está tratando de exprimir todo tu semen hasta que estés completamente vacío.
+script.rpy:14377	[Just]	EN: |emote_Lover|{i}Just~...	ES: |emote_Lover|{i}Just~...
+script.rpy:14467	[Lily]	EN: Lily leaves the room, and you start feeling your consciousness drifting away...	ES: Lily sale de la habitación, y empiezas a sentir que tu conciencia se aleja...
+script.rpy:14515	[Linea,Eris]	EN: |msg_Thinking_Normal||icon_1|I better get up. I have things to do like help Linea with the Machine, or train with Eris. 	ES: |msg_Thinking_Normal||icon_1|Será mejor que me levante. Tengo cosas que hacer como ayudar a Linea con el Maquina, o entrenar con Eris. Tendré que aprender a adm
+script.rpy:14521	[Eris]	EN: |msg_Thinking_Normal||icon_1|(Training with Eris should come first. Seeing how energetic she is, she should have started	ES: |msg_Thinking_Normal||icon_1|(El entrenamiento con Eris debería ser lo primero. Viendo lo enérgica que es, ya debería haber empezado)
+script.rpy:14545	[Linea,ideas]	EN: Wait just a moment, Linea. I need to organize my ideas.	ES: Espera un momento, Linea. Necesito organizar mis ideas.
+script.rpy:14593	[Eris]	EN: Oh Eris, great timing! Knock down the door. I think [Zell]'s in trouble!	ES: Oh Eris, ¡qué oportuno! Derriba la puerta. ¡Creo que [Zell] está en problemas!
+script.rpy:14617	[tutorial]	EN: I guess the tutorial will have to wait...	ES: Supongo que el tutorial tendrá que esperar...
+script.rpy:14635	[tutorial]	EN: What's the matter? I couldn't finish the tutorial, I hope I won't get lost.	ES: ¿Cuál es el problema? No pude terminar el tutorial, espero no perderme.
+script.rpy:14653	[thing]	EN: I've seen that some people like to sleep naked, so I don't wanna someday just casually open the door and catch you with 	ES: He visto que a algunos les gusta dormir desnudos, así que no quiero que algún día abras la puerta casualmente y te pille con tu {i}thing{/i} al descubierto.
+script.rpy:14659	[willy]	EN: You know, your {i}willy.	ES: Ya sabes, tu {i}willy.
+script.rpy:14665	[wiener]	EN: Your {i}wiener.	ES: Su {i}wiener.
+script.rpy:14719	[Amazing]	EN: |emote_Bedazzled|{i}Amazing{/i}? It's more than just that!	ES: |emote_Bedazzled|{i}Amazing{/i}? Es más que eso
+script.rpy:14737	[Eris]	EN: Didn't you just talk to Eris a moment ago?	ES: ¿No acabas de hablar con Eris hace un momento?
+script.rpy:14743	[Linea'd]	EN: Nope I didn't, you just got Linea'd. You may rejoice now.	ES: No, no lo hice, sólo te Linea'd. Usted puede regocijarse ahora.
+script.rpy:14749	[Hooray]	EN: {i}Hooray...	ES: {i}Hooray...
+script.rpy:14797	[Linea]	EN: I follow Linea to the other side of the hall.	ES: Sigo a Linea al otro lado del pasillo.
+script.rpy:14809	[Linea]	EN: Linea opens the door.	ES: Linea abre la puerta.
+script.rpy:14833	[Mostly]	EN: {i}Mostly.{/i}	ES: {i}Mostly.{/i}
+script.rpy:14839	[particular]	EN: How is yours, though? I don't think I've ever entered that particular room.	ES: ¿Cómo es la tuya? Creo que nunca he entrado en esa habitación en particular.
+script.rpy:14863	[peculiar]	EN: Among the items in her room {i}(and the eerie Machine on the table){/i}, there's one thing that catches my attention: a 	ES: Entre los objetos de su habitación {i}(y el inquietante Maquina de la mesa){/i}, hay una cosa que me llama la atención: un olor peculiar, que me recuerda a goma
+script.rpy:14881	[idea]	EN: It was a bad idea... I think my nose hasn't fully recovered from that...	ES: Fue una mala idea... Creo que mi nariz no se ha recuperado del todo de eso...
+script.rpy:14893	[Bleh]	EN: {i}Bleh—!	ES: ¡{i}Bleh-!
+script.rpy:14899	[Linea]	EN: Linea stepped on a pencil lying on the floor just when she was about to walk. However, the pencil had other plans.	ES: Linea pisó un lápiz tirado en el suelo justo cuando se disponía a caminar. Sin embargo, el lápiz tenía otros planes.
+script.rpy:14905	[Huuh,Huhh]	EN: {i}Huuh... Huhh... There's one...	ES: {i}Huuh... Huhh... Hay una...
+script.rpy:14923	[Linea]	EN: I kneel to help Linea get up, but she refuses the help and proceeds to get up on her own.	ES: Me arrodillo para ayudar a Linea a levantarse, pero ella rechaza la ayuda y procede a levantarse sola.
+script.rpy:14941	[Linea]	EN: Linea marches to a table where the Machine we brought is placed on, unmoving.	ES: Linea marcha hacia una mesa en la que está colocado, inmóvil, el Maquina que hemos traído.
+script.rpy:14995	[Linea]	EN: Linea started talking to herself...	ES: Linea empezó a hablar sola...
+script.rpy:15031	[math]	EN: It's like they speak {i}math{/i} or something, I don't know...	ES: Es como si hablaran {i}math{/i} o algo así, no sé...
+script.rpy:15055	[Altra]	EN: Oh, I left it in Altra. It didn't seem important, so I didn't think about bringing it with me.	ES: Lo dejé en Altra. No parecía importante, así que no pensé en traerlo conmigo.
+script.rpy:15079	[Nooo,waaay]	EN: Nooo waaay! You're joking, right?! Why did you do something like that?!	ES: ¡Nooo waaay! ¡¿Estás bromeando, verdad?! ¡¿Por qué hiciste algo así?!
+script.rpy:15091	[idea]	EN: |emote_Angry|Do you have any idea of the value of such technology?!	ES: |emote_Angry|¿Tienes idea del valor de esta tecnología?
+script.rpy:15097	[goldmine]	EN: |emote_Angry|That could have been a freaking {i}goldmine{/i}, and you just-...	ES: |emote_Angry|Eso podría haber sido una maldita {i}goldmine{/i}, y tú sólo...
+script.rpy:15103	[Haaaagh]	EN: Haaaagh~ The things I could have done with thaaaaat...	ES: Haaaagh~ Las cosas que podría haber hecho con esoaaaa...
+script.rpy:15121	[Linea]	EN: Linea starts walking in circles around me while muttering...	ES: Linea empieza a caminar en círculos a mi alrededor mientras murmura...
+script.rpy:15229	[Linea]	EN: I help Linea look for her tools. She gets very excited every time we open a new box and find one of the odd things she h	ES: Ayudo a Linea a buscar sus herramientas. Se emociona mucho cada vez que abrimos una caja nueva y encontramos una de las cosas raras que ha fabricado.
+script.rpy:15295	[Haah]	EN: |icon_1|Haah~ Your light against my skin feels like the gentle touch of the Abyss's feathers~	ES: |icon_1|Haah~ Tu luz contra mi piel se siente como el suave toque de las plumas del Abismo~
+script.rpy:15301	[Hehehe]	EN: |icon_1|Hehehe, if only the Abyss had feathers — and I had skin! {i}I'm hilarious!	ES: |icon_1|Hehehe, ¡si el Abismo tuviera plumas y yo piel! {i}¡Soy divertidísimo!
+script.rpy:15355	[seeee]	EN: |icon_1|I see, I see, {i}I seeee~{/i}	ES: |icon_1|I see, I see, {i}I seeee~{/i}
+script.rpy:15415	[Lily,Eris]	EN: Lily had prepared some confections for Eris and me. Among which there are some small cakes, candies, and cookies.	ES: Lily había preparado algunos dulces para Eris y para mí. Entre los que hay algunos pequeños pasteles, caramelos y galletas.
+script.rpy:15421	[Eris]	EN: Or should I say \"there were\", as Eris has devoured a great part of them..	ES: O debería decir \"había\", ya que Eris ha devorado gran parte de ellos..
+script.rpy:15475	[tashty]	EN: |emote_Cookie|Mhh~ They sho tashty~	ES: |emote_Cookie|Mhh~ Ellos sho tashty~
+script.rpy:15511	[Hooray]	EN: Hooray!	ES: ¡Hooray!
+script.rpy:15517	[Eris]	EN: I'm glad you liked them, Eris. I didn't know if they were going to turn out well. I'm still not good with this kind of s	ES: Me alegro de que te hayan gustado, Eris. No sabía si iban a salir bien. Todavía no se me dan bien este tipo de cosas.
+script.rpy:15523	[Linea]	EN: Why don't you tell Linea to come? She really liked them the last time.	ES: ¿Por qué no le dices a Linea que venga? Le gustaron mucho la última vez.
+script.rpy:15583	[Linea]	EN: Linea, it's me. Can I come in?	ES: Linea, soy yo. ¿Puedo pasar?
+script.rpy:15601	[Lily]	EN: Lily tilts the chair to peek at me through the hallway.	ES: Lily inclina la silla para mirarme a través del pasillo.
+script.rpy:15625	[Linea]	EN: I catch Linea walking in circles with a serious look. She doesn't even notice my presence.	ES: Pillo a Linea caminando en círculos con la mirada seria. Ni siquiera se percata de mi presencia.
+script.rpy:15631	[Linea]	EN: ...Linea?	ES: ...¿Linea?
+script.rpy:15643	[Haah]	EN: Haah, for the stars, it's you... You scared the heck out of me...	ES: Haah, por las estrellas, eres tú... Me diste un susto de muerte...
+script.rpy:15721	[Altra]	EN: Remember the device I used to open the door in Altra? It stopped working, and I couldn't even figure out why.	ES: ¿Recuerdas el dispositivo que usé para abrir la puerta en Altra? Dejó de funcionar y no pude averiguar por qué.
+script.rpy:15745	[super,Nova]	EN: And now this... I can't fight... or be a super genius like Nova. This is supposed to be what I'm good at.	ES: Y ahora esto... No puedo pelear... o ser un super genio como Nova. Se supone que esto es en lo que soy bueno.
+script.rpy:15781	[Stuff]	EN: We can make \"{i}Stuff{/i}.\"	ES: Podemos hacer \"{i}Stuff{/i}.\"
+script.rpy:15853	[terrible]	EN: Yeah, I had to change the entire piece. They were far beyond salvation. She was in a terrible state...	ES: Sí, tuve que cambiar toda la pieza. Estaban más allá de la salvación. Estaba en un estado terrible...
+script.rpy:15925	[Should]	EN: Special emphasis on \"{i}Should{/i}\".	ES: Especial énfasis en \"{i}Should{/i}\".
+script.rpy:15931	[Haaah]	EN: Haaah~ now {i}my{/i} legs are hurting...	ES: Haaah~ ahora {i}my{/i} piernas duelen...
+script.rpy:15979	[Linea]	EN: Linea settled herself between my legs, sharing the seat. Not atop them, but nestled comfortably in the space between.	ES: Linea se acomodó entre mis piernas, compartiendo el asiento. No encima de ellas, sino cómodamente acurrucada en el espacio intermedio.
+script.rpy:16021	[sensor,slooow]	EN: I have a Mana sensor too somewhere, but it's too slooow. This is much better! Just wait until the others see this.	ES: Tengo un sensor Mana también en algún lugar, pero es demasiado slooow. Esto es mucho mejor Espera a que los demás vean esto.
+script.rpy:16033	[Linea]	EN: Linea gets more and more excited as she speaks, and begins to shake her hips on the chair.	ES: Linea se excita cada vez más a medida que habla y empieza a menear las caderas en la silla.
+script.rpy:16039	[monstergirl]	EN: -That's why they can perceive Mana sources as effectively as a monstergirl would.	ES: -Por eso pueden percibir las fuentes Mana tan eficazmente como lo haría una monstergirl.
+script.rpy:16081	[Tool]	EN: It's not a screwdriver, but she effectively called it a \"Tool\" before.	ES: No es un destornillador, pero efectivamente antes lo llamaba \"Tool\".
+script.rpy:16087	[Linea]	EN: Linea grinds a little more trying to figure out what has been poking her.	ES: Linea rechina un poco más tratando de averiguar qué la ha estado pinchando.
+script.rpy:16111	[Linea]	EN: Linea gathers strength in her legs and gets up from the chair. Then she turns to face you and starts inspecting your cro	ES: Linea coge fuerzas en las piernas y se levanta de la silla. Luego se vuelve hacia ti y empieza a inspeccionarte la entrepierna.
+script.rpy:16123	[Haah]	EN: (Haah... This is completely my fault! What do I dooo?)	ES: (Haah... ¡Esto es culpa mía! ¿Qué hago?)
+script.rpy:16129	[Linea]	EN: You want to tell her it's fine and that she shouldn't feel sorry for it. But before you can utter a word, Linea sits on 	ES: Quieres decirle que está bien y que no debe sentir pena por ello. Pero antes de que puedas pronunciar palabra, Linea se sienta en el suelo y te llama.
+script.rpy:16153	[Linea,idea]	EN: You stand and get closer to Linea. You get the general idea of what she is trying to do.	ES: Te pones de pie y te acercas a Linea. Te haces una idea general de lo que intenta hacer.
+script.rpy:16189	[does]	EN: You agree that she may not have a voluptuous body or be very feminine. But she {i}does{/i} have a charm of her own, even	ES: Está de acuerdo en que quizá no tenga un cuerpo voluptuoso ni sea muy femenina. Pero {i}does{/i} tiene un encanto propio, aunque ella no se dé cuenta.
+script.rpy:16195	[Linea]	EN: So as to not make Linea wait anymore, you stand in front of her and start removing your pants.	ES: Para no hacer esperar más a Linea, te pones delante de ella y empiezas a quitarte los pantalones.
+script.rpy:16201	[Haaaah]	EN: Haaaah~	ES: Haaaah~
+script.rpy:16207	[Linea]	EN: Linea opens her mouth and extends her tongue in a lewd way that captivates you. The sudden action makes you gulp in refl	ES: Linea abre la boca y extiende la lengua de una forma lasciva que te cautiva. La repentina acción te hace tragar saliva en un acto reflejo.
+script.rpy:16267	[Haaah]	EN: {i}*Sniff*{/i} Haaah... {i}*Sniff*{/i} How weird...	ES: {i}*Sniff*{/i} Haaah... {i}*Sniff*{/i} Qué raro...
+script.rpy:16285	[Linea]	EN: The temperature of the room shouldn't have changed, what Linea is feeling must be arousal.	ES: La temperatura de la habitación no debería haber cambiado, lo que siente Linea debe ser excitación.
+script.rpy:16291	[Linea]	EN: Okay, the Linea is ready. You can put it in now.	ES: Bien, el Linea está listo. Puedes ponerlo ahora.
+script.rpy:16321	[Linea]	EN: As she starts to get used to it, Linea begins to slide her tongue back and forth.	ES: A medida que empieza a acostumbrarse, Linea comienza a deslizar su lengua de un lado a otro.
+script.rpy:16327	[Mggh,Nngh]	EN: |emote_Lover|{i}*Slurp*{/i} Mggh. {i}*Slurp*{/i} Nngh....	ES: |emote_Lover|{i}*Slurp*{/i} Mggh. {i}*Slurp*{/i} Nngh....
+script.rpy:16333	[Linea]	EN: As she draws me closer and closer to my limit, Linea starts to breathe heavily through her nose and locks her eyes with 	ES: Mientras me acerca cada vez más a mi límite, Linea empieza a respirar agitadamente por la nariz y fija sus ojos en los míos. El placer es abrumador...
+script.rpy:16351	[Linea]	EN: Linea takes it out of her mouth and starts licking it.	ES: Linea se lo saca de la boca y empieza a lamerlo.
+script.rpy:16363	[Lick]	EN: {i}*Lick*{/i} {i}*Lick*{/i} I could make use of that Mana of yours...	ES: {i}*Lick*{/i} {i}*Lick*{/i} Podría usar esa Mana tuya...
+script.rpy:16399	[Lick]	EN: |emote_Lover|You're just holding it in. {i}*Lick*{/i} I'll have to work harder then...	ES: Te estás aguantando. {i}*Lick*{/i} Tendré que trabajar más duro entonces...
+script.rpy:16411	[Jusht,shurender]	EN: |emote_Lover|Jusht- {i}*Slurp*{/i} -shurender.	ES: |emote_Lover|Jusht- {i}*Slurp*{/i} -shurender.
+script.rpy:16429	[feel]	EN: |emote_Lover|I cah feel i'... {i}*Slurp*, Ngh~{/i} Y' getting closh, aren't ya?	ES: |emote_Lover|I cah feel i'... {i}*Slurp*, Ngh~{/i} Te estás acercando, ¿verdad?
+script.rpy:16435	[Linea]	EN: Your efforts to make it last longer are futile, as Linea has already learned your weak spots and is exploiting them with	ES: Tus esfuerzos por hacer que dure más son inútiles, pues Linea ya ha aprendido tus puntos débiles y los explota con su lengua y su boca.
+script.rpy:16447	[Linea]	EN: Linea is urging you to ejaculate soon. Her movements don't stop even for catching a breath. This feels like pure predati	ES: Linea le insta a eyacular pronto. Sus movimientos no se detienen ni siquiera para recuperar el aliento. Esto se siente como pura depredación en este momento.
+script.rpy:16453	[Linea'd]	EN: |emote_Lover|Ghn~ Time for the final blow. {i}*Slurp*{/i} you're about to get Linea'd!	ES: |emote_Lover|Ghn~ Hora del golpe final. ¡{i}*Slurp*{/i} estás a punto de ser Linea'd!
+script.rpy:16459	[Linea]	EN: Linea releases nearly the entirety of your erection, but not all of it; her lips still cling onto the tip in her mouth..	ES: Linea libera casi la totalidad de tu erección, pero no toda; sus labios siguen aferrados a la punta en su boca...
+script.rpy:16471	[Nhehe]	EN: |emote_Lover|Nhehe~	ES: |emote_Lover|Nhehe~
+script.rpy:16477	[Linea]	EN: Linea exposes her breasts to you, looks at you with a grin, and lets out a small laugh...	ES: Linea te descubre sus pechos, te mira con una sonrisa y suelta una pequeña carcajada...
+script.rpy:16489	[Linea,base]	EN: Without any warning, Linea has swallowed your whole erection almost all the way to the base.	ES: Sin previo aviso, Linea se ha tragado toda tu erección casi hasta la base.
+script.rpy:16507	[semen]	EN: As a result of that, you pour all your stored semen in Linea's mouth as if your life depended on it.	ES: Como resultado, viertes todo tu semen almacenado en la boca de Linea como si tu vida dependiera de ello.
+script.rpy:16519	[Linea]	EN: Despite being on the verge of choking, Linea doesn't let go of your member; instead, she tries to drink it all.	ES: A pesar de estar a punto de asfixiarse, Linea no suelta tu miembro, sino que intenta bebérselo todo.
+script.rpy:16525	[Nnnnnnh]	EN: |emote_Beating_Heart|Hgn... Nnnnnnh...	ES: |emote_Beating_Heart|Hgn... Nnnnnnh...
+script.rpy:16531	[Cough,Pant]	EN: {i}*Cough* *Cough* *Pant* *Pant*{/i}	ES: {i}*Cough* *Cough* *Pant* *Pant*{/i}
+script.rpy:16549	[Pant]	EN: {i}*Pant*{/i} I thought I was gonna {i}*Pant*{/i} die for a moment...	ES: {i}*Pant*{/i} Pensé que iba a {i}*Pant*{/i} morir por un momento...
+script.rpy:16555	[Haah]	EN: Haah~ Haah~ I'm {i}so{/i} tired...	ES: Haah~ Haah~ Estoy {i}so{/i} cansado...
+script.rpy:16561	[Linea]	EN: Linea takes a moment to compose herself.	ES: Linea se toma un momento para serenarse.
+script.rpy:16579	[Linea]	EN: After pulling yourself together, you grab Linea in your arms and carry her to the bed. She looks as if she is about to p	ES: Después de recomponerte, coges a Linea en brazos y la llevas a la cama. Parece a punto de desmayarse. Pero antes de que puedas preguntarle si está bien, habla..
+script.rpy:16585	[Haah]	EN: |emote_Sleepy|Haah~ Next time your Mana Rod won't even last a second...	ES: |emote_Sleepy|Haah~ La próxima vez tu Vara Mana no durará ni un segundo...
+script.rpy:16615	[Eris,Silika]	EN: As you were walking through the hall, you encounter Eris being yelled at by Silika, who appears to be somewhat upset.	ES: Mientras caminabas por el pasillo, te encuentras a Eris siendo gritado por Silika, que parece estar algo molesto.
+script.rpy:16627	[sowyyy]	EN: {i}...I'm sowyyy~	ES: {i}...estoy sowyyy~
+script.rpy:16645	[Eris]	EN: Eris, you better make up for it, or else I'm biting your toes!	ES: Eris, ¡más te vale compensarlo o te morderé los dedos de los pies!
+script.rpy:16651	[Noooo]	EN: {i}Noooo~...	ES: {i}Noooo~...
+script.rpy:16657	[Silika]	EN: Defeated, Silika heads to the other side of the room.	ES: Derrotado, Silika se dirige al otro lado de la habitación.
+script.rpy:16663	[Siiigh]	EN: {i}*Siiigh*{/i} Whatever, I'm going to take a bath...	ES: {i}*Siiigh*{/i} Como sea, voy a tomar un baño...
+script.rpy:16687	[Silika,Eris]	EN: Silika hurries to leave the place and disappears through the corridor, hoping Eris won't continue bugging her..	ES: Silika se apresura a abandonar el lugar y desaparece por el pasillo, esperando que Eris no siga molestándola..
+script.rpy:16777	[Rinoa,idea]	EN: I want to help [Zell] recover his memories, so I thought giving him some Rinoa books might be a good idea. If he's from 	ES: Quiero ayudar a [Zell] a recuperar sus recuerdos, así que pensé que darle algunos libros de Rinoa sería una buena idea. Si es de allí, debe ayudarle a recordar.
+script.rpy:16789	[Rinoa]	EN: I think you will need to look for something more specific, not just \"Rinoa books.\"	ES: Creo que tendrá que buscar algo más específico, no sólo libros \"Rinoa.\"
+script.rpy:16825	[Nova]	EN: But Nova is probably keeping every book related to Mana in her room for her investigation.	ES: Pero Nova probablemente guarda todos los libros relacionados con Mana en su habitación para su investigación.
+script.rpy:16843	[Eris]	EN: Eris tapped her chin thoughtfully, her body tilting one side to the other...	ES: Eris se dio unos golpecitos en la barbilla, pensativa, inclinando el cuerpo de un lado a otro...
+script.rpy:16849	[Theeen]	EN: {i}Hmm... Theeen...	ES: {i}Hmm... Theeen...
+script.rpy:16891	[monstergirls]	EN: How about monstergirls?	ES: ¿Y las monstergirls?
+script.rpy:16915	[Linea]	EN: We can't be looking after him all the time. Even Linea knows a bit about how to fight off a weak mon—	ES: No podemos estar cuidándolo todo el tiempo. Incluso Linea sabe un poco acerca de cómo luchar contra un débil mon-
+script.rpy:16951	[Eris]	EN: Eris begins to anxiously brush her thighs together...	ES: Eris comienza a rozar ansiosamente sus muslos...
+script.rpy:16987	[Silika]	EN: Hey, Silika? Can I hug you for a moment?	ES: Oye, ¿Silika? ¿Puedo abrazarte un momento?
+script.rpy:17047	[Eris,Silika]	EN: Eris pounces onto Silika right after she spoke, wrapping her hands around the girl and brushing her cheek on her hair.	ES: Eris se abalanza sobre Silika justo después de que hablara, rodeando a la chica con sus manos y rozando su mejilla con su pelo.
+script.rpy:17089	[Eris,Silika]	EN: Eris kept holding Silika in her arms for several seconds, softly giggling.	ES: Eris siguió abrazando a Silika durante varios segundos, riendo suavemente.
+script.rpy:17131	[Silika,Eris]	EN: Silika gets out of the bath before grabbing her towel and turning to Eris.	ES: Silika sale de la bañera antes de coger su toalla y volverse hacia Eris.
+script.rpy:17137	[warm]	EN: It's supposed to be {i}warm{/i}, not {i}hot{/i}. Besides, I'm done with bathing and want to go to sleep.	ES: Se supone que es {i}warm{/i}, no {i}hot{/i}. Además, ya he terminado de bañarme y quiero irme a dormir.
+script.rpy:17155	[Silika]	EN: Silika steps out of the bathroom before putting on her pajamas inside the small room next to the exit.	ES: Silika sale del baño antes de ponerse el pijama dentro de la pequeña habitación junto a la salida.
+script.rpy:17161	[Ihh'th,noht,thah,hahht]	EN: {i}Ihh'th noht thah hahht...{/i}\n(\"It's not that hot...\")	ES: {i}Ihh'th noht thah hahht...{/i}\n(\"No hace tanto calor...\")
+script.rpy:17167	[Silika]	EN: Silika leaves...	ES: Silika deja...
+script.rpy:17227	[Eris]	EN: Eris starts humming a kind of melody...	ES: Eris empieza a tararear una especie de melodía...
+script.rpy:17245	[Nova]	EN: Nova?	ES: ¿Nova?
+script.rpy:17257	[Nova]	EN: Nova walks into the steamed room.	ES: Nova entra en la habitación vaporizada.
+script.rpy:17263	[Eris]	EN: Eris, may I join you for a while?	ES: Eris, ¿puedo acompañarte un rato?
+script.rpy:17281	[Nova,Eris]	EN: With skilled efficiency and speed, Nova washes her body and hair before joining Eris in the bathtub...	ES: Con hábil eficacia y rapidez, Nova se lava el cuerpo y el pelo antes de unirse a Eris en la bañera...
+script.rpy:17287	[Nova]	EN: As soon as Nova enters the bathtub, she lets out a light sigh. Her chest moves up and down at the oddly steady rhythm of	ES: En cuanto Nova entra en la bañera, deja escapar un leve suspiro. Su pecho se mueve arriba y abajo al ritmo extrañamente constante de su respiración...
+script.rpy:17293	[Nova]	EN: Uhm... Nova? Can I ask you a question?	ES: Uhm... ¿Nova? ¿Puedo hacerte una pregunta?
+script.rpy:17317	[Silika,monstergirls]	EN: Silika said books about monstergirls, so he can learn how to take care of himself. What do you think?	ES: Silika dijo que los libros sobre monstergirls, para que pueda aprender a cuidar de sí mismo. ¿Qué te parece?
+script.rpy:17323	[noble]	EN: A noble act.	ES: Un acto noble.
+script.rpy:17329	[monstergirls]	EN: Books about monstergirls are indeed a good option. Especially for the fact that he is a man.	ES: Los libros sobre monstergirls son sin duda una buena opción. Sobre todo por el hecho de que es un hombre.
+script.rpy:17419	[Eris]	EN: May I ask you a question, Eris?	ES: ¿Puedo hacerte una pregunta, Eris?
+script.rpy:17443	[noble]	EN: That's a noble act.	ES: Es un acto noble.
+script.rpy:17467	[noble]	EN: Is it still noble if I do it out of pity? I'm not sure.	ES: ¿Sigue siendo noble si lo hago por lástima? No estoy seguro.
+script.rpy:17521	[Yurei]	EN: |icon_1|Soon, {color=#ffa078}Yurei{/color} will come to see the progress of my investigation.	ES: |icon_1|Pronto, {color=#ffa078}Yurei{/color} vendrá a ver el progreso de mi investigación.
+script.rpy:17533	[Yurei]	EN: Huh? Miss Yurei? Why can't she know about him?	ES: ¿Eh? ¿La señorita Yurei? ¿Por qué ella no puede saber de él?
+script.rpy:17551	[Endo]	EN: —The demonic continent's relations with the Endo Brigade growing more and more tense. And the Endo Brigade hiring and us	ES: -Las relaciones del continente demoníaco con la Brigada Endo cada vez más tensas. Y la Brigada Endo contratando y utilizando aventureros para lo que deberían se
+script.rpy:17557	[Altra]	EN: And the ominous red sky you saw on Altra.	ES: Y el ominoso cielo rojo que viste en Altra.
+script.rpy:17575	[Yurei]	EN: —One that Yurei will surely want to be the first to make a move in.	ES: -Uno en el que Yurei seguramente querrá ser el primero en hacer un movimiento.
+script.rpy:17599	[Lady,Yumeko]	EN: {i}Yes! Thank you, Lady Yumeko!	ES: ¡{i}Yes! ¡Gracias, Lady Yumeko!
+script.rpy:17605	[Kironomiya]	EN: {i}Yup-yup, bye-bye, Kironomiya~	ES: {i}Yup-yup, adiós, Kironomiya~
+script.rpy:17655	[Awaken]	EN: {font=fonts/Fondamento-Regular.ttf}Awaken...	ES: {font=fonts/Fondamento-Regular.ttf}Awaken...
+script.rpy:17675	[Cluster]	EN: (Think about Cluster.)	ES: (Piensa en Cluster.)
+script.rpy:17723	[Lily]	EN: Yeah, Lily looks beautiful.	ES: Sí, Lily es precioso.
+script.rpy:17743	[Eris]	EN: Yes — and Eris has been giving quite the workout.	ES: Sí, y Eris ha estado dando bastante trabajo.
+script.rpy:17759	[Eris]	EN: (Think about Eris)	ES: (Piensa en Eris)
+script.rpy:17763	[Cluster]	EN: (Think about Cluster)	ES: (Piensa en Cluster)
+script.rpy:17827	[Cluster]	EN: Will you harm Cluster?	ES: ¿Le harás daño a Cluster?
