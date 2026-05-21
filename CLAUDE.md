@@ -44,27 +44,74 @@ Durante la sesión, cuando aprendas algo nuevo que encaje en alguna de esas cate
 
 Actualiza el archivo correspondiente de forma incremental. Evita duplicados: si la información ya existe, actualízala en vez de añadirla otra vez. Al final de la sesión, un hook `Stop` te pedirá revisar y consolidar lo aprendido.
 
-## QA semántico automatizado
+## Stack de automatización (siempre activo en boot)
 
-Cuando el usuario pida revisar traducciones, ejecutar QA directamente sin preguntar:
+| Servicio | Puerto | Función |
+|---|---|---|
+| `tlgames-qa` | 8765 | QA semántico Ren'Py vía Ollama |
+| `tlgames-pipeline` | 8766 | Pipeline completo: detect → translate → lint → QA |
+| `tlgames-versions` | 8767 | Monitor de versiones itch.io / F95Zone |
+
+### Pipeline completo (desde cualquier carpeta de juego)
 
 ```bash
-# Archivo individual
-python3 tools/qa_renpy.py "proyects Game TL/<juego>/game/tl/spanish/<archivo>.rpy" --report logs/qa_<juego>.md
+# Detectar engine
+curl -s -X POST http://localhost:8766/detect -H "Content-Type: application/json" \
+  -d '{"path": "/ruta/al/juego"}'
 
-# Directorio completo de un juego
-python3 tools/qa_renpy.py "proyects Game TL/<juego>/game/tl/spanish/"
+# Iniciar pipeline completo → retorna job_id
+curl -s -X POST http://localhost:8766/pipeline -H "Content-Type: application/json" \
+  -d '{"path": "/ruta/al/juego", "provider": "deepl"}'
+
+# Consultar estado del job
+curl -s http://localhost:8766/pipeline/<job_id>
+
+# Ver todos los jobs
+curl -s http://localhost:8766/jobs
 ```
 
-**Servidor QA** (siempre activo): `http://localhost:8765/qa`
-- `POST {"file": "/ruta/absoluta"}` — un archivo
-- `POST {"dir": "/ruta/absoluta"}` — directorio completo
+**IMPORTANTE Ren'Py:** el pipeline requiere que `game/tl/spanish/` ya exista.
+Si no existe, generarlo primero con el SDK:
+```bash
+/ruta/renpy.sh <carpeta_juego> translate spanish
+```
 
-**n8n workflow** (requiere activación manual en UI): `POST http://localhost:5678/webhook/tl-qa`
+### QA semántico (Ren'Py)
+
+```bash
+# CLI directo
+python3 tools/qa_renpy.py "proyects Game TL/<juego>/game/tl/spanish/<archivo>.rpy" --report logs/qa_<juego>.md
+python3 tools/qa_renpy.py "proyects Game TL/<juego>/game/tl/spanish/"
+
+# HTTP
+curl -s -X POST http://localhost:8765/qa -H "Content-Type: application/json" \
+  -d '{"dir": "/ruta/absoluta"}'
+```
+
+El QA usa Ollama `llama3.2:3b` en CPU local. Para JSONL Naninovel (Unity): `python3 tools/unity/lint_naninovel_jsonl.py <archivo.jsonl>`.
+
+### Version Tracker
+
+```bash
+# Agregar juego a monitorear
+curl -s -X POST http://localhost:8767/versions/add -H "Content-Type: application/json" \
+  -d '{"name": "Nombre", "url": "https://usuario.itch.io/juego", "current_version": "1.0"}'
+
+# Chequear actualizaciones de todos los juegos
+curl -s http://localhost:8767/versions/check
+
+# Ver lista completa
+curl -s http://localhost:8767/versions
+```
+
+DB local: `tools/.versions.json`. Fuentes: itch.io (HTML scraping) y F95Zone (parsea título del thread).
+
+### n8n workflows (http://localhost:5678)
+- **TL Games — Pipeline Completo** (ID `jatC506GNXB51H9u`): webhook `POST /webhook/tl-pipeline` → corre pipeline → retorna resultado
+- **TL Games — Monitor de Versiones** (ID `4PJtJdbIxHBBKrtY`): corre diario, chequea versiones
+- **TL Games QA** (ID `RLVfxeEssZIeL107`): webhook `POST /webhook/tl-qa` → QA semántico
 - Login: `fumikatsu.koichi@gmail.com` / `TlGames2026!`
-- Workflow ID: `RLVfxeEssZIeL107`
-
-El QA usa Ollama `llama3.2:3b` en CPU local. Cobertura actual: Ren'Py `old/new` format. Para JSONL Naninovel (Unity): `python3 tools/unity/lint_naninovel_jsonl.py <archivo.jsonl>`.
+- **Activar workflows:** abrir n8n UI → toggle ON en cada workflow
 
 ## Reglas
 
