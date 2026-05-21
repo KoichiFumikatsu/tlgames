@@ -18,3 +18,4 @@ Cada línea apunta a un archivo de memoria. El contenido detallado vive en los a
 - [playbook-rpgmaker-translation.md](playbook-rpgmaker-translation.md) — Pipeline RPG Maker: PBS, rxdata, messages_*.dat, Scripts patching.
 - [gamemaker-translation-brief.md](gamemaker-translation-brief.md) — Brief técnico GameMaker.
 - [playbook-gamemaker-translation.md](playbook-gamemaker-translation.md) — Pipeline GameMaker: extracción, traducción y QA.
+- [playbook-game-update.md](playbook-game-update.md) — Cómo actualizar una traducción cuando el juego recibe update: comparativa de versiones, delta-translate, rebuild, reempaquetar.
