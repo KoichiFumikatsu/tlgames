@@ -84,6 +84,40 @@ Decisiones técnicas y de producto tomadas durante el proyecto, con su razonamie
 **Razon:** resuelve el ingles visible sin tocar mapas y elimina mojibake real en las entradas corregidas manualmente.
 **Alternativas descartadas:** cambiar fuentes — no era la causa, todas las fuentes del juego tienen cmap ES; escribir mapas `Map*.rxdata` — riesgo ya comprobado; usar `unicode_escape` global — convierte `\r` en carriage return y rompe codigos del juego.
 
+### 2026-05-19 — QA semántico Ren'Py via Ollama local
+
+**Decisión:** crear pipeline de QA semántico para archivos `.rpy` con `tools/qa_renpy.py` + `tools/qa_server.py`, usando Ollama (`llama3.2:3b`) en CPU local. Servicio systemd `tlgames-qa` en puerto 8765. Workflow n8n "TL Games QA" (ID `RLVfxeEssZIeL107`) con webhook `POST http://localhost:5678/webhook/tl-qa`.
+
+**Cobertura del QA semántico:**
+- Concordancia de género/número
+- Calcos del inglés antinaturales
+- Mezcla de tuteo/ustedeo
+- Nombres de personaje traducidos cuando no deberían
+- Frases literalmente traducidas incomprensibles en español
+- Pares de 1-2 palabras se saltean (stats, atributos — sin contexto suficiente)
+
+**Comandos:**
+```bash
+# Archivo individual
+python3 tools/qa_renpy.py "proyects Game TL/<juego>/game/tl/spanish/script.rpy" --report logs/qa.md
+
+# Directorio completo
+python3 tools/qa_renpy.py "proyects Game TL/<juego>/game/tl/spanish/"
+
+# Via HTTP (para n8n o scripts externos)
+curl -X POST http://localhost:8765/qa -H "Content-Type: application/json" \
+  -d '{"file": "/ruta/absoluta/al/archivo.rpy"}'
+```
+
+**Razón:** el lint estructural existente (`lint_naninovel_jsonl.py`) solo cubre JSONL Unity. Los `.rpy` no tenían QA automatizado. Ollama local evita costos de API y mantiene privacidad del contenido adulto.
+
+**Limitaciones conocidas:**
+- `llama3.2:3b` es conservador con strings cortos — tiende a dar OK en pares de 1-2 palabras (filtrados por diseño).
+- CPU only (i7-8665U) — un lote de 40 pares tarda ~30-60s. Aceptable para volúmenes de sesión (~50-100 pares/día).
+- Cubre solo formato `old "..." / new "..."` de string blocks. Dialogue blocks (formato `"speaker" "text"`) pendientes.
+
+**Alternativas descartadas:** Claude API para QA (costo + privacidad); lint regex manual (no detecta calcos ni género); OpenAI para QA (costo, y Ollama es suficiente para este caso).
+
 ### 2026-05-21 — The Demon Lord's Lover: pipeline nativo ZIP completado al 100%
 
 **Estado final:** 9.282 entradas traducidas (2191 strings + 1079 grammar + 6012 scenes), 0 vacíos. ZIP final: `es-kelsie.zip` (296 KB). Importar via Settings → Translations → Import translation. Costo total: ~$0.002 (solo el recovery pass; las 9k iniciales venían de una sesión anterior con cuenta agotada).

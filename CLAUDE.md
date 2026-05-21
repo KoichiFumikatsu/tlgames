@@ -44,6 +44,28 @@ Durante la sesión, cuando aprendas algo nuevo que encaje en alguna de esas cate
 
 Actualiza el archivo correspondiente de forma incremental. Evita duplicados: si la información ya existe, actualízala en vez de añadirla otra vez. Al final de la sesión, un hook `Stop` te pedirá revisar y consolidar lo aprendido.
 
+## QA semántico automatizado
+
+Cuando el usuario pida revisar traducciones, ejecutar QA directamente sin preguntar:
+
+```bash
+# Archivo individual
+python3 tools/qa_renpy.py "proyects Game TL/<juego>/game/tl/spanish/<archivo>.rpy" --report logs/qa_<juego>.md
+
+# Directorio completo de un juego
+python3 tools/qa_renpy.py "proyects Game TL/<juego>/game/tl/spanish/"
+```
+
+**Servidor QA** (siempre activo): `http://localhost:8765/qa`
+- `POST {"file": "/ruta/absoluta"}` — un archivo
+- `POST {"dir": "/ruta/absoluta"}` — directorio completo
+
+**n8n workflow** (requiere activación manual en UI): `POST http://localhost:5678/webhook/tl-qa`
+- Login: `fumikatsu.koichi@gmail.com` / `TlGames2026!`
+- Workflow ID: `RLVfxeEssZIeL107`
+
+El QA usa Ollama `llama3.2:3b` en CPU local. Cobertura actual: Ren'Py `old/new` format. Para JSONL Naninovel (Unity): `python3 tools/unity/lint_naninovel_jsonl.py <archivo.jsonl>`.
+
 ## Reglas
 
 - No escribas información efímera (estado de tareas en curso, detalles de la conversación actual).
