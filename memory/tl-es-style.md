@@ -1,4 +1,36 @@
-# FromTheSin — Guia de estilo ES
+# Guía de estilo ES — Convenciones generales y por juego
+
+Referencia para el pase humano de pulido sobre la salida MT. Se aplica despues
+de `translate.py` + `lint.py`.
+
+---
+
+## Convenciones multi-juego (aplican a todos los proyectos)
+
+### Género del héroe jugador
+
+- Si el juego tiene selección de género con sistema de placeholders (`{gender|form}`, `{actor|subject}`, etc.), esos tokens resuelven el género automáticamente — no hardcodear.
+- Si el texto inglés usa una palabra gender-neutral ("adventurer", "dear", "rookie") **sin placeholder**, el MT puede generar género femenino por defecto. **Corregir siempre a masculino** como forma neutra estándar en español.
+  - "adventurer" → "aventurero" (no "aventurera" a menos que el speaker sea claramente femenino y hable de sí mismo)
+  - "dear" dirigido al jugador → "querido" (no "querida")
+  - "rookie" → "novato" (no "novata")
+- NPCs femeninos hablando de **sí mismas** → femenino es correcto, no tocar.
+- Verificar contexto: ¿quién habla y a quién? Si el speaker es un NPC y el destinatario es el jugador → masculino por defecto.
+
+### Términos de gremio / guild
+
+- "guild" / "la guild" / "la guilda" → **"el gremio"** (nunca "guilda")
+- Aplicar contracción: "de el gremio" → "**del** gremio"
+
+### Contracciones obligatorias
+
+- "de el" → "del"
+- "a el" → "al"
+- El MT frecuentemente omite estas contracciones cuando hace reemplazos de términos — revisar siempre después de cualquier sustitución masiva de strings.
+
+---
+
+## FromTheSin — Guia de estilo específico
 
 Referencia para el pase humano de pulido sobre la salida MT. Se aplica despues
 de `translate.py` + `lint.py`.
