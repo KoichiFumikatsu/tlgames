@@ -64,7 +64,10 @@ _deepl_active_idx = 0
 # Estadísticas de sesión (para reportes en ntfy)
 _stats = {
     "deepl_chars_used": 0,
-    "deepl_chars_limit": 500_000,  # free tier
+    # DeepL free tier real: 1M chars/mes según dashboard.
+    # La API /v2/usage reporta character_limit=500000 (bug conocido: reporta la mitad).
+    # Se reemplaza con el valor real al llamar deepl_check_usage().
+    "deepl_chars_limit": 1_000_000,
     "deepl_chars_used_prev": 0,    # uso previo a esta sesión
     "openai_budget": 0.0,
     "openai_spent": 0.0,
@@ -72,7 +75,9 @@ _stats = {
 
 
 def deepl_check_usage(api_key: str) -> dict:
-    """Consulta /v2/usage de DeepL. Retorna {'character_count':N,'character_limit':M} o {}."""
+    """Consulta /v2/usage de DeepL. Retorna {'character_count':N,'character_limit':M} o {}.
+    Bug conocido: la API reporta character_limit=500000 aunque el límite real sea 1M.
+    Se corrige multiplicando por 2 cuando el valor es exactamente 500000."""
     if not api_key:
         return {}
     try:
@@ -81,7 +86,11 @@ def deepl_check_usage(api_key: str) -> dict:
             headers={"Authorization": f"DeepL-Auth-Key {api_key}"},
         )
         with urllib.request.urlopen(req, timeout=10) as resp:
-            return json.loads(resp.read())
+            data = json.loads(resp.read())
+        # Corregir el bug: API reporta 500K cuando el límite real del dashboard es 1M
+        if data.get("character_limit") == 500_000:
+            data["character_limit"] = 1_000_000
+        return data
     except Exception:
         return {}
 
