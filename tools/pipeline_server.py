@@ -7,7 +7,8 @@ de la pipeline completa: detección de engine → traducción → postprocess �
 Endpoints:
   GET  /health               → {"status":"ok", "jobs":<n>}
   POST /detect               {"path":"/ruta/juego"}  → engine info
-  POST /pipeline             {"path":"/ruta/juego", "name":"opt", "provider":"deepl"}
+  POST /pipeline             {"path":"/ruta/juego", "name":"opt", "provider":"deepl",
+                              "lang":"Spanish", "ntfy_topic":"koichi_agenda_2026"}
                              → {"job_id":"abc12345", "status":"running"}
   GET  /pipeline/<job_id>    → {"status":"running|done|error|unsupported", "progress":[...], ...}
   GET  /jobs                 → lista de todos los jobs (últimos 50)
@@ -15,6 +16,7 @@ Endpoints:
 
 import argparse
 import json
+import os
 import sys
 import threading
 import time
@@ -90,6 +92,34 @@ def detect_engine(path: Path) -> dict:
             }
 
     return {"engine": "unknown", "confidence": 0, "details": "estructura no reconocida"}
+
+
+def detect_unity_json_tl(path: Path) -> dict | None:
+    """Detecta si un juego Unity tiene sistema nativo de traducción JSON.
+    Retorna metadatos o None si no aplica."""
+    for data_dir in list(path.glob("*_Data")) or [path]:
+        tl_dir = data_dir / "StreamingAssets" / "Translations"
+        if not tl_dir.is_dir():
+            continue
+        eng_dir = tl_dir / "English"
+        if not eng_dir.is_dir():
+            continue
+        jsons = list(eng_dir.glob("*.json"))
+        if not jsons:
+            continue
+        lang_file = tl_dir / "languages.json"
+        langs = []
+        if lang_file.exists():
+            try:
+                langs = json.loads(lang_file.read_text(encoding="utf-8-sig")).get("languages", [])
+            except Exception:
+                pass
+        return {
+            "tl_dir": str(tl_dir),
+            "json_count": len(jsons),
+            "languages": langs,
+        }
+    return None
 
 
 # ── Ren'Py pipeline ───────────────────────────────────────────────────────────
@@ -191,6 +221,65 @@ def run_renpy_pipeline(job: dict, game_path: Path, provider: str = "deepl"):
     log("Pipeline completado.")
 
 
+def run_unity_json_pipeline(job: dict, game_path: Path, lang: str = "Spanish",
+                            ntfy_topic: str = "koichi_agenda_2026"):
+    def log(msg: str):
+        job["progress"].append(msg)
+
+    unity_info = detect_unity_json_tl(game_path)
+    if not unity_info:
+        log("ERROR: no se encontró sistema de traducción JSON en este juego Unity")
+        job["status"] = "error"
+        job["error"] = "Unity JSON translation system no detectado"
+        return
+
+    log(f"[1/3] Unity JSON nativo detectado: {unity_info['json_count']} archivos, idiomas actuales: {unity_info['languages']}")
+    log(f"[2/3] Iniciando traducción EN→{lang} (DeepL→OpenAI). Notificaciones vía ntfy...")
+
+    script = TOOLS / "tl" / "translate_unity_json.py"
+    cmd = [
+        sys.executable, str(script),
+        str(game_path),
+        "--lang", lang,
+        "--ntfy", ntfy_topic,
+    ]
+
+    log(f"  Ejecutando: {' '.join(cmd[-4:])}")
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            cwd=str(ROOT),
+            timeout=7200,  # 2 horas máximo
+        )
+        # Añadir stdout al progreso (líneas relevantes)
+        for line in (result.stdout or "").splitlines():
+            if line.strip():
+                job["progress"].append(f"  {line}")
+
+        if result.returncode == 0:
+            log("[3/3] Traducción completada sin errores.")
+            job["status"] = "done"
+        elif result.returncode == 2:
+            log("[3/3] Traducción detenida: presupuesto OpenAI alcanzado.")
+            job["status"] = "done"
+            job["warning"] = "budget_exceeded"
+        else:
+            err = (result.stderr or result.stdout or "")[:300]
+            log(f"[3/3] ERROR (código {result.returncode}): {err}")
+            job["status"] = "error"
+            job["error"] = f"translate_unity_json salió con código {result.returncode}: {err[:200]}"
+    except subprocess.TimeoutExpired:
+        log("ERROR: timeout (>2h)")
+        job["status"] = "error"
+        job["error"] = "Timeout en traducción Unity JSON (>2h)"
+    except Exception as e:
+        log(f"ERROR inesperado: {e}")
+        job["status"] = "error"
+        job["error"] = str(e)
+
+
 def _count_pending(tl_path: Path) -> int:
     """Retorna número de strings pendientes, o -1 si no se puede determinar."""
     script = TL_TOOLS / "_count_pending.py"
@@ -211,7 +300,8 @@ def _count_pending(tl_path: Path) -> int:
 
 # ── Job runner ────────────────────────────────────────────────────────────────
 
-def run_job(job_id: str, game_path_str: str, provider: str):
+def run_job(job_id: str, game_path_str: str, provider: str,
+            lang: str = "Spanish", ntfy_topic: str = "koichi_agenda_2026"):
     with _jobs_lock:
         job = _jobs[job_id]
 
@@ -226,6 +316,20 @@ def run_job(job_id: str, game_path_str: str, provider: str):
 
         if info["engine"] == "renpy":
             run_renpy_pipeline(job, game_path, provider)
+        elif info["engine"] == "unity":
+            # Verificar si tiene sistema nativo JSON antes de marcar unsupported
+            unity_json = detect_unity_json_tl(game_path)
+            if unity_json:
+                job["progress"].append(
+                    f"Unity JSON nativo detectado ({unity_json['json_count']} archivos). "
+                    f"Idiomas actuales: {unity_json['languages']}"
+                )
+                run_unity_json_pipeline(job, game_path, lang=lang, ntfy_topic=ntfy_topic)
+            else:
+                job["progress"].append(
+                    "Unity sin sistema JSON nativo. Requiere playbook manual."
+                )
+                job["status"] = "unsupported"
         else:
             engine = info["engine"]
             job["progress"].append(
@@ -315,12 +419,15 @@ class Handler(BaseHTTPRequestHandler):
                 return
 
             provider = body.get("provider", "deepl")
+            lang = body.get("lang", "Spanish")
+            ntfy_topic = body.get("ntfy_topic", os.environ.get("NTFY_TOPIC", "koichi_agenda_2026"))
             job_id = str(uuid.uuid4())[:8]
             job = {
                 "job_id": job_id,
                 "game_path": p,
                 "game_name": body.get("name") or Path(p).name,
                 "provider": provider,
+                "lang": lang,
                 "status": "running",
                 "progress": [],
                 "engine": None,
@@ -328,6 +435,7 @@ class Handler(BaseHTTPRequestHandler):
                 "qa_issues": None,
                 "tl_path": None,
                 "error": None,
+                "warning": None,
                 "started_at": time.time(),
                 "finished_at": None,
             }
@@ -339,7 +447,7 @@ class Handler(BaseHTTPRequestHandler):
                     _jobs.pop(old, None)
 
             threading.Thread(
-                target=run_job, args=(job_id, p, provider), daemon=True
+                target=run_job, args=(job_id, p, provider, lang, ntfy_topic), daemon=True
             ).start()
 
             self.send_json(202, {"job_id": job_id, "status": "running",
