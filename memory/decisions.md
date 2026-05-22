@@ -11,6 +11,26 @@ Decisiones técnicas y de producto tomadas durante el proyecto, con su razonamie
 
 ## Historial
 
+### 2026-05-22 — RPGMaker MV/MZ: pipeline autónomo (`translate_rpgmaker.py`) + 5 bugs críticos
+
+**Contexto:** Primera ejecución real del pipeline RPGMaker autónomo. Juego: "Life With a Flirty Step-Sister". 9 JSON files, 7272 strings. CommonEvents.json concentra 7143 strings (98%). Se descubrieron y corrigieron 5 bugs en serie.
+
+**Bug 1 — ntfy spam:** loop `for txt in texts` seguía llamando `deepl_translate()` tras primer `DeepLQuotaExhausted`. Fix: `if not deepl_active: continue` al inicio del loop. Una sola notificación por transición.
+
+**Bug 2 — DeepL sin memoria diaria:** cada run reintentaba DeepL aunque estuviera agotado. Fix: `tools/tl/.cache/deepl_quota_state.json` con fecha. `_deepl_exhausted_today()` en startup → skip DeepL si es hoy. Se resetea automáticamente al día siguiente.
+
+**Bug 3 — OpenAI timeout fatal:** `openai_translate_batch()` espera chunks de `OPENAI_BATCH_SIZE=25`. RPGMaker mandaba 7143 strings de golpe → timeout 120s → `raise last_err` sin guardar nada. Fix: helper `_openai_chunked()` divide en chunks de 25, guarda cache tras cada chunk, captura errores de red por chunk.
+
+**Bug 4 — cache keys invisibles:** OpenAI guarda `openai|model|texto`, búsqueda era `texto`. 215 traducciones invisibles en siguiente run. Fix: `_load_cache()` normaliza al cargar, strip del prefijo `openai|model|`.
+
+**Bug 5 — dashboard sin output en tiempo real:** `subprocess.run(capture_output=False)` → stdout al journal, no al job. Fix: `subprocess.Popen(stdout=PIPE)` + `for line in proc.stdout: log(line)`.
+
+**Trampa permanente — proceso zombie:** `systemctl restart` mata el server pero NO el subprocess hijo. Verificar `ps aux | grep translate_` antes de relanzar y matar el proceso viejo.
+
+**Trampa CommonEvents.json:** el 98% del texto está en un solo archivo. Si falla ahí, el job no avanza.
+
+**Estado 2026-05-22:** job `4d07093e` corriendo. DeepL agotado hoy. OpenAI activo, ~$0.21 gastados de $1.50. ~2% al guardar esta memoria.
+
 ### 2026-04-30 — ナースコール警備員: pipeline completado — XLSX + binary patch level files
 
 **Estado final:** traducción ES funcional. Selector muestra "Español". Contenido del juego en español al seleccionar ese idioma.
@@ -117,6 +137,38 @@ curl -X POST http://localhost:8765/qa -H "Content-Type: application/json" \
 - Cubre solo formato `old "..." / new "..."` de string blocks. Dialogue blocks (formato `"speaker" "text"`) pendientes.
 
 **Alternativas descartadas:** Claude API para QA (costo + privacidad); lint regex manual (no detecta calcos ni género); OpenAI para QA (costo, y Ollama es suficiente para este caso).
+
+### 2026-05-22 — Pipeline RPG Maker MV/MZ: bugs críticos resueltos
+
+**Bugs encontrados y corregidos:**
+
+1. **Notificación ntfy en loop** — `except DeepLQuotaExhausted` enviaba ntfy por cada string del batch (potencialmente 7000+ veces). Fix: `if not deepl_active: batch_results.append(None); continue` corta el loop inmediatamente tras el primer fallo. Ntfy se envía exactamente una vez.
+
+2. **DeepL sin estado persistente entre runs** — Al relanzar el pipeline el mismo día, volvía a intentar DeepL y fallaba otra vez. Fix: `tools/tl/.cache/deepl_quota_state.json` con `{"exhausted_date": "YYYY-MM-DD"}`. Al inicio de cada run se comprueba si la fecha coincide con hoy; si sí, `deepl_available = False` directamente. Reset automático al día siguiente.
+
+3. **`openai_translate_batch` recibía 7143 strings de golpe** — La función espera chunks de `OPENAI_BATCH_SIZE=25`. Con el volumen completo de CommonEvents.json, la llamada tardaba >120s y reventaba con `TimeoutError` no capturado. Fix: helper `_openai_chunked()` que itera en chunks de 25, guarda cache tras cada chunk, y captura errores por chunk sin abortar todo el proceso.
+
+4. **`TimeoutError` no capturado** — El bloque `except OpenAIBudgetExceeded` no cubría `TimeoutError`. La excepción subía hasta `main()` y mataba el proceso. Fix: capturado dentro de `_openai_chunked` con fallback a `None` para el chunk fallido.
+
+5. **Dos procesos traduciendo el mismo juego simultáneamente** — Al reiniciar el servidor, el subproceso del job anterior (iniciado por el servidor muerto) seguía vivo. Fix: matar manualmente con `kill <PID>`; en el futuro el servidor debe trackear PIDs hijos.
+
+**Decisión de arquitectura:**
+- `translate_rpgmaker.py` importa `OPENAI_BATCH_SIZE` de `translate_unity_json` para consistencia.
+- El estado de cuota DeepL es compartido entre runs vía archivo, no variable de entorno ni `.env`.
+
+### 2026-05-22 — Dashboard pipeline: HTML externo en lugar de string embebida
+
+**Decisión:** mover el HTML del dashboard de un string `"""..."""` embebido en `pipeline_server.py` a un archivo separado `tools/dashboard.html`, cargado con `open(...).read()` al arrancar el servidor.
+
+**Razón:** embeber HTML con JS en triple-quoted Python genera escaping hell: `\"` → `"` rompe strings JS, `\n` real vs literal, `\[` como invalid escape sequence Python 3.12. El archivo externo elimina la capa de escaping completamente.
+
+**Dashboard nuevo:**
+- Vista única: job activo si existe, último job terminado si no.
+- Sin lista histórica de jobs.
+- Log a 440px de altura, auto-scroll al fondo cuando está corriendo.
+- Botón "Job activo" (disabled) mientras hay proceso; "Traducir" cuando libre.
+- Barra de stats horizontal: Archivos / Strings / Provider / OpenAI $.
+- Coloreado por tipo de línea: azul=archivo, celeste=OpenAI batch, rojo=error, amarillo=warn, verde=completado.
 
 ### 2026-05-21 — The Demon Lord's Lover: pipeline nativo ZIP completado al 100%
 

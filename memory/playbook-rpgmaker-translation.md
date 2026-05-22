@@ -1,5 +1,13 @@
 # Playbook: Traduccion RPG Maker al Espanol
 
+## Trampas críticas (pipeline automático)
+
+- **`openai_translate_batch` no se llama directamente con todo el archivo** — espera chunks de `OPENAI_BATCH_SIZE=25`. Usar siempre `_openai_chunked()` en `translate_rpgmaker.py`.
+- **DeepL 456 genera notificación por cada string si no se corta el loop** — verificar `if not deepl_active: continue` al inicio del for antes de llamar `deepl_translate`.
+- **Estado de cuota DeepL persiste en `.cache/deepl_quota_state.json`** — si el archivo dice hoy, DeepL se salta sin intentar. Se resetea solo al día siguiente.
+- **CommonEvents.json puede tener 7000+ strings** — el pipeline puede tardar 30-60 minutos en este archivo solo con OpenAI. Normal, no es un hang.
+- **Dos instancias del mismo juego simultáneas** — si el servidor se reinicia con un job corriendo, el subproceso sobrevive. Verificar con `ps aux | grep translate_rpgmaker` y matar el viejo.
+
 ## Fase 0 — Preparacion
 
 1. Colocar el juego en `proyects Game TL/RPGMaker/<Juego>/`.
