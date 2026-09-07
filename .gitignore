@@ -50,3 +50,9 @@ __pycache__/
 
 # Temporales con prefijo _tmp_
 _tmp_*.py
+
+# Working dirs del pipeline (corpus + copias de juegos, regenerable)
+_tl_work/
+
+# Estado runtime del monitor de versiones
+tools/.versions.json
