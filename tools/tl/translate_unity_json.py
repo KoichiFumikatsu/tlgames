@@ -9,7 +9,7 @@ Uso:
 
 Opciones:
   --lang NOMBRE    Carpeta destino en Translations/ (default: Spanish)
-  --ntfy TOPIC     Topic ntfy.sh (default: koichi_agenda_2026 o NTFY_TOPIC env)
+  --ntfy TOPIC     Topic ntfy.sh (de NTFY_TOPIC env; sin valor no notifica)
   --budget USD     Tope gasto OpenAI por sesión (default: OPENAI_BUDGET_USD o 1.50)
   --batch N        Strings por request OpenAI (default: 25)
   --dry            Solo muestra, no escribe archivos
@@ -53,7 +53,7 @@ OPENAI_BATCH_SIZE = 25
 RATE_LIMIT_DEEPL = 0.12   # 500 req/s free tier limit (conservador)
 RATE_LIMIT_OPENAI = 0.35
 RETRY_BACKOFF = [2, 5, 15]
-NTFY_DEFAULT_TOPIC = "koichi_agenda_2026"
+NTFY_DEFAULT_TOPIC = ""
 NTFY_URL = "https://ntfy.sh"
 
 # Pool de keys DeepL (inicializado en main)
@@ -64,10 +64,9 @@ _deepl_active_idx = 0
 # Estadísticas de sesión (para reportes en ntfy)
 _stats = {
     "deepl_chars_used": 0,
-    # DeepL free tier real: 1M chars/mes según dashboard.
-    # La API /v2/usage reporta character_limit=500000 (bug conocido: reporta la mitad).
-    # Se reemplaza con el valor real al llamar deepl_check_usage().
-    "deepl_chars_limit": 1_000_000,
+    # DeepL API Free oficial: 500,000 chars/mes (verificado 2026-05-24 contra /v2/usage).
+    # El comentario anterior asumia bug API y duplicaba a 1M; era mito.
+    "deepl_chars_limit": 500_000,
     "deepl_chars_used_prev": 0,    # uso previo a esta sesión
     "openai_budget": 0.0,
     "openai_spent": 0.0,
@@ -97,7 +96,7 @@ def deepl_check_usage(api_key: str) -> dict:
 
 # ── Helpers ntfy ──────────────────────────────────────────────────────────────
 
-def ntfy_send(topic: str, msg: str, title: str = "TL Games", tags: str = "gear",
+def ntfy_send(topic: str, msg: str, title: str = "TL Games", tags: str = "",
               priority: str = "default"):
     if not topic:
         return
@@ -473,6 +472,12 @@ def run(args: argparse.Namespace) -> int:
     model = OPENAI_MODEL
     budget = args.budget
     batch_size = args.batch
+    game_version = getattr(args, "game_version", None) or ""
+    game_os = getattr(args, "game_os", None) or ""
+    game_runtime = getattr(args, "game_runtime", None) or ""
+
+    ntfy_send(ntfy_topic, "Localizando archivos, verificando APIs...",
+              title=f"TL {game_path.name} - Preparando")
 
     api_key_deepl = os.environ.get("DEEPL_API_KEY", "")
     api_key_openai = os.environ.get("OPENAI_API_KEY", "")
@@ -557,14 +562,30 @@ def run(args: argparse.Namespace) -> int:
         print("[DRY RUN — no se escriben archivos]")
     print()
 
+    meta_parts = []
+    if game_version:
+        meta_parts.append(f"v{game_version}")
+    if game_os:
+        meta_parts.append(game_os)
+    if game_runtime:
+        meta_parts.append(game_runtime)
+    meta_line = f"[{' | '.join(meta_parts)}]\n" if meta_parts else ""
+
+    provider_line = "DeepL" if deepl_available else ""
+    if deepl_available and openai_available:
+        provider_line += " → OpenAI (fallback)"
+    elif openai_available:
+        provider_line = "OpenAI"
+
     inicio_msg = (
-        f"Iniciando: {game_path.name} → {lang}\n"
-        f"{pending_total} strings en {len(json_files)} archivos\n"
+        f"{meta_line}"
+        f"{pending_total} strings | {len(json_files)} archivos | EN → {lang}\n"
+        f"Provider: {provider_line}\n"
     )
     if deepl_available:
         inicio_msg += f"DeepL: {deepl_remaining:,} chars disponibles\n"
-    inicio_msg += f"OpenAI: ${openai_remaining:.2f} presupuesto disponible"
-    ntfy_send(ntfy_topic, inicio_msg, title=f"TL {game_path.name}", tags="gear,hourglass")
+    inicio_msg += f"OpenAI: ${openai_remaining:.2f} disponible de ${budget:.2f}"
+    ntfy_send(ntfy_topic, inicio_msg, title=f"TL {game_path.name} - Iniciando")
 
     deepl_active = deepl_available
     translated = 0
@@ -633,7 +654,7 @@ def run(args: argparse.Namespace) -> int:
                               f"{translated}/{pending_total} strings completados\n"
                               f"DeepL usó {deepl_this_session:,} chars esta sesión\n"
                               f"OpenAI: ${_stats['openai_spent']:.4f} gastados | ${openai_remaining_now:.4f} restantes",
-                              title=f"TL {game_path.name}", tags="warning", priority="high")
+                              title=f"TL {game_path.name}", priority="high")
                     # Traducir el resto de este archivo + los siguientes con OpenAI
                     remaining_keys = pending_keys[i:]
                     remaining_texts = pending_texts[i:]
@@ -656,7 +677,7 @@ def run(args: argparse.Namespace) -> int:
                         except OpenAIBudgetExceeded as e:
                             print(f"\n  [BUDGET] {e}", flush=True)
                             ntfy_send(ntfy_topic, f"Presupuesto OpenAI alcanzado. {translated}/{pending_total} strings traducidos.",
-                                      title=f"TL {game_path.name}", tags="warning,money", priority="high")
+                                      title=f"TL {game_path.name}", priority="high")
                             if not dry and file_changed:
                                 write_json(target_dir / jf.name, tgt_data, dry)
                             _save_cache(cache_file, cache)
@@ -690,7 +711,7 @@ def run(args: argparse.Namespace) -> int:
                 except OpenAIBudgetExceeded as e:
                     print(f"\n  [BUDGET] {e}", flush=True)
                     ntfy_send(ntfy_topic, f"Presupuesto OpenAI alcanzado. {translated}/{pending_total} strings traducidos.",
-                              title=f"TL {game_path.name}", tags="warning,money", priority="high")
+                              title=f"TL {game_path.name}", priority="high")
                     if not dry and file_changed:
                         write_json(target_dir / jf.name, tgt_data, dry)
                     _save_cache(cache_file, cache)
@@ -714,22 +735,26 @@ def run(args: argparse.Namespace) -> int:
         msg = f"[{files_done}/{len(json_files)}] {jf.name} | {translated}/{pending_total} strings | {pct}%"
         print(msg, flush=True)
 
-        # ntfy cada 25%
-        ntfy_pct = (pct // 25) * 25
+        # ntfy cada 5%
+        ntfy_pct = (pct // 5) * 5
         if ntfy_pct > last_ntfy_pct and ntfy_pct > 0:
             last_ntfy_pct = ntfy_pct
             provider_now = "DeepL" if deepl_active else "OpenAI"
-            deepl_info = ""
+            body = (
+                f"{meta_line}"
+                f"Archivos: {files_done}/{len(json_files)}\n"
+                f"Strings: {translated}/{pending_total}\n"
+                f"Archivo actual: {jf.name}\n"
+                f"Provider: {provider_now}\n"
+            )
             if deepl_available:
                 chars_total_used = _stats["deepl_chars_used_prev"] + _stats["deepl_chars_used"]
                 deepl_remaining_now = max(0, _stats["deepl_chars_limit"] - chars_total_used)
-                deepl_info = f"DeepL: {deepl_remaining_now:,} chars restantes\n"
+                body += f"DeepL: {deepl_remaining_now:,} chars restantes\n"
             openai_remaining_now = max(0.0, budget - _stats["openai_spent"])
-            openai_info = f"OpenAI: ${_stats['openai_spent']:.4f} gastados | ${openai_remaining_now:.4f} restantes"
-            ntfy_send(ntfy_topic,
-                      f"{ntfy_pct}% — {files_done}/{len(json_files)} archivos | {translated}/{pending_total} strings\n"
-                      f"Provider activo: {provider_now}\n{deepl_info}{openai_info}",
-                      title=f"TL {game_path.name}", tags="white_check_mark")
+            body += f"OpenAI: ${_stats['openai_spent']:.4f} gastados | ${openai_remaining_now:.4f} restantes"
+            ntfy_send(ntfy_topic, body,
+                      title=f"TL {game_path.name} - {ntfy_pct}%")
 
     # Actualizar languages.json
     if not dry and lang_file.exists():
@@ -750,20 +775,23 @@ def run(args: argparse.Namespace) -> int:
     chars_total_used = _stats["deepl_chars_used_prev"] + deepl_session_chars
     deepl_remaining_final = max(0, _stats["deepl_chars_limit"] - chars_total_used)
 
-    summary_lines = [
-        f"Completado: {translated}/{pending_total} strings en {files_done}/{len(json_files)} archivos",
-    ]
+    summary_lines = []
+    if meta_line.strip():
+        summary_lines.append(meta_line.strip())
+    summary_lines.append(f"Strings: {translated}/{pending_total}")
+    summary_lines.append(f"Archivos: {files_done}/{len(json_files)}")
+    summary_lines.append(f"Idioma: EN → {lang}")
     if deepl_available:
-        summary_lines.append(f"DeepL: {deepl_session_chars:,} chars usados esta sesión | {deepl_remaining_final:,} restantes de cuota")
-    summary_lines.append(f"OpenAI: ${cost_total:.4f} gastados en sesión | ${max(0.0, budget - cost_total):.4f} restantes del presupuesto")
+        summary_lines.append(f"DeepL: {deepl_session_chars:,} chars usados | {deepl_remaining_final:,} restantes")
+    summary_lines.append(f"OpenAI: ${cost_total:.4f} gastados | ${max(0.0, budget - cost_total):.4f} restantes")
     if errors:
         summary_lines.append(f"Errores: {errors}")
 
     summary = "\n".join(summary_lines)
     print(f"\n{summary}")
     ntfy_send(ntfy_topic, summary,
-              title=f"TL {game_path.name} — Listo",
-              tags="white_check_mark,tada", priority="high")
+              title=f"TL {game_path.name} - Listo",
+              priority="high")
 
     return 0 if errors == 0 else 1
 
@@ -774,7 +802,7 @@ def main():
     ap.add_argument("game_path", help="Ruta raíz del juego")
     ap.add_argument("--lang", default="Spanish", help="Carpeta destino (default: Spanish)")
     ap.add_argument("--ntfy", default=os.environ.get("NTFY_TOPIC", NTFY_DEFAULT_TOPIC),
-                    help="Topic ntfy.sh (default: koichi_agenda_2026)")
+                    help="Topic ntfy.sh (de NTFY_TOPIC env; sin valor no notifica)")
     ap.add_argument("--budget", type=float,
                     default=float(os.environ.get("OPENAI_BUDGET_USD", "1.50")),
                     help="Tope gasto OpenAI USD (default: 1.50)")
@@ -782,6 +810,9 @@ def main():
                     help=f"Strings por request OpenAI (default: {OPENAI_BATCH_SIZE})")
     ap.add_argument("--model", default=OPENAI_MODEL,
                     help=f"Modelo OpenAI (default: {OPENAI_MODEL})")
+    ap.add_argument("--game-version", default="", help="Versión del juego (para ntfy)")
+    ap.add_argument("--game-os", default="", help="OS del juego (para ntfy)")
+    ap.add_argument("--game-runtime", default="", help="Runtime del juego, ej: IL2CPP (para ntfy)")
     ap.add_argument("--dry", action="store_true", help="No escribir archivos")
     ap.add_argument("--quiet", action="store_true", help="Sin notificaciones ntfy")
     args = ap.parse_args()
