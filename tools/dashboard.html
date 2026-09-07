@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>TL Games</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:monospace;background:#0d1117;color:#c9d1d9;padding:20px 24px;max-width:1040px;margin:0 auto}
+h1{color:#58a6ff;font-size:.95em;margin-bottom:14px;letter-spacing:.1em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+h1 .right{font-size:.7em;text-transform:none;letter-spacing:0;color:#6e7681}
+h1 .right a{color:#58a6ff;margin-left:10px;cursor:pointer;text-decoration:none}
+h1 .right a:hover{color:#79c0ff;text-decoration:underline}
+.lbox{background:#161b22;border:1px solid #30363d;border-radius:7px;padding:12px 14px;margin-bottom:16px}
+.lrow{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.lf{display:flex;flex-direction:column;gap:3px}
+.lf label{font-size:.68em;color:#6e7681;text-transform:uppercase;letter-spacing:.07em}
+.lf input,.lf select{background:#0d1117;border:1px solid #30363d;border-radius:5px;color:#c9d1d9;font-family:monospace;font-size:.8em;padding:5px 9px;outline:none;transition:border-color .15s}
+.lf input{min-width:380px}
+.lf input:focus,.lf select:focus{border-color:#388bfd}
+.lf input::placeholder{color:#3d4451}
+.btn{background:#1f6feb;border:none;border-radius:5px;color:#fff;cursor:pointer;font-family:monospace;font-size:.8em;font-weight:bold;padding:6px 16px;align-self:flex-end;transition:background .15s;white-space:nowrap}
+.btn:hover:not(:disabled){background:#388bfd}
+.btn:disabled{background:#1c2128;color:#3d4451;cursor:not-allowed}
+.lmsg{font-size:.75em;margin-top:7px;padding:4px 9px;border-radius:4px;display:none}
+.lmsg.on{display:block}
+.ok{color:#3fb950;background:#0a1f0d;border:1px solid #238636}
+.fail{color:#f85149;background:#1f0a0a;border:1px solid #6e1313}
+.info{color:#e3b341;background:#1f1a0a;border:1px solid #7d5800}
+.jp{background:#161b22;border:1px solid #30363d;border-radius:7px;padding:14px 16px;margin-bottom:12px}
+.jp.running{border-color:#1f6feb}
+.jp.done{border-color:#238636}
+.jp.error,.jp.unsupported{border-color:#6e1313}
+.jhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;gap:8px}
+.jname{color:#e6edf3;font-weight:bold;font-size:.95em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jbadges{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.eng{font-size:.68em;background:#21262d;border-radius:3px;padding:2px 7px;color:#8b949e}
+.badge{font-size:.68em;padding:2px 8px;border-radius:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.04em}
+.b-running{background:#162032;color:#58a6ff}
+.b-done{background:#112318;color:#3fb950}
+.b-error,.b-unsupported{background:#1f1010;color:#f85149}
+.jpath{font-size:.7em;color:#3d4451;margin-bottom:3px;word-break:break-all}
+.jmeta{font-size:.7em;color:#6e7681;margin-bottom:8px}
+.tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:9px}
+.tag{font-size:.66em;padding:1px 7px;border-radius:9px;background:#21262d;color:#8b949e}
+.tv{color:#e3b341;background:#1f1a08}
+.tl{color:#79c0ff;background:#08192b}
+.tw{color:#b5b5ff;background:#12122e}
+.tm{color:#aaa;background:#1e1e1e}
+.ti2{color:#f0883e;background:#211200}
+.tmo{color:#7ee787;background:#081a0d}
+/* Chips de etapas */
+.chips{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.chip{font-size:.7em;padding:5px 10px;border-radius:14px;background:#1c2128;border:1px solid #30363d;color:#6e7681;display:flex;align-items:center;gap:5px}
+.chip.pending{}
+.chip.running{background:#162032;border-color:#1f6feb;color:#79c0ff}
+.chip.done{background:#0a1f0d;border-color:#238636;color:#3fb950}
+.chip.skipped{background:#1a1a1a;color:#666;border-color:#30363d}
+.chip.error{background:#1f0a0a;border-color:#6e1313;color:#f85149}
+.chip .ic{font-weight:bold}
+/* Barra global */
+.bar-bg{background:#1c2128;border-radius:3px;height:18px;margin-bottom:9px;overflow:hidden;position:relative}
+.bar{height:100%;border-radius:3px;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;font-size:.65em;font-weight:bold;min-width:20px;transition:width .5s}
+.br{background:linear-gradient(90deg,#1a4480,#388bfd);animation:blink 1.6s ease-in-out infinite}
+.bd{background:linear-gradient(90deg,#1a4a25,#3fb950)}
+.be{background:linear-gradient(90deg,#4a0a0a,#8b1a1a)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.7}}
+/* Panel expandido de etapa activa */
+.spanel{background:#0a0d12;border:1px solid #1f6feb;border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.78em}
+.spanel.done{border-color:#238636}
+.spanel.error{border-color:#6e1313}
+.spanel .stitle{color:#79c0ff;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;font-size:.85em;margin-bottom:6px}
+.spanel.done .stitle{color:#3fb950}
+.spanel .srow{display:flex;justify-content:space-between;gap:10px;margin:3px 0;color:#8b949e}
+.spanel .srow .sk{color:#6e7681;text-transform:uppercase;font-size:.85em;letter-spacing:.05em}
+.spanel .srow .sv{color:#c9d1d9}
+.sbar-bg{background:#1c2128;border-radius:2px;height:6px;margin:5px 0;overflow:hidden}
+.sbar{height:100%;background:linear-gradient(90deg,#1a4480,#388bfd);transition:width .5s}
+.spanel.done .sbar{background:linear-gradient(90deg,#1a4a25,#3fb950)}
+/* Stats grid */
+.stats{display:flex;flex-wrap:wrap;font-size:.75em;margin-bottom:10px;border:1px solid #21262d;border-radius:5px;overflow:hidden}
+.stat{padding:6px 12px;border-right:1px solid #21262d;display:flex;flex-direction:column;gap:1px;flex:1;min-width:120px}
+.stat:last-child{border-right:none}
+.sl{color:#6e7681;font-size:.75em;text-transform:uppercase;letter-spacing:.05em}
+.sv{color:#c9d1d9}
+.sv.warn{color:#e3b341}
+.sv.crit{color:#f85149}
+/* Colapsable */
+.coll{margin-top:8px}
+.coll summary{cursor:pointer;font-size:.75em;color:#79c0ff;padding:4px 0;user-select:none;list-style:none}
+.coll summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
+.coll[open] summary::before{transform:rotate(90deg)}
+.coll[open] summary::before{content:"▾ "}
+.coll summary:hover{color:#c9d1d9}
+.coll .cbody{margin-top:6px}
+/* Lista pendientes / archivos */
+.flist{font-size:.72em;color:#8b949e;max-height:200px;overflow-y:auto;background:#0a0d12;border:1px solid #21262d;border-radius:4px;padding:6px 10px}
+.flist .fi{padding:1px 0}
+.flist .fi.cur{color:#79c0ff;font-weight:bold}
+.flist .fi.done{color:#3fb950;opacity:.6}
+/* Errores/warnings */
+.elist{font-size:.72em;background:#0a0d12;border:1px solid #21262d;border-radius:4px;padding:6px 10px;max-height:160px;overflow-y:auto}
+.elist .el{padding:2px 0}
+.elist .el.err{color:#f85149}
+.elist .el.warn{color:#e3b341}
+.elist .el .ets{color:#3d4451;font-size:.85em;margin-right:6px}
+/* Log */
+.log{background:#0a0d12;border:1px solid #21262d;border-radius:5px;padding:10px 12px;font-size:.71em;color:#8b949e;height:340px;overflow-y:scroll;white-space:pre-wrap;word-break:break-word;line-height:1.5;margin-top:2px}
+.lf2{color:#79c0ff}.lh{color:#e6edf3}.lo{color:#a5d6ff}.le{color:#f85149}.lw{color:#e3b341}.lg{color:#3fb950}
+.ready{background:#081a0d;border:1px solid #238636;border-radius:5px;padding:7px 12px;margin-top:9px;font-size:.78em;color:#3fb950}
+.zipline{background:#0a1a20;border:1px solid #1f6feb;border-radius:5px;padding:5px 10px;margin-top:6px;font-size:.74em;color:#79c0ff}
+.empty{color:#3d4451;text-align:center;padding:60px 20px;font-size:.88em;line-height:2.2}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{display:inline-block;width:7px;height:7px;border:2px solid #388bfd;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;margin-right:4px;vertical-align:middle}
+.footer{color:#3d4451;font-size:.66em;text-align:right;margin-top:8px}
+/* Settings modal */
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:100;align-items:center;justify-content:center}
+.modal.on{display:flex}
+.mbox{background:#161b22;border:1px solid #30363d;border-radius:7px;width:90%;max-width:760px;max-height:85vh;display:flex;flex-direction:column}
+.mhd{padding:10px 14px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center}
+.mhd h2{color:#58a6ff;font-size:.85em;letter-spacing:.08em;text-transform:uppercase}
+.mhd .cl{color:#8b949e;cursor:pointer;background:none;border:none;font-size:1.1em;padding:0 6px}
+.mhd .cl:hover{color:#f85149}
+.mbody{padding:12px 14px;overflow-y:auto;flex:1}
+.mfoot{padding:8px 14px;border-top:1px solid #30363d;display:flex;justify-content:flex-end;gap:8px}
+.mbody textarea{width:100%;height:50vh;background:#0a0d12;border:1px solid #21262d;color:#c9d1d9;font-family:monospace;font-size:.78em;padding:10px;border-radius:5px;outline:none;resize:vertical}
+.mbody textarea:focus{border-color:#1f6feb}
+</style>
+</head>
+<body>
+<h1>
+  <span>TL Games &mdash; Pipeline</span>
+  <span class="right">
+    <a onclick="showSettings()">[settings]</a>
+    <a onclick="loadHealth()" id="hl">[health]</a>
+  </span>
+</h1>
+<div class="lbox">
+  <div class="lrow">
+    <div class="lf" style="flex:1">
+      <label>Ruta del juego</label>
+      <input id="lpath" type="text" placeholder="/home/kelsie/Downloads/Games h/NombreJuego"
+             list="path-hist" autocomplete="off">
+      <datalist id="path-hist"></datalist>
+    </div>
+    <div class="lf">
+      <label>Idioma</label>
+      <select id="llang">
+        <option value="Spanish" selected>Spanish</option>
+        <option value="English">English</option>
+        <option value="French">French</option>
+        <option value="German">German</option>
+        <option value="Portuguese">Portuguese</option>
+        <option value="Italian">Italian</option>
+        <option value="Chinese">Chinese</option>
+        <option value="Japanese">Japanese</option>
+      </select>
+    </div>
+    <div class="lf">
+      <label>Provider</label>
+      <select id="lprov">
+        <option value="" selected>auto (preflight)</option>
+        <option value="deepl">deepl</option>
+        <option value="openai">openai</option>
+      </select>
+    </div>
+    <button class="btn" id="btn-launch" onclick="launch()">Traducir</button>
+  </div>
+  <div class="lmsg" id="lmsg"></div>
+</div>
+<div id="root"></div>
+<div class="footer" id="ts"></div>
+
+<!-- Modal settings -->
+<div class="modal" id="smodal">
+  <div class="mbox">
+    <div class="mhd">
+      <h2>Settings &mdash; pipeline_settings.json</h2>
+      <button class="cl" onclick="closeSettings()">x</button>
+    </div>
+    <div class="mbody">
+      <textarea id="sjson" spellcheck="false"></textarea>
+      <div id="smsg" style="font-size:.75em;margin-top:6px;color:#e3b341;display:none"></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn" onclick="closeSettings()" style="background:#21262d">Cerrar</button>
+      <button class="btn" onclick="saveSettings()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var ENG = {renpy:"Ren'Py", unity:'Unity', rpgmaker:'RPG Maker', gamemaker:'GameMaker', electron:'Electron', unknown:'?'};
+var READY = {
+  unity: 'Abre el juego -> Settings -> Language -> Spanish.',
+  renpy: 'Lanza el juego normalmente.',
+  rpgmaker: 'Abre el juego y cambia idioma en opciones.'
+};
+var STAGE_LABEL = {analyze:'Analyze', setup:'Setup', translate:'Translate', lint_qa:'Lint/QA', package:'Package'};
+var STAGE_ORDER = ['analyze','setup','translate','lint_qa','package'];
+var STAGE_IC = {pending:'o', running:'>', done:'v', skipped:'-', error:'x'};
+var _jid = null, _jlen = 0;
+
+function elapsed(s, f) {
+  var d = (f || Date.now()/1000) - s;
+  if (d < 60) return Math.round(d) + 's';
+  if (d < 3600) return Math.round(d/60) + 'm ' + Math.round(d%60) + 's';
+  return Math.floor(d/3600) + 'h ' + Math.round((d%3600)/60) + 'm';
+}
+
+function fmtBytes(n) {
+  if (!n) return '0 B';
+  if (n < 1024) return n + ' B';
+  if (n < 1048576) return (n/1024).toFixed(1) + ' KB';
+  if (n < 1073741824) return (n/1048576).toFixed(1) + ' MB';
+  return (n/1073741824).toFixed(2) + ' GB';
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function colorLine(raw) {
+  var t = esc(raw);
+  if (/^\[STAGE\]/.test(raw))                            return '<span class="lh">' + t + '</span>';
+  if (/^\[PROVIDER\]/.test(raw))                         return '<span class="lo">' + t + '</span>';
+  if (/^===/.test(t))                                    return '<span class="lh">' + t + '</span>';
+  if (/^\[\d+\/\d+\]/.test(raw))                        return '<span class="lf2">' + t + '</span>';
+  if (/\[openai\]/i.test(raw))                           return '<span class="lo">' + t + '</span>';
+  if (/cuota agotada|ABORT|BUDGET|ERROR:/i.test(raw))    return '<span class="le">' + t + '</span>';
+  if (/WARN|fallback|SKIP/i.test(raw))                   return '<span class="lw">' + t + '</span>';
+  if (/completad|Listo|copiado|Pipeline listo|done|exito/i.test(raw)) return '<span class="lg">' + t + '</span>';
+  return t;
+}
+
+function renderChips(stages) {
+  var html = STAGE_ORDER.map(function(s){
+    var st = (stages && stages[s]) || {status:'pending', pct:0};
+    var ic = STAGE_IC[st.status] || 'o';
+    var pct = st.status==='running' && st.pct ? ' '+st.pct+'%' : '';
+    return '<div class="chip '+st.status+'"><span class="ic">'+ic+'</span>'+STAGE_LABEL[s]+pct+'</div>';
+  }).join('');
+  return '<div class="chips">'+html+'</div>';
+}
+
+function renderActiveStagePanel(job) {
+  var cur = job.current_stage;
+  if (!cur) return '';
+  var st = (job.stages || {})[cur] || {};
+  var det = st.details || {};
+  var cls = st.status === 'error' ? 'error' : (st.status === 'done' ? 'done' : '');
+  var pct = st.pct || 0;
+
+  var rows = [];
+  if (cur === 'analyze') {
+    var a = job.analysis || {};
+    if (a.engine) rows.push(['Engine', a.engine + (a.runtime ? ' / '+a.runtime : '')]);
+    if (a.version) rows.push(['Version', 'v' + a.version]);
+    if (a.files_count) rows.push(['Archivos', a.files_count]);
+    if (a.chars_count) rows.push(['Chars traducibles', a.chars_count.toLocaleString()]);
+    if (a.size_gb) rows.push(['Size juego', a.size_gb + ' GB']);
+    if (a.chosen_provider) rows.push(['Provider preflight', a.chosen_provider + ' (' + (a.provider_reason||'') + ')']);
+  } else if (cur === 'translate') {
+    var s = job.stats || {};
+    if (s.current_file) rows.push(['Archivo actual', s.current_file]);
+    if (s.provider) rows.push(['Provider', s.provider]);
+    if (s.total_files) rows.push(['Files', (s.files_done||0) + ' / ' + s.total_files]);
+    if (s.total_strings) rows.push(['Strings', (s.strings_done||0) + ' / ' + s.total_strings]);
+    if (s.openai_spent) rows.push(['OpenAI gastado', '$' + (+s.openai_spent).toFixed(4)]);
+  } else if (cur === 'lint_qa') {
+    if (det.current_file) rows.push(['Archivo actual', det.current_file]);
+    if (det.postprocess_errors != null) rows.push(['Postprocess errors', det.postprocess_errors]);
+    if (det.lint_warnings != null) rows.push(['Lint warnings', det.lint_warnings]);
+    if (det.qa_issues != null) rows.push(['QA issues', det.qa_issues]);
+  } else if (cur === 'package') {
+    if (det.current) rows.push(['Fase', det.current]);
+    if (det.size_mb) rows.push(['ZIP size', det.size_mb + ' MB']);
+    if (det.zip_path) rows.push(['ZIP path', det.zip_path]);
+  } else if (cur === 'setup') {
+    rows.push(['Estado', 'Preparando workspace']);
+  }
+
+  var rowsHtml = rows.map(function(r){
+    return '<div class="srow"><span class="sk">'+esc(r[0])+'</span><span class="sv">'+esc(r[1])+'</span></div>';
+  }).join('');
+
+  return '<div class="spanel '+cls+'">' +
+    '<div class="stitle">'+STAGE_LABEL[cur]+' ('+pct+'%)</div>' +
+    '<div class="sbar-bg"><div class="sbar" style="width:'+pct+'%"></div></div>' +
+    rowsHtml +
+    '</div>';
+}
+
+function renderStats(job) {
+  var a = job.analysis || {};
+  var s = job.stats || {};
+  var avail = a.openai_budget_avail;
+  var budget = 1.50;
+  var spent = +(s.openai_spent || 0);
+  var deepl = a.deepl_quota_avail || 0;
+  var cells = [];
+  cells.push('<div class="stat"><span class="sl">Overall</span><span class="sv">'+(job.overall_pct||0)+'%</span></div>');
+  if (a.chars_count) cells.push('<div class="stat"><span class="sl">Chars</span><span class="sv">'+a.chars_count.toLocaleString()+'</span></div>');
+  cells.push('<div class="stat"><span class="sl">Files</span><span class="sv">'+(s.files_done||0)+' / '+(s.total_files||a.files_count||0)+'</span></div>');
+  if (s.total_strings) cells.push('<div class="stat"><span class="sl">Strings</span><span class="sv">'+(s.strings_done||0)+' / '+s.total_strings+'</span></div>');
+  cells.push('<div class="stat"><span class="sl">Provider</span><span class="sv">'+esc(s.provider||a.chosen_provider||'-')+'</span></div>');
+  if (deepl !== undefined) {
+    var dcls = deepl < 50000 ? ' warn' : '';
+    cells.push('<div class="stat"><span class="sl">DeepL avail</span><span class="sv'+dcls+'">'+deepl.toLocaleString()+' chars</span></div>');
+  }
+  if (avail !== undefined) {
+    var ocls = avail < 0.10 ? ' crit' : (avail < 0.30 ? ' warn' : '');
+    cells.push('<div class="stat"><span class="sl">OpenAI</span><span class="sv'+ocls+'">$'+spent.toFixed(4)+' / $'+budget.toFixed(2)+'</span></div>');
+  }
+  return '<div class="stats">'+cells.join('')+'</div>';
+}
+
+function renderEvents(job) {
+  var evs = job.events || [];
+  if (!evs.length) return '';
+  var errs = evs.filter(function(e){ return e.event === 'error' || e.event === 'warn' || e.event === 'provider_switch'; });
+  if (!errs.length) return '';
+  var html = errs.slice(-15).map(function(e){
+    var ts = new Date(e.ts*1000).toLocaleTimeString();
+    var cls = e.event === 'error' ? 'err' : (e.event === 'warn' ? 'warn' : '');
+    var msg = '';
+    if (e.event === 'provider_switch') {
+      msg = '['+e.stage+'] provider '+e.from+' -> '+e.to+' ('+(e.reason||'')+')';
+      cls = 'warn';
+    } else {
+      msg = '['+e.stage+'] '+(e.message || '');
+    }
+    return '<div class="el '+cls+'"><span class="ets">'+ts+'</span>'+esc(msg)+'</div>';
+  }).join('');
+  return '<details class="coll" open><summary>Eventos ('+errs.length+')</summary>' +
+    '<div class="cbody"><div class="elist">'+html+'</div></div></details>';
+}
+
+function renderJob(job) {
+  var st = job.status, run = st === 'running', done = st === 'done', err = (st === 'error' || st === 'unsupported');
+  var eng = (job.engine && job.engine.engine) || 'unknown';
+  var gi = job.game_info || {};
+
+  // Backward compat: si no hay stages, usar logica vieja
+  var hasStages = !!job.stages && Object.keys(job.stages).length > 0;
+  var overall = hasStages ? (job.overall_pct||0) : ((job.stats||{}).pct || 0);
+
+  var tags = [];
+  if (gi.version) tags.push('<span class="tag tv">v' + esc(gi.version) + '</span>');
+  var oc = {linux:'tl', windows:'tw', macos:'tm'};
+  (gi.os || []).forEach(function(o){ tags.push('<span class="tag ' + (oc[o]||'tag') + '">' + o + '</span>'); });
+  if (gi.runtime) {
+    var rc = gi.runtime.toLowerCase().startsWith('il2cpp') ? 'ti2' : gi.runtime.toLowerCase().startsWith('mono') ? 'tmo' : 'tag';
+    tags.push('<span class="tag ' + rc + '">' + esc(gi.runtime) + '</span>');
+  }
+
+  var dp = err ? 100 : Math.max(overall, 2);
+  var bc = run ? 'bar br' : done ? 'bar bd' : 'bar be';
+  var logHtml = (job.progress || []).slice(-200).map(colorLine).join('\n');
+
+  var cs = job.copy_status, cp = esc(job.copy_path || '');
+  var copyLine = '';
+  if (cs === 'copying') copyLine = '<div style="font-size:.73em;color:#e3b341;margin-top:7px">Copiando... ' + cp + '</div>';
+  else if (cs === 'done') copyLine = '<div style="font-size:.73em;color:#3fb950;margin-top:7px">Copia: ' + cp + '</div>';
+  else if (cs === 'error') copyLine = '<div style="font-size:.73em;color:#f85149;margin-top:7px">Copia fallida</div>';
+
+  var zipLine = '';
+  if (job.zip_path) {
+    zipLine = '<div class="zipline">ZIP: ' + esc(job.zip_path) + '</div>';
+  }
+
+  var readyOk = (cs === 'done') || (done && cs === null);
+  var readyTxt = readyOk ? (READY[eng] || 'Traduccion completada.') : '';
+  var errTxt = job.error ? '<div style="color:#f85149;font-size:.73em;margin-top:6px">' + esc(job.error) + '</div>' : '';
+  var warnTxt = job.warning === 'budget_exceeded' ? '<div style="color:#e3b341;font-size:.73em;margin-top:6px">Presupuesto OpenAI alcanzado</div>' : '';
+
+  var spinHtml = run ? '<span class="spin"></span>' : '';
+  var metaTxt = run ? ('corriendo hace ' + elapsed(job.started_at, null)) : ('tiempo: ' + elapsed(job.started_at, job.finished_at) + ' &mdash; ' + job.job_id);
+
+  return '<div class="jp ' + st + '">'
+    + '<div class="jhead">'
+    +   '<div class="jname">' + esc(job.game_name || 'Job') + '</div>'
+    +   '<div class="jbadges">'
+    +     '<span class="eng">' + (ENG[eng] || esc(eng)) + '</span>'
+    +     '<span class="badge b-' + st + '">' + spinHtml + st + '</span>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="jpath">' + esc(job.game_path || '') + '</div>'
+    + '<div class="jmeta">' + metaTxt + '</div>'
+    + (tags.length ? '<div class="tags">' + tags.join('') + '</div>' : '')
+    + (hasStages ? renderChips(job.stages) : '')
+    + '<div class="bar-bg"><div class="' + bc + '" style="width:' + dp + '%">' + (overall ? overall + '%' : '') + '</div></div>'
+    + (hasStages ? renderActiveStagePanel(job) : '')
+    + renderStats(job)
+    + renderEvents(job)
+    + '<details class="coll"><summary>Log (' + (job.progress||[]).length + ')</summary>'
+    +   '<div class="cbody"><div class="log" id="jlog">' + logHtml + '</div></div>'
+    + '</details>'
+    + (job.diagnose_report ? (
+        '<details class="coll"><summary>Diagnose report (post-job)</summary>'
+        + '<div class="cbody"><div class="log" style="height:300px">' + esc(job.diagnose_report) + '</div></div>'
+        + '</details>'
+      ) : '')
+    + copyLine + zipLine + warnTxt + errTxt
+    + (readyTxt ? '<div class="ready">Listo para jugar &mdash; ' + readyTxt + '</div>' : '')
+    + '</div>';
+}
+
+async function tick() {
+  try {
+    var r = await fetch('/jobs');
+    var d = await r.json();
+    var jobs = d.jobs || [];
+
+    var running = jobs.filter(function(j){ return j.status === 'running'; });
+    var target = running.length ? running[running.length-1] : (jobs.length ? jobs[jobs.length-1] : null);
+
+    var btn = document.getElementById('btn-launch');
+    var isRunning = target && target.status === 'running';
+    btn.disabled = !!isRunning;
+    btn.textContent = isRunning ? 'Job activo' : 'Traducir';
+
+    if (!target) {
+      document.getElementById('root').innerHTML = '<div class="empty">Sin actividad reciente.<br><span style="font-size:.88em">Ingresa la ruta del juego y presiona Traducir.</span></div>';
+      document.getElementById('ts').textContent = 'Actualizado: ' + new Date().toLocaleTimeString();
+      return;
+    }
+
+    var curLen = (target.progress || []).length;
+    var curEv = (target.events || []).length;
+    var stateKey = target.job_id + ':' + curLen + ':' + curEv + ':' + (target.overall_pct||0) + ':' + target.current_stage;
+    if (_stateKey !== stateKey) {
+      _stateKey = stateKey;
+      document.getElementById('root').innerHTML = renderJob(target);
+      if (isRunning) {
+        var log = document.getElementById('jlog');
+        if (log) log.scrollTop = log.scrollHeight;
+      }
+    } else if (isRunning) {
+      var el = document.querySelector('.jmeta');
+      if (el) el.textContent = 'corriendo hace ' + elapsed(target.started_at, null);
+    }
+
+    var paths = [...new Set(jobs.map(function(j){ return j.game_path; }).filter(Boolean))];
+    var dl = document.getElementById('path-hist');
+    if (dl.options.length !== paths.length)
+      dl.innerHTML = paths.map(function(p){ return '<option value="' + p.replace(/"/g,'&quot;') + '">'; }).join('');
+
+    document.getElementById('ts').textContent = 'Actualizado: ' + new Date().toLocaleTimeString();
+  } catch(e) {
+    document.getElementById('root').innerHTML = '<div class="empty" style="color:#f85149">Sin conexion con el servidor en localhost:8766</div>';
+  }
+}
+
+var _stateKey = '';
+
+function showMsg(cls, txt) {
+  var m = document.getElementById('lmsg');
+  m.className = 'lmsg on ' + cls;
+  m.textContent = txt;
+}
+
+async function launch() {
+  var path = document.getElementById('lpath').value.trim();
+  var lang = document.getElementById('llang').value;
+  var prov = document.getElementById('lprov').value;
+  var btn = document.getElementById('btn-launch');
+  if (!path) { showMsg('info', 'Escribe la ruta del juego.'); return; }
+  btn.disabled = true; btn.textContent = 'Lanzando...';
+  showMsg('info', 'Detectando engine + preflight...');
+  try {
+    var body = {path: path, lang: lang};
+    if (prov) body.provider = prov;
+    var r = await fetch('/pipeline', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    });
+    var d = await r.json();
+    if (r.status === 409) {
+      showMsg('info', 'Ya hay un job corriendo (' + d.existing_job_id + ')');
+      btn.disabled = false; btn.textContent = 'Traducir';
+    } else if (r.ok) {
+      showMsg('ok', 'Job lanzado: ' + d.job_id);
+      document.getElementById('lpath').value = '';
+      _stateKey = '';
+      await tick();
+    } else {
+      showMsg('fail', 'Error: ' + (d.error || r.status));
+      btn.disabled = false; btn.textContent = 'Traducir';
+    }
+  } catch(e) {
+    showMsg('fail', 'Sin conexion con el servidor.');
+    btn.disabled = false; btn.textContent = 'Traducir';
+  }
+}
+
+// Settings modal
+async function showSettings() {
+  try {
+    var r = await fetch('/settings');
+    var d = await r.json();
+    document.getElementById('sjson').value = JSON.stringify(d, null, 2);
+    document.getElementById('smsg').style.display = 'none';
+    document.getElementById('smodal').classList.add('on');
+  } catch(e) {
+    showMsg('fail', 'No pude cargar settings');
+  }
+}
+
+function closeSettings() {
+  document.getElementById('smodal').classList.remove('on');
+}
+
+async function saveSettings() {
+  var txt = document.getElementById('sjson').value;
+  var sm = document.getElementById('smsg');
+  try {
+    var parsed = JSON.parse(txt);
+    var r = await fetch('/settings', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(parsed)
+    });
+    if (r.ok) {
+      sm.textContent = 'Guardado correctamente.';
+      sm.style.color = '#3fb950';
+      sm.style.display = 'block';
+      setTimeout(closeSettings, 1200);
+    } else {
+      var d = await r.json();
+      sm.textContent = 'Error: ' + (d.error || r.status);
+      sm.style.color = '#f85149';
+      sm.style.display = 'block';
+    }
+  } catch(e) {
+    sm.textContent = 'JSON invalido: ' + e.message;
+    sm.style.color = '#f85149';
+    sm.style.display = 'block';
+  }
+}
+
+async function loadHealth() {
+  try {
+    var r = await fetch('/health');
+    var d = await r.json();
+    var summary = 'Ollama: '+d.ollama+' | DeepL: '+(d.deepl && d.deepl.available !== undefined ? d.deepl.available.toLocaleString()+' chars' : '?')+' | OpenAI: $'+((d.openai && d.openai.spent_usd) || 0).toFixed(4)+' / $'+((d.openai && d.openai.budget_usd) || 1.50).toFixed(2);
+    alert(summary);
+  } catch(e) {
+    alert('Sin conexion al server.');
+  }
+}
+
+document.getElementById('lpath').addEventListener('keydown', function(e){ if (e.key === 'Enter') launch(); });
+document.getElementById('smodal').addEventListener('click', function(e){ if (e.target === this) closeSettings(); });
+tick();
+setInterval(tick, 2000);
+</script>
+</body>
+</html>
