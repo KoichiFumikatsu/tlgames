@@ -14,7 +14,10 @@ for f in root.rglob("*.rpy"):
         continue
     for b in ds + ss:
         total_blocks += 1
-        if not b.current_target.strip():
+        src = b.source.strip()
+        tgt = b.current_target.strip()
+        untranslated = not tgt or (tgt == src and len(src) >= 4 and any(c.isalpha() for c in src))
+        if untranslated:
             total_pending += 1
             total_chars_pending += len(b.source)
 print(f"archivos: {sum(1 for _ in root.rglob('*.rpy'))}")

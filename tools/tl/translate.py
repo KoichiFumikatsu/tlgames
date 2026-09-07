@@ -779,7 +779,7 @@ def translate_text(src: str, cache: dict, glossary: dict, provider: str, email: 
 
 def process_dialogue(path: Path, limit: int, dry: bool, provider: str, email: str, api_key: str, fallback_deepl_key: str = "", batch_size: int = GEMINI_BATCH_SIZE, gemini_model: str = GEMINI_MODEL, openai_model: str = OPENAI_MODEL):
     blocks = parse_dialogue_file(str(path))
-    pending = [b for b in blocks if not b.current_target.strip()]
+    pending = [b for b in blocks if not b.current_target.strip() or (b.current_target.strip() == b.source.strip() and len(b.source.strip()) >= 4 and any(c.isalpha() for c in b.source))]
     print(f"bloques totales: {len(blocks)} | vacios: {len(pending)}")
     if limit:
         pending = pending[:limit]
@@ -934,7 +934,7 @@ def process_dialogue(path: Path, limit: int, dry: bool, provider: str, email: st
 
 def process_strings(path: Path, limit: int, dry: bool, provider: str, email: str, api_key: str, fallback_deepl_key: str = "", batch_size: int = GEMINI_BATCH_SIZE, gemini_model: str = GEMINI_MODEL, openai_model: str = OPENAI_MODEL):
     blocks = parse_strings_file(str(path))
-    pending = [b for b in blocks if not b.current_target.strip()]
+    pending = [b for b in blocks if not b.current_target.strip() or (b.current_target.strip() == b.source.strip() and len(b.source.strip()) >= 4 and any(c.isalpha() for c in b.source))]
     print(f"strings totales: {len(blocks)} | vacios: {len(pending)}")
     if limit:
         pending = pending[:limit]
