@@ -26,7 +26,7 @@ con calidad razonable y mínimo trabajo manual. Construido sobre el caso
 ### API Translation
 | Provider | Tier | Limitación | Comentario |
 |---|---|---|---|
-| **DeepL Free** | gratis con registro | 1M chars/mes (dashboard); el endpoint `/v2/usage` puede devolver 500k por bug — confiar en el dashboard | Calidad alta. Key con suffix `:fx`. Default. |
+| **DeepL Free** | gratis con registro | **500K chars/mes** (oficial; verificado 2026-05-24 contra `/v2/usage`). El dashboard web puede mostrar otras metricas, pero la API es la verdad operativa. | Calidad alta. Key con suffix `:fx`. Default. |
 | MyMemory | gratis con email | ~10k palabras/día | Calidad media. Útil si DeepL agota. |
 
 ### Variables de entorno
@@ -77,6 +77,34 @@ Copy-Item -Recurse "<ruta-original>" "backups/<NombreJuego>-original/"
 cd "proyects Game TL/<NombreJuego>/game"
 python -m unrpa -mp . content.rpa  # repetir para cada .rpa
 ```
+
+**0.2.bis CASO CRÍTICO: juego SIN ningún `.rpy` ni `.rpyc` suelto (todo en scripts.rpa).**
+
+Algunos juegos modernos distribuyen el script entero empaquetado en `scripts.rpa` y no dejan absolutamente nada suelto. `detect_engine` antes retornaba "unknown" → unsupported. Síntomas:
+
+```bash
+ls game/   # solo .rpa, cache, fonts, gui, images, presplash, script_version.txt
+find game -name '*.rpy' -o -name '*.rpyc' | wc -l   # 0
+```
+
+Pasos manuales:
+```bash
+~/.local/bin/unrpa game/scripts.rpa     # genera .rpyc dentro de game/
+python3 /home/kelsie/.local/share/unrpyc/unrpyc-master/unrpyc.py -c game/
+mv game/scripts.rpa game/scripts.rpa.unpacked_bak
+```
+
+**Automatización (desde 2026-05-24):** el pipeline detecta este caso (`state="packed"` + `needs_unpack/needs_decompile`) y ejecuta unpack+decompile automáticamente en stage `analyze`. Settings en `tools/pipeline_settings.json` → `renpy.unrpa_bin`, `renpy.unrpyc_script`, `renpy.auto_unpack`.
+
+**Trampa POST-decompile:** si el juego viene con traducciones oficiales del autor DENTRO del rpa, también se decompilan. NO traducir si ya hay `tl/spanish/` completo:
+```bash
+grep -c 'old "' game/tl/spanish/*.rpy | awk -F: '{s+=$2}END{print s}'
+# pending == 0 → solo _force_spanish.rpy + compile
+```
+
+Caso real: **Stuck with my Ex's Family and Zombies** (2026-05-24) — 3 .rpa, todo compilado, tras decompile aparecieron 47 .rpy + tl/{chinese,japanese,portuguese,russian,spanish}/ del autor 100% completas. Cero traducción necesaria.
+
+**Trampa adicional (2026-05-24, caso Norikascases2):** el detector debe EXCLUIR `tl/<lang>/` del conteo de .rpy. Caso real: juego ruso con `tl/english/` del autor (28 archivos, ~120K líneas) + 33 `.rpyc` huérfanos del juego principal + 1 `.rpy` accesorio (`WITHBLINK.rpy`). El detector contaba los 29 `.rpy` totales y reportaba "translated" → el pipeline solo procesaba `common.rpy` del sistema interno de Ren'Py y dejaba el juego sin traducir. Fix aplicado: contar solo `.rpy` fuera de `tl/` y fuera de `_force_*.rpy` (generados por el pipeline), considerar "packed" si hay >3 `.rpyc` huérfanos o `.rpa`.
 
 **0.3 Decompilar `.rpyc` → `.rpy`** SOLO si faltan los fuentes. Detectar primero:
 ```powershell
@@ -229,6 +257,18 @@ vbox:
     # añadir el resto de idiomas existentes en tl/
 ```
 
+> **Trampa: selector activo SIN entrada de español (caso Norikascases2 v0.31,
+> 2026-05-26).** El pipeline auto-genera `_force_spanish.rpy` solo cuando NO
+> detecta ningún `Language(...)` en `screens.rpy`. Si el juego ya trae un
+> selector activo con otros idiomas (ej. `Language(None)` ruso + `Language("english")`),
+> el pipeline NO genera el force, asumiendo que el usuario seleccionará ES
+> desde el menú — pero la entrada ES no existe y queda inseleccionable.
+> Además, aunque generes el force manualmente, si el usuario toca el selector
+> y elige otro idioma, ese valor se guarda en `~/.renpy/<game>/persistent` y
+> pisa el default. **Fix obligatorio:** añadir `textbutton "Español" action
+> Language("spanish")` al `vbox` existente y borrar el `screens.rpyc` para
+> forzar recompilación.
+
 ### Fase 3 — Construir glosario (opcional pero recomendado)
 
 `tools/tl/tl-es-glossary.json` — solo términos invariables:
@@ -305,7 +345,7 @@ Notas:
 
 #### Alternativa: Gemini batch (solo si el usuario lo pide explícitamente)
 
-Si el juego excede los ~1M chars/mes de DeepL Free (caso típico: novelas
+Si el juego excede los **~500K chars/mes** de DeepL Free (verificado 2026-05-24; antes se asumia 1M por mito; caso típico: novelas
 visuales largas, p.ej. Maeves Academy con ~1M chars), usar Gemini en modo
 batch:
 
@@ -410,7 +450,7 @@ Cambiar idioma desde Preferences → Language → Español.
 | Crash al lanzar diálogo | bug decompilado en `screen say` | Añadir defaults perdidos a parámetros |
 | Strings con `\r\n` rompen compile | Sanitizer no aplicado | Re-correr `translate.py` (sanitizer integrado) |
 | "Don no..." en español | DeepL malinterpreta `Don't` | `python tools\tl\postprocess.py --all` |
-| Cuota DeepL agotada | 1M chars/mes (verificar en dashboard, no en API) | Cambiar a `--provider openai` (default `gpt-4.1-nano`, ver fase 4 fallback). Gemini solo si el usuario lo pide. |
+| Cuota DeepL agotada | **500K chars/mes** (oficial, verificado contra `/v2/usage` 2026-05-24) | Cambiar a `--provider openai` (default `gpt-4.1-nano`, ver fase 4 fallback). Gemini solo si el usuario lo pide. |
 | Cuota MyMemory agotada | ~10k palabras/día | Esperar 24h o pasar a DeepL/Gemini |
 | Cuota Gemini agotada | 1000 RPD lite / 250 RPD flash | Esperar al reset diario (medianoche Pacífico) o cambiar de modelo. |
 | Strings sin traducir tras run | bloque ya tenía contenido (skip por diseño) | Borrar el target con script y re-correr |
@@ -437,6 +477,17 @@ Cambiar idioma desde Preferences → Language → Español.
 - Cache es por texto exacto: cambios menores en el source = nueva consulta.
 - Glosario no es contextual: un término ambiguo va al MT con la oración entera.
 - `--add-markers` no edita el target, solo señala (la edición es decisión humana).
+
+**Limitaciones de lint conocidas (2026-05-24):**
+- `tools/tl/lint.py` revisa `{tags}`, `[vars]`, `|placeholders|`, `\n`, `SENTINEL`, `UNCHANGED` y `EXPAND > 1.5x` solo para source >= 20 chars. **No flagea overflow en strings cortos** (botones, choices, labels de menu).
+- Ren'Py SDK `lint` reporta "dialogue too long" solo para `say`, no para `screen`.
+- Casos historicos: `"Achievements" → "Logros"` cabe; `"Quick Save" → "Guardado Rapido"` se desborda. Choices de 2 lineas EN pueden volverse 3 en ES.
+
+**Mejoras pendientes de lint Ren'Py (playbook futuro, no bloqueantes):**
+1. Portar check `OVERFLOW` de `lint_rpgmaker.py` a `lint.py`: source < 30 chars y ratio > 1.4 → reportar.
+2. Prompt con `max_length` explicito para strings que vienen de screen labels / choices (cuando el extractor pueda distinguirlos del flujo `say`).
+3. Auto-shrink font en screens criticas via `adjust_spacing`, `xfit/yfit`, `text_align`, `min_width` — absorbe expansion moderada sin tocar la traduccion.
+4. Glosario de abreviaciones canonicas para terminos que rompen layout (`Configuracion → Ajustes`, etc.).
 
 ---
 

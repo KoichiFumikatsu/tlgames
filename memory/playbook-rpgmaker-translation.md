@@ -86,3 +86,31 @@ MV/MZ:
 - Revisar menu, dialogos, batalla, mochila, Pokedex, opciones, quests.
 - Revisar overflow: RPG Maker XP tiene cajas pequenas; abreviar antes que reducir legibilidad.
 - Revisar fuentes: acentos, `ñ`, `¿`, `¡`, `ü`.
+
+## Lint automatico (pipeline stage `lint_qa`) — desde 2026-05-24
+
+El pipeline ahora corre `tools/tl/lint_rpgmaker.py` para `engine=rpgmaker` (antes el stage se saltaba con `engine_unsupported`). Compara `<data>/<archivo>.json.bak` (source EN) contra `<archivo>.json` (target ES) recorriendo las mismas rutas que `translate_rpgmaker.extract_strings()`.
+
+Checks emitidos:
+- `CTRL` — control codes RPGMaker perdidos/alterados (`\C[n] \I[n] \N[n] \V[n] \P[n] \G \. \! \> \< \^ \{ \}`, `%1..%9`).
+- `EMPTY` — target vacio con source no vacio.
+- `UNCHANGED` — target == source. Filtra nombres propios CamelCase (`Raphaela`) y speaker labels (`[Ruby]`); el resto suele ser onomatopeya legitima o traduccion olvidada — revisar caso por caso.
+- `EN_RESID` — heuristica suave de palabras EN comunes en target. Ruido esperable; no bloquear por esto.
+- `OVERFLOW` — source < 30 chars y `len(target)/len(source) > 1.4` → riesgo desborde en labels/choices/botones.
+- `EXPAND` — ratio > 1.6 general.
+
+Salida: stdout JSON con `summary`, `issues_total`, `strings_compared`, `files_no_bak`. Pipeline persiste en `job.lint_report` y `job.stages.lint_qa.details`. No es bloqueante.
+
+Si un archivo no tiene `.json.bak` (extract no encontro strings EN traducibles), queda en `files_no_bak` y no se compara.
+
+`STAGE_PCT["rpgmaker"]` ajustado a `translate:75, lint_qa:5, package:10` para reservar progreso al lint.
+
+## Mejoras pendientes de lint (playbook futuro, no bloqueantes)
+
+Discutidas 2026-05-24; aplican a engines con strings cortos visibles (labels, choices, botones):
+
+1. **Prompt con `max_length` explicito** — cuando `extract_strings` clasifique un string como label/choice (< 30 chars), pasar instruccion al traductor "maximo N caracteres" en el prompt OpenAI/DeepL.
+2. **Glosario de abreviaciones canonicas** — entradas pre-MT para terminos que rompen layout: `Configuracion → Ajustes`, `Guardado Rapido → G. Rapido`, etc.
+3. **Re-prompt automatico** — strings flagged `OVERFLOW` se reintentan con instruccion de brevedad antes de reportar.
+
+Casos historicos observados: botones tipo "Achievements" → "Logros" caben; "Quick Save" → "Guardado Rapido" se desborda. Choices de 2 lineas EN pueden volverse 3 en ES y romper layout.
