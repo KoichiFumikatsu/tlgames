@@ -38,7 +38,12 @@ class QAHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/health":
-            self.send_json(200, {"status": "ok", "model": qa_renpy.MODEL})
+            import os
+            backend = qa_renpy.BACKEND
+            if backend == "auto":
+                backend = "groq" if os.environ.get("GROQ_API_KEY", "").strip() else "ollama"
+            model = qa_renpy.GROQ_MODEL if backend == "groq" else qa_renpy.OLLAMA_MODEL
+            self.send_json(200, {"status": "ok", "backend": backend, "model": model})
         else:
             self.send_json(404, {"error": "not found"})
 

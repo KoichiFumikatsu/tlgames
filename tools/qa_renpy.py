@@ -13,16 +13,33 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
+import time
 import urllib.request
 import urllib.error
 from datetime import datetime
 from pathlib import Path
 
+# Cargar .env si esta disponible (igual que el resto de scripts del repo)
+try:
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "tl"))
+    from _env import load_env as _load_env
+    _load_env(Path(__file__).resolve().parent.parent)
+except Exception:
+    pass
+
 OLLAMA_URL = "http://localhost:11434/api/chat"
-MODEL = "llama3.2:3b"
-BATCH_SIZE = 40  # pares por llamada a Ollama
+OLLAMA_MODEL = "llama3.2:3b"
+
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = "llama-3.1-8b-instant"  # free tier, ~500 tokens/s
+
+MODEL = OLLAMA_MODEL  # backward compat con codigo antiguo
+BATCH_SIZE = 40  # pares por llamada al LLM
+BACKEND = "auto"  # 'auto' | 'groq' | 'ollama'
+GROQ_RATE_LIMIT_DELAY = 2.0  # segundos entre requests para respetar 30/min
 
 # Tags y variables que no se traducen — se ignoran en la evaluación de género
 PROTECTED_RE = re.compile(r"\{[^{}]+\}|\[[^\[\]]+\]|\|[A-Za-z0-9_]+\|")
@@ -79,30 +96,29 @@ def parse_rpy(path: Path) -> list[dict]:
     return pairs
 
 
-def ollama_qa(pairs: list[dict], batch_idx: int) -> list[str]:
-    """Envía un lote de pares a Ollama y devuelve lista de issues encontrados."""
+def _build_user_content(pairs: list[dict], batch_idx: int) -> str:
     lines = []
     for i, p in enumerate(pairs, 1):
         n = batch_idx * BATCH_SIZE + i
         src = p["source"].replace("\n", "\\n")
         tgt = p["target"].replace("\n", "\\n")
         lines.append(f"[{n}] EN: {src!r} | ES: {tgt!r}  ({p['location']})")
+    return "Revisa estas traducciones:\n" + "\n".join(lines)
 
-    user_content = "Revisa estas traducciones:\n" + "\n".join(lines)
 
+def ollama_qa(pairs: list[dict], batch_idx: int) -> list[str]:
+    """Envía un lote a Ollama local. Lento en CPU, se satura facil."""
     payload = {
-        "model": MODEL,
+        "model": OLLAMA_MODEL,
         "stream": False,
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_content},
+            {"role": "user", "content": _build_user_content(pairs, batch_idx)},
         ],
     }
-
-    data = json.dumps(payload).encode()
     req = urllib.request.Request(
         OLLAMA_URL,
-        data=data,
+        data=json.dumps(payload).encode(),
         headers={"Content-Type": "application/json"},
     )
     try:
@@ -115,7 +131,80 @@ def ollama_qa(pairs: list[dict], batch_idx: int) -> list[str]:
     except urllib.error.URLError as e:
         return [f"[ERROR] Ollama no disponible: {e}"]
     except Exception as e:
-        return [f"[ERROR] Llamada fallida: {e}"]
+        return [f"[ERROR] Llamada Ollama fallida: {e}"]
+
+
+_groq_last_call_ts = 0.0
+
+
+def groq_qa(pairs: list[dict], batch_idx: int) -> list[str]:
+    """Envía un lote a Groq API (OpenAI-compatible). Free tier 30 req/min."""
+    global _groq_last_call_ts
+    api_key = os.environ.get("GROQ_API_KEY", "").strip()
+    if not api_key:
+        return ["[ERROR] GROQ_API_KEY no configurada en .env"]
+
+    # Rate limit: 30 req/min = 1 cada 2s. Espera si necesario.
+    elapsed = time.time() - _groq_last_call_ts
+    if elapsed < GROQ_RATE_LIMIT_DELAY:
+        time.sleep(GROQ_RATE_LIMIT_DELAY - elapsed)
+    _groq_last_call_ts = time.time()
+
+    payload = {
+        "model": GROQ_MODEL,
+        "temperature": 0.1,
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": _build_user_content(pairs, batch_idx)},
+        ],
+    }
+    req = urllib.request.Request(
+        GROQ_URL,
+        data=json.dumps(payload).encode(),
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}",
+            # Cloudflare frente a Groq bloquea User-Agent "Python-urllib/X.Y" con error 1010
+            "User-Agent": "tlgames-qa/1.0 (+https://localhost:8765/qa)",
+            "Accept": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            result = json.loads(resp.read())
+            text = result["choices"][0]["message"]["content"].strip()
+            if text == "OK":
+                return []
+            return [line for line in text.splitlines() if line.strip() and line.strip() != "OK"]
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")[:300] if e.fp else ""
+        if e.code == 429:
+            # Rate limit hit — esperar y reintentar 1 vez
+            time.sleep(5)
+            try:
+                with urllib.request.urlopen(req, timeout=60) as resp:
+                    result = json.loads(resp.read())
+                    text = result["choices"][0]["message"]["content"].strip()
+                    return [] if text == "OK" else [
+                        l for l in text.splitlines() if l.strip() and l.strip() != "OK"
+                    ]
+            except Exception as e2:
+                return [f"[ERROR] Groq 429 reintento fallo: {e2}"]
+        return [f"[ERROR] Groq HTTP {e.code}: {body}"]
+    except urllib.error.URLError as e:
+        return [f"[ERROR] Groq no disponible: {e}"]
+    except Exception as e:
+        return [f"[ERROR] Llamada Groq fallida: {e}"]
+
+
+def _qa_dispatch(pairs: list[dict], batch_idx: int) -> list[str]:
+    """Selecciona backend segun BACKEND. 'auto' = groq si hay key, sino ollama."""
+    backend = BACKEND
+    if backend == "auto":
+        backend = "groq" if os.environ.get("GROQ_API_KEY", "").strip() else "ollama"
+    if backend == "groq":
+        return groq_qa(pairs, batch_idx)
+    return ollama_qa(pairs, batch_idx)
 
 
 def qa_file(path: Path) -> dict:
@@ -130,7 +219,7 @@ def qa_file(path: Path) -> dict:
     for i in range(batches):
         chunk = pairs[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]
         print(f"  lote {i+1}/{batches} ({len(chunk)} pares)...", end=" ", flush=True)
-        found = ollama_qa(chunk, i)
+        found = _qa_dispatch(chunk, i)
         issues.extend(found)
         print(f"{len(found)} issues")
 
@@ -180,13 +269,24 @@ def render_report(results: list[dict], target_path: Path | None = None) -> str:
 
 
 def main() -> int:
-    global MODEL  # noqa: PLW0603
-    parser = argparse.ArgumentParser(description="QA semántico de traducciones Ren'Py vía Ollama.")
+    global OLLAMA_MODEL, GROQ_MODEL, BACKEND  # noqa: PLW0603
+    parser = argparse.ArgumentParser(description="QA semantico de traducciones Ren'Py (Groq o Ollama).")
     parser.add_argument("target", type=Path, help="Archivo .rpy o directorio con archivos .rpy")
     parser.add_argument("--report", type=Path, default=None, help="Guardar reporte en esta ruta (.md)")
-    parser.add_argument("--model", default=MODEL, help=f"Modelo Ollama (default: {MODEL})")
+    parser.add_argument("--backend", choices=["auto", "groq", "ollama"], default="auto",
+                        help="Backend del LLM (default: auto = groq si hay GROQ_API_KEY, sino ollama)")
+    parser.add_argument("--ollama-model", default=OLLAMA_MODEL,
+                        help=f"Modelo Ollama (default: {OLLAMA_MODEL})")
+    parser.add_argument("--groq-model", default=GROQ_MODEL,
+                        help=f"Modelo Groq (default: {GROQ_MODEL})")
     args = parser.parse_args()
-    MODEL = args.model
+    OLLAMA_MODEL = args.ollama_model
+    GROQ_MODEL = args.groq_model
+    BACKEND = args.backend
+    chosen = BACKEND
+    if chosen == "auto":
+        chosen = "groq" if os.environ.get("GROQ_API_KEY", "").strip() else "ollama"
+    print(f"# Backend: {chosen} ({GROQ_MODEL if chosen=='groq' else OLLAMA_MODEL})", file=sys.stderr)
 
     if args.target.is_dir():
         results = qa_directory(args.target)
