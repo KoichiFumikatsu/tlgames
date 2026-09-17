@@ -34,7 +34,7 @@ OLLAMA_URL = "http://localhost:11434/api/chat"
 OLLAMA_MODEL = "llama3.2:3b"
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_MODEL = "llama-3.1-8b-instant"  # free tier, ~500 tokens/s
+GROQ_MODEL = "openai/gpt-oss-20b"  # free tier; los llama-3.x ya no existen en la cuenta (2026-09-17)
 
 MODEL = OLLAMA_MODEL  # backward compat con codigo antiguo
 BATCH_SIZE = 40  # pares por llamada al LLM

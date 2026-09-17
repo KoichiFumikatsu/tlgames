@@ -44,8 +44,8 @@ sep
 # ── 1. Servicios systemd ──────────────────────────────────────────────────────
 hdr 1 "Servicios systemd"
 for svc in tlgames-pipeline tlgames-qa tlgames-versions; do
-  status=$(systemctl is-active $svc 2>/dev/null)
-  uptime=$(systemctl show $svc --property=ActiveEnterTimestamp --value 2>/dev/null | sed 's/^.\{4\}//' | cut -d' ' -f1-2)
+  status=$(systemctl --user is-active $svc 2>/dev/null)
+  uptime=$(systemctl --user show $svc --property=ActiveEnterTimestamp --value 2>/dev/null | sed 's/^.\{4\}//' | cut -d' ' -f1-2)
   if [ "$status" = "active" ]; then
     ok "$svc — active desde $uptime"
   else

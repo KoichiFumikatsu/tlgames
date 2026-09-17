@@ -56,3 +56,4 @@ _tl_work/
 
 # Estado runtime del monitor de versiones
 tools/.versions.json
+.venv/

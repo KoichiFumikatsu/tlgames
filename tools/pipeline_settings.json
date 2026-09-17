@@ -1,7 +1,7 @@
 {
   "default_lang": "Spanish",
   "default_provider": "auto",
-  "output_dir": "/home/kelsie/Documents/games tl",
+  "output_dir": "/home/koilinux/Documents/games-tl/salida",
   "renpy_sdk": "auto",
   "ntfy_topic": "tl-7cf5a1900a685b9c6d8cb11a",
   "openai": {
@@ -35,8 +35,8 @@
   },
   "renpy": {
     "force_language_if_no_selector": true,
-    "unrpa_bin": "/home/kelsie/.local/bin/unrpa",
-    "unrpyc_script": "/home/kelsie/.local/share/unrpyc/unrpyc-master/unrpyc.py",
+    "unrpa_bin": "/home/koilinux/projects/tlgames/.venv/bin/unrpa",
+    "unrpyc_script": "/home/koilinux/.local/share/unrpyc/unrpyc-master/unrpyc.py",
     "auto_unpack": true
   },
   "stage_weights": {
