@@ -161,3 +161,109 @@ python -c "import openai, dotenv, openpyxl, UnityPy; print('Paquetes OK')"
 python --version
 git --version
 ```
+
+## Despliegue en koilinux
+
+El servidor web usa Python 3.12 y solo stdlib. Conserva las dependencias y las
+claves que ya utiliza el pipeline de traducción. Ejecutar los comandos siguientes
+en koilinux como el usuario `koilinux`, desde `~/projects/tlgames`.
+
+Configurar estas variables en el `.env` del repositorio, conservando las existentes:
+
+```dotenv
+TLGAMES_BASE=/tlgames
+DASH_USER=<usuario>
+DASH_PASS=<contraseña larga y única>
+SESSION_SECRET=<secreto aleatorio independiente>
+INTERNAL_TOKEN=<token aleatorio para servicios internos>
+TLGAMES_ENTRADA=/home/koilinux/Documents/games-tl/entrada
+```
+
+`TLGAMES_BASE` es vacío por defecto; acepta `/tlgames` y `/tlgames/`. Funnel
+preserva el prefijo y el servidor lo recorta antes de resolver cada ruta. Las rutas
+sin prefijo continúan disponibles para los clientes internos, con autenticación.
+La salida se toma de `output_dir` en `tools/pipeline_settings.json`; en koilinux
+debe seguir siendo `/home/koilinux/Documents/games-tl/salida`.
+
+`DASH_USER`, `DASH_PASS` y `SESSION_SECRET` son obligatorios al arrancar. Generar
+`SESSION_SECRET` e `INTERNAL_TOKEN` con al menos 32 bytes aleatorios cada uno y
+guardarlos directamente en `.env`, sin incluirlos en comandos, logs ni Git. Los
+valores `<...>` del ejemplo son marcadores que deben reemplazarse. Proteger `.env`
+con permisos `600`. No se confía en ninguna IP de origen: Funnel llega por localhost.
+
+El formulario `/tlgames/login` crea una cookie HMAC válida durante 12 horas, con
+`HttpOnly`, `Secure`, `SameSite=Strict` y alcance `/tlgames`. Usar HTTPS para el
+login; para pruebas por HTTP local usar Basic Auth o `X-Internal-Token`.
+Cambiar `SESSION_SECRET` invalida las sesiones. Solo `/login` y `/health` son públicos.
+El estado de salud publica cuotas agregadas, presupuesto y disponibilidad de QA.
+
+```bash
+mkdir -p /home/koilinux/Documents/games-tl/entrada /home/koilinux/Documents/games-tl/salida
+chmod 600 .env
+systemctl --user restart tlgames-pipeline
+systemctl --user status tlgames-pipeline --no-pager
+curl --fail http://127.0.0.1:8766/tlgames/health
+curl -i http://127.0.0.1:8766/tlgames/jobs
+```
+
+La última petición debe responder `401`. El servicio existente debe ejecutar
+`tools/pipeline_server.py --host 127.0.0.1 --port 8766` desde el repositorio. El
+servidor carga `.env` al iniciar; variables ya presentes en el entorno systemd
+tienen prioridad. Si el unit contiene valores antiguos, actualizarlos antes de
+reiniciar. Si se modifica el unit, ejecutar también `systemctl --user daemon-reload`.
+
+Actualizar los clientes internos antes de publicar: todas sus llamadas a jobs,
+pipeline, detect y settings deben enviar `X-Internal-Token` con el mismo valor
+que `INTERNAL_TOKEN`, o Basic Auth. En particular, el cliente `_PipelineHTTP` de
+briefing actualmente hace peticiones sin autenticación y requiere ese ajuste en
+su propio repositorio. No es necesario cambiar sus URLs sin prefijo.
+
+Tras verificar el servicio y la autenticación, publicar:
+
+```bash
+sudo tailscale funnel --bg --set-path=/tlgames 8766
+```
+
+Abrir `https://koilinux.tail7024a4.ts.net/tlgames/`: iniciar sesión, subir un ZIP,
+elegir **Traducir** en Entrada y descargar el paquete desde Salida cuando termine.
+Comprobar desde una sesión privada que `/tlgames/jobs` devuelve `401` y que
+`/tlgames/health` sigue accesible. QA escucha en `127.0.0.1:8765` por defecto;
+`tools/qa_server.py --host DIRECCION` permite elegir otro bind. No exponer QA ni
+el version tracker mediante Funnel.
+
+La subida usa el ZIP como cuerpo binario (`Content-Type: application/zip`), con
+`Content-Length` y `X-Nombre` codificado como URL; también acepta `filename` en
+`Content-Disposition`. No usa multipart ni mantiene el cuerpo completo en RAM.
+Se requieren espacio para el ZIP y su contenido descomprimido. Se extrae en una
+carpeta temporal de Entrada y se mueve al destino únicamente al completar la
+validación. Si hay una sola carpeta raíz, se utiliza su nombre saneado y su
+contenido como juego; de lo contrario, se usa el nombre de la cabecera sin `.zip`.
+Un nombre existente responde `409`, sin sobrescribirlo. Se rechazan rutas
+absolutas, componentes `..` y enlaces dentro del ZIP. Borrar exige confirmación
+en la interfaz y el servidor rechaza juegos con traducciones en curso.
+
+El empaquetado escribe primero un archivo `.zip.part` y lo renombra al completar
+el ZIP. Los temporales no aparecen en Salida ni se pueden descargar. Si una
+retraducción falla al empaquetar, se conserva el paquete completo anterior.
+
+| Endpoint autenticado | Resultado |
+|---|---|
+| `POST /upload` | `201 {nombre, size, zip_size, path}`; tamaños en bytes |
+| `GET /entrada` | `{entrada: [{nombre, path, paquete, paquetes, job}]}` |
+| `POST /entrada/borrar` | Recibe `{nombre}`; borra solo esa carpeta de Entrada |
+| `GET /salida` | `{salida: [{nombre, size, mtime, download}]}`; fecha Unix |
+| `GET /salida/<archivo>` | ZIP por streaming, limitado a la carpeta de salida |
+| `GET /pipeline/<job_id>/diagnostico` | Informe de diagnóstico como texto |
+
+Las rutas anteriores también aceptan el prefijo `/tlgames`. Se conservan los
+endpoints de pipeline, detección, trabajos, eventos y settings.
+
+Pruebas locales sin traducciones reales ni llamadas a proveedores:
+
+```bash
+python -m pip install pytest
+python -m pytest -q
+```
+
+`pytest` es una dependencia exclusiva de pruebas. La suite usa HTTP en localhost,
+carpetas temporales y proveedores simulados; no modifica la configuración real.

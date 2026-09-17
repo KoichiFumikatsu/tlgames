@@ -100,12 +100,13 @@ def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--model", default=qa_renpy.MODEL)
     args = parser.parse_args()
 
     qa_renpy.MODEL = args.model
-    server = HTTPServer(("0.0.0.0", args.port), QAHandler)
-    print(f"[qa_server] escuchando en http://0.0.0.0:{args.port}")
+    server = HTTPServer((args.host, args.port), QAHandler)
+    print(f"[qa_server] escuchando en http://{args.host}:{args.port}")
     print(f"[qa_server] modelo: {qa_renpy.MODEL}")
     try:
         server.serve_forever()

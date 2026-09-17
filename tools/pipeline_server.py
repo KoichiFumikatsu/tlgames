@@ -24,9 +24,9 @@ import time
 import uuid
 import urllib.request
 import subprocess
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from pipeline_web import PublicHandlerMixin, FILES_LOCK, _base, validate_auth_config
 
 # Regex para parsear las líneas de progreso de translate_unity_json.py
 # Ejemplo: "[42/117] YuriDialogue.json | 1523/9358 strings | 35%"
@@ -1846,13 +1846,14 @@ def _v2_package(job, game_path: Path, settings: dict, tracker: StageTracker):
     ver = ginfo.get("version") or ""
     safe_name = game_path.name + (f"-v{ver}" if ver else "") + "-spanish.zip"
     zip_path = output_dir / safe_name
+    pending_zip = zip_path.with_suffix(".zip.part")
 
     max_gb = float(_settings_get_safe("package.max_size_gb", 5))
     compress_below = int(_settings_get_safe("package.compress_below_mb", 500))
 
     cmd = [
         sys.executable, str(TL_TOOLS / "_package.py"),
-        str(game_path), str(zip_path),
+        str(game_path), str(pending_zip),
         "--max-gb", str(max_gb),
         "--compress-below-mb", str(compress_below),
     ]
@@ -1874,6 +1875,7 @@ def _v2_package(job, game_path: Path, settings: dict, tracker: StageTracker):
         proc.wait(timeout=3600)
     except subprocess.TimeoutExpired:
         proc.kill()
+        proc.wait()
         emit_event(job, "package", "warn", message="Timeout ZIP (>1h)")
 
     if skipped:
@@ -1882,7 +1884,9 @@ def _v2_package(job, game_path: Path, settings: dict, tracker: StageTracker):
             "zip_path": None, "reason": "too_large",
             "copy_path": job.get("copy_path"),
         })
-    elif proc.returncode == 0 and zip_path.exists():
+    elif proc.returncode == 0 and pending_zip.exists():
+        # Las descargas solo ven paquetes completos, incluso durante una retraducción.
+        pending_zip.replace(zip_path)
         size_mb = zip_path.stat().st_size / (1024 ** 2)
         job["zip_path"] = str(zip_path)
         tracker.end("package", details={
@@ -1892,6 +1896,7 @@ def _v2_package(job, game_path: Path, settings: dict, tracker: StageTracker):
     else:
         emit_event(job, "package", "warn", message=f"ZIP fallo (rc={proc.returncode})")
         tracker.end("package", status="error", details={"rc": proc.returncode})
+    pending_zip.unlink(missing_ok=True)
 
 
 # ── Job runner ────────────────────────────────────────────────────────────────
@@ -1965,7 +1970,16 @@ def run_job(job_id: str, game_path_str: str, provider: str,
 
 # ── HTTP handler ──────────────────────────────────────────────────────────────
 
-class Handler(BaseHTTPRequestHandler):
+class Handler(PublicHandlerMixin, BaseHTTPRequestHandler):
+
+    def output_dir(self):
+        return Path(_settings_get_safe("output_dir", str(GAMES_TL_DIR))).expanduser().resolve()
+
+    def jobs_snapshot(self):
+        merged = {j["job_id"]: j for j in _load_history()}
+        with _jobs_lock:
+            merged.update({jid: dict(_jobs[jid]) for jid in _jobs_order})
+        return sorted(merged.values(), key=lambda j: j.get("started_at", 0))
 
     def send_json(self, code: int, data: dict):
         body = json.dumps(data, ensure_ascii=False, indent=2).encode()
@@ -1984,13 +1998,36 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def read_body(self) -> dict:
-        length = int(self.headers.get("Content-Length", 0))
-        if length == 0:
-            return {}
-        return json.loads(self.rfile.read(length))
+        body = json.loads(self._read_small_body() or b"{}")
+        if not isinstance(body, dict):
+            raise ValueError("Se requiere un objeto JSON")
+        return body
 
     def do_GET(self):
-        path = urlparse(self.path).path
+        path = self.route()
+        if not self.authorize(path):
+            return
+
+        if path == "/login":
+            return self._serve_login()
+        if path == "/entrada":
+            return self._list_entrada()
+        if path == "/salida":
+            return self.send_json(200, {"salida": self._list_salida()})
+        if path.startswith("/salida/"):
+            return self._download(path[len("/salida/"):])
+        if path.startswith("/pipeline/") and path.endswith("/diagnostico"):
+            job_id = path[len("/pipeline/"):-len("/diagnostico")]
+            job = next((j for j in self.jobs_snapshot() if j["job_id"] == job_id), None)
+            if not job:
+                return self.send_json(404, {"error": "job no encontrado"})
+            report = job.get("diagnose_report") or "Diagnóstico aún no disponible."
+            body = report.encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            return self.wfile.write(body)
 
         if path in ("/", "/dashboard"):
             # Releer del disco para soportar reload sin reiniciar
@@ -1998,7 +2035,7 @@ class Handler(BaseHTTPRequestHandler):
                 html = open(Path(__file__).parent / "dashboard.html", encoding="utf-8").read()
             except Exception:
                 html = DASHBOARD_HTML
-            self.send_html(200, html)
+            self.send_html(200, html.replace("{B}", _base()))
 
         elif path == "/health":
             with _jobs_lock:
@@ -2010,13 +2047,23 @@ class Handler(BaseHTTPRequestHandler):
                     health["ollama"] = "ok" if r.status == 200 else f"http {r.status}"
             except Exception:
                 health["ollama"] = "down"
+            try:
+                with urllib.request.urlopen("http://127.0.0.1:8765/health", timeout=2) as r:
+                    health["qa"] = json.load(r)
+            except Exception:
+                health["qa"] = {"status": "down", "backend": _settings_get_safe("qa.backend", "auto")}
             if _dl is not None:
                 try:
                     health["deepl"] = _dl.check_quota_pool()
+                    for key in health["deepl"].get("per_key", []):
+                        key.pop("key_suffix", None)
                     health["deepl_exhausted_today"] = _dl.is_exhausted_today()
                 except Exception as e:
                     health["deepl"] = {"error": str(e)}
             usage_file = TL_TOOLS / ".cache" / "openai_usage.json"
+            budget = float(_settings_get_safe("openai.budget_usd", 1.50))
+            health["openai"] = {"spent_usd": 0, "budget_usd": budget,
+                                "available_usd": budget, "requests": 0}
             if usage_file.exists():
                 try:
                     u = json.loads(usage_file.read_text())
@@ -2071,13 +2118,29 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json(404, {"error": "ruta no encontrada"})
 
     def do_POST(self):
-        path = urlparse(self.path).path
+        path = self.route()
+        if not self.authorize(path):
+            return
+        if not self.same_origin():
+            return
+        if path == "/login":
+            return self._do_login()
+        if path == "/upload":
+            return self._upload()
 
         try:
             body = self.read_body()
         except Exception as e:
+            self.close_connection = True
             self.send_json(400, {"error": f"JSON inválido: {e}"})
             return
+
+        with FILES_LOCK:
+            self._post_json(path, body)
+
+    def _post_json(self, path, body):
+        if path == "/entrada/borrar":
+            return self._delete_entrada(body)
 
         if path == "/health":
             self.send_json(200, {"status": "ok"})
@@ -2094,14 +2157,14 @@ class Handler(BaseHTTPRequestHandler):
 
         elif path == "/detect":
             p = body.get("path", "")
-            if not p:
+            if not isinstance(p, str) or not p:
                 self.send_json(400, {"error": "falta 'path'"})
                 return
             self.send_json(200, detect_engine(Path(p)))
 
         elif path == "/pipeline":
             p = body.get("path", "")
-            if not p:
+            if not isinstance(p, str) or not p:
                 self.send_json(400, {"error": "falta 'path'"})
                 return
 
@@ -2124,11 +2187,12 @@ class Handler(BaseHTTPRequestHandler):
             with _jobs_lock:
                 for jid in _jobs_order:
                     existing = _jobs.get(jid)
-                    if existing and existing.get("game_path") == p and existing.get("status") == "running":
+                    if (existing and existing.get("status") == "running"
+                            and Path(existing["game_path"]).resolve() == Path(p).resolve()):
                         self.send_json(409, {
                             "error": "Ya hay un job corriendo para este juego",
                             "existing_job_id": jid,
-                            "poll": f"/pipeline/{jid}",
+                            "poll": f"{_base()}/pipeline/{jid}",
                         })
                         return
 
@@ -2182,7 +2246,7 @@ class Handler(BaseHTTPRequestHandler):
             ).start()
 
             self.send_json(202, {"job_id": job_id, "status": "running",
-                                  "poll": f"/pipeline/{job_id}",
+                                  "poll": f"{_base()}/pipeline/{job_id}",
                                   "pipeline_version": pipeline_version})
 
         else:
@@ -2198,7 +2262,11 @@ def main():
     ap.add_argument("--host", default="127.0.0.1")
     args = ap.parse_args()
 
-    srv = HTTPServer((args.host, args.port), Handler)
+    try:
+        validate_auth_config()
+    except ValueError as exc:
+        ap.error(str(exc))
+    srv = ThreadingHTTPServer((args.host, args.port), Handler)
     print(f"Pipeline server activo en http://{args.host}:{args.port}", flush=True)
     srv.serve_forever()
 

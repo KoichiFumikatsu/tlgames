@@ -1,560 +1,131 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>TL Games</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f7f3ea">
+<title>TL Games — Taller de traducción</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:monospace;background:#0d1117;color:#c9d1d9;padding:20px 24px;max-width:1040px;margin:0 auto}
-h1{color:#58a6ff;font-size:.95em;margin-bottom:14px;letter-spacing:.1em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
-h1 .right{font-size:.7em;text-transform:none;letter-spacing:0;color:#6e7681}
-h1 .right a{color:#58a6ff;margin-left:10px;cursor:pointer;text-decoration:none}
-h1 .right a:hover{color:#79c0ff;text-decoration:underline}
-.lbox{background:#161b22;border:1px solid #30363d;border-radius:7px;padding:12px 14px;margin-bottom:16px}
-.lrow{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
-.lf{display:flex;flex-direction:column;gap:3px}
-.lf label{font-size:.68em;color:#6e7681;text-transform:uppercase;letter-spacing:.07em}
-.lf input,.lf select{background:#0d1117;border:1px solid #30363d;border-radius:5px;color:#c9d1d9;font-family:monospace;font-size:.8em;padding:5px 9px;outline:none;transition:border-color .15s}
-.lf input{min-width:380px}
-.lf input:focus,.lf select:focus{border-color:#388bfd}
-.lf input::placeholder{color:#3d4451}
-.btn{background:#1f6feb;border:none;border-radius:5px;color:#fff;cursor:pointer;font-family:monospace;font-size:.8em;font-weight:bold;padding:6px 16px;align-self:flex-end;transition:background .15s;white-space:nowrap}
-.btn:hover:not(:disabled){background:#388bfd}
-.btn:disabled{background:#1c2128;color:#3d4451;cursor:not-allowed}
-.lmsg{font-size:.75em;margin-top:7px;padding:4px 9px;border-radius:4px;display:none}
-.lmsg.on{display:block}
-.ok{color:#3fb950;background:#0a1f0d;border:1px solid #238636}
-.fail{color:#f85149;background:#1f0a0a;border:1px solid #6e1313}
-.info{color:#e3b341;background:#1f1a0a;border:1px solid #7d5800}
-.jp{background:#161b22;border:1px solid #30363d;border-radius:7px;padding:14px 16px;margin-bottom:12px}
-.jp.running{border-color:#1f6feb}
-.jp.done{border-color:#238636}
-.jp.error,.jp.unsupported{border-color:#6e1313}
-.jhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;gap:8px}
-.jname{color:#e6edf3;font-weight:bold;font-size:.95em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.jbadges{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.eng{font-size:.68em;background:#21262d;border-radius:3px;padding:2px 7px;color:#8b949e}
-.badge{font-size:.68em;padding:2px 8px;border-radius:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.04em}
-.b-running{background:#162032;color:#58a6ff}
-.b-done{background:#112318;color:#3fb950}
-.b-error,.b-unsupported{background:#1f1010;color:#f85149}
-.jpath{font-size:.7em;color:#3d4451;margin-bottom:3px;word-break:break-all}
-.jmeta{font-size:.7em;color:#6e7681;margin-bottom:8px}
-.tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:9px}
-.tag{font-size:.66em;padding:1px 7px;border-radius:9px;background:#21262d;color:#8b949e}
-.tv{color:#e3b341;background:#1f1a08}
-.tl{color:#79c0ff;background:#08192b}
-.tw{color:#b5b5ff;background:#12122e}
-.tm{color:#aaa;background:#1e1e1e}
-.ti2{color:#f0883e;background:#211200}
-.tmo{color:#7ee787;background:#081a0d}
-/* Chips de etapas */
-.chips{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.chip{font-size:.7em;padding:5px 10px;border-radius:14px;background:#1c2128;border:1px solid #30363d;color:#6e7681;display:flex;align-items:center;gap:5px}
-.chip.pending{}
-.chip.running{background:#162032;border-color:#1f6feb;color:#79c0ff}
-.chip.done{background:#0a1f0d;border-color:#238636;color:#3fb950}
-.chip.skipped{background:#1a1a1a;color:#666;border-color:#30363d}
-.chip.error{background:#1f0a0a;border-color:#6e1313;color:#f85149}
-.chip .ic{font-weight:bold}
-/* Barra global */
-.bar-bg{background:#1c2128;border-radius:3px;height:18px;margin-bottom:9px;overflow:hidden;position:relative}
-.bar{height:100%;border-radius:3px;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;font-size:.65em;font-weight:bold;min-width:20px;transition:width .5s}
-.br{background:linear-gradient(90deg,#1a4480,#388bfd);animation:blink 1.6s ease-in-out infinite}
-.bd{background:linear-gradient(90deg,#1a4a25,#3fb950)}
-.be{background:linear-gradient(90deg,#4a0a0a,#8b1a1a)}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.7}}
-/* Panel expandido de etapa activa */
-.spanel{background:#0a0d12;border:1px solid #1f6feb;border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:.78em}
-.spanel.done{border-color:#238636}
-.spanel.error{border-color:#6e1313}
-.spanel .stitle{color:#79c0ff;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;font-size:.85em;margin-bottom:6px}
-.spanel.done .stitle{color:#3fb950}
-.spanel .srow{display:flex;justify-content:space-between;gap:10px;margin:3px 0;color:#8b949e}
-.spanel .srow .sk{color:#6e7681;text-transform:uppercase;font-size:.85em;letter-spacing:.05em}
-.spanel .srow .sv{color:#c9d1d9}
-.sbar-bg{background:#1c2128;border-radius:2px;height:6px;margin:5px 0;overflow:hidden}
-.sbar{height:100%;background:linear-gradient(90deg,#1a4480,#388bfd);transition:width .5s}
-.spanel.done .sbar{background:linear-gradient(90deg,#1a4a25,#3fb950)}
-/* Stats grid */
-.stats{display:flex;flex-wrap:wrap;font-size:.75em;margin-bottom:10px;border:1px solid #21262d;border-radius:5px;overflow:hidden}
-.stat{padding:6px 12px;border-right:1px solid #21262d;display:flex;flex-direction:column;gap:1px;flex:1;min-width:120px}
-.stat:last-child{border-right:none}
-.sl{color:#6e7681;font-size:.75em;text-transform:uppercase;letter-spacing:.05em}
-.sv{color:#c9d1d9}
-.sv.warn{color:#e3b341}
-.sv.crit{color:#f85149}
-/* Colapsable */
-.coll{margin-top:8px}
-.coll summary{cursor:pointer;font-size:.75em;color:#79c0ff;padding:4px 0;user-select:none;list-style:none}
-.coll summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
-.coll[open] summary::before{transform:rotate(90deg)}
-.coll[open] summary::before{content:"▾ "}
-.coll summary:hover{color:#c9d1d9}
-.coll .cbody{margin-top:6px}
-/* Lista pendientes / archivos */
-.flist{font-size:.72em;color:#8b949e;max-height:200px;overflow-y:auto;background:#0a0d12;border:1px solid #21262d;border-radius:4px;padding:6px 10px}
-.flist .fi{padding:1px 0}
-.flist .fi.cur{color:#79c0ff;font-weight:bold}
-.flist .fi.done{color:#3fb950;opacity:.6}
-/* Errores/warnings */
-.elist{font-size:.72em;background:#0a0d12;border:1px solid #21262d;border-radius:4px;padding:6px 10px;max-height:160px;overflow-y:auto}
-.elist .el{padding:2px 0}
-.elist .el.err{color:#f85149}
-.elist .el.warn{color:#e3b341}
-.elist .el .ets{color:#3d4451;font-size:.85em;margin-right:6px}
-/* Log */
-.log{background:#0a0d12;border:1px solid #21262d;border-radius:5px;padding:10px 12px;font-size:.71em;color:#8b949e;height:340px;overflow-y:scroll;white-space:pre-wrap;word-break:break-word;line-height:1.5;margin-top:2px}
-.lf2{color:#79c0ff}.lh{color:#e6edf3}.lo{color:#a5d6ff}.le{color:#f85149}.lw{color:#e3b341}.lg{color:#3fb950}
-.ready{background:#081a0d;border:1px solid #238636;border-radius:5px;padding:7px 12px;margin-top:9px;font-size:.78em;color:#3fb950}
-.zipline{background:#0a1a20;border:1px solid #1f6feb;border-radius:5px;padding:5px 10px;margin-top:6px;font-size:.74em;color:#79c0ff}
-.empty{color:#3d4451;text-align:center;padding:60px 20px;font-size:.88em;line-height:2.2}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spin{display:inline-block;width:7px;height:7px;border:2px solid #388bfd;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;margin-right:4px;vertical-align:middle}
-.footer{color:#3d4451;font-size:.66em;text-align:right;margin-top:8px}
-/* Settings modal */
-.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:100;align-items:center;justify-content:center}
-.modal.on{display:flex}
-.mbox{background:#161b22;border:1px solid #30363d;border-radius:7px;width:90%;max-width:760px;max-height:85vh;display:flex;flex-direction:column}
-.mhd{padding:10px 14px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center}
-.mhd h2{color:#58a6ff;font-size:.85em;letter-spacing:.08em;text-transform:uppercase}
-.mhd .cl{color:#8b949e;cursor:pointer;background:none;border:none;font-size:1.1em;padding:0 6px}
-.mhd .cl:hover{color:#f85149}
-.mbody{padding:12px 14px;overflow-y:auto;flex:1}
-.mfoot{padding:8px 14px;border-top:1px solid #30363d;display:flex;justify-content:flex-end;gap:8px}
-.mbody textarea{width:100%;height:50vh;background:#0a0d12;border:1px solid #21262d;color:#c9d1d9;font-family:monospace;font-size:.78em;padding:10px;border-radius:5px;outline:none;resize:vertical}
-.mbody textarea:focus{border-color:#1f6feb}
+:root{--paper:#f7f3ea;--ink:#151515;--blue:#1f4bd8;--green:#1f7a52;--red:#b8321f}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 Arial,Helvetica,sans-serif}
+a{color:var(--blue);text-underline-offset:4px}button,input{font:inherit}button,.button{display:inline-flex;align-items:center;justify-content:center;padding:10px 18px;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);background:var(--blue);color:white;font-weight:700;text-decoration:none;cursor:pointer;min-height:46px}
+button:hover,.button:hover{transform:translate(-1px,-1px)}button:active,.button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}button:disabled{opacity:.5;cursor:wait;transform:none}.secondary{background:var(--paper);color:var(--ink)}.danger{background:var(--red)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:6px}header{border-bottom:2px solid var(--ink)}.topbar{max-width:1240px;margin:auto;padding:24px 28px;display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}.brand{font-size:26px;font-weight:900;letter-spacing:-1px;color:var(--ink);text-decoration:none}.edition{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px}nav{display:flex;gap:10px 22px;flex-wrap:wrap}nav a{font-size:14px;font-weight:700;color:var(--ink)}
+main{max-width:1240px;margin:auto;padding:38px 28px 60px}.intro{display:grid;grid-template-columns:2fr 1fr;gap:32px;align-items:end;margin-bottom:32px}.eyebrow{margin:0 0 12px;text-transform:uppercase;letter-spacing:2px;font-size:12px;font-weight:700}h1{font-size:clamp(38px,6vw,72px);line-height:1.02;letter-spacing:-2px;margin:0;font-weight:900}h1 span{color:var(--blue)}.intro p:last-child{margin-bottom:0}.intro-note{border-left:2px solid var(--ink);padding-left:24px}.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px}section{border:2px solid var(--ink);background:#fffdf8;box-shadow:4px 4px 0 var(--ink);min-width:0;scroll-margin-top:20px}.wide{grid-column:1/-1}.section-head{border-bottom:2px solid var(--ink);display:flex;align-items:center;gap:14px;padding:16px 20px}.number{font-size:14px;font-weight:900;border:2px solid var(--ink);padding:3px 7px}.section-head h2{font-size:24px;letter-spacing:-.7px;line-height:1.2;margin:0}.count{margin-left:auto;font-size:13px;font-weight:700}.content{padding:22px;min-width:0}.muted{color:#555047;font-size:14px}.empty{color:#555047;margin:8px 0}.dropzone{padding:28px 18px;border:2px dashed var(--ink);text-align:center;background:var(--paper)}.dropzone.drag{border-style:solid;border-color:var(--blue);background:#e8edff}.dropzone strong{display:block;font-size:22px;margin-bottom:6px}.dropzone p{margin:8px 0 20px}.file-input{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.file-input:focus-visible+label{outline:3px solid var(--blue);outline-offset:6px}.file-input:disabled+label{opacity:.5;cursor:wait}.upload-meta{margin:18px 0 10px;overflow-wrap:anywhere;min-height:26px}.actions{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:16px}.meter{display:block;width:100%;height:17px;border:2px solid var(--ink);background:var(--paper);border-radius:0;appearance:none}.meter::-webkit-progress-bar{background:var(--paper)}.meter::-webkit-progress-value{background:var(--blue)}.meter::-moz-progress-bar{background:var(--blue)}
+.row{padding:18px 0;border-bottom:2px solid var(--ink);min-width:0}.row:first-child{padding-top:0}.row:last-child{border-bottom:0;padding-bottom:0}.row-title{display:flex;align-items:start;justify-content:space-between;gap:12px;flex-wrap:wrap}.row h3{font-size:19px;line-height:1.3;margin:0;overflow-wrap:anywhere;min-width:0;flex:1}.badge{display:inline-block;border:2px solid currentColor;padding:2px 7px;font-size:11px;letter-spacing:.5px;font-weight:700;text-transform:uppercase;white-space:nowrap}.ok{color:var(--green)}.error{color:var(--red)}.active{color:var(--blue)}.job-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:12px 0 8px;font-size:14px}.job-foot{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:10px;font-size:13px}.issue{border-left:4px solid var(--red);padding-left:12px;color:var(--red);overflow-wrap:anywhere;margin:12px 0;font-size:14px}.status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.status-item{border:2px solid var(--ink);padding:18px;min-width:0}.status-item h3{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px}.status-value{font-size:24px;line-height:1.2;font-weight:900;margin:0 0 8px;overflow-wrap:anywhere}.status-item p:last-child{margin-bottom:0}.notice{padding:14px 18px;border:2px solid var(--ink);border-left:8px solid var(--blue);background:#fffdf8;margin-bottom:24px;overflow-wrap:anywhere}.notice.error{border-left-color:var(--red)}[hidden]{display:none!important}footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:28px;border-top:2px solid var(--ink);padding-top:16px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+@media(max-width:720px){.topbar{padding:20px}.edition{display:none}main{padding:28px 18px 40px}.intro{grid-template-columns:minmax(0,1fr);gap:18px}.intro-note{padding-left:16px}.grid{grid-template-columns:minmax(0,1fr);gap:22px}.wide{grid-column:auto}.section-head{padding:14px 16px}.section-head h2{font-size:22px}.content{padding:18px}.status-grid{grid-template-columns:minmax(0,1fr);gap:14px}.dropzone{padding:24px 12px}nav{gap:10px 16px}.row-title{gap:8px}.row h3{flex-basis:100%}}
 </style>
 </head>
 <body>
-<h1>
-  <span>TL Games &mdash; Pipeline</span>
-  <span class="right">
-    <a onclick="showSettings()">[settings]</a>
-    <a onclick="loadHealth()" id="hl">[health]</a>
-  </span>
-</h1>
-<div class="lbox">
-  <div class="lrow">
-    <div class="lf" style="flex:1">
-      <label>Ruta del juego</label>
-      <input id="lpath" type="text" placeholder="/home/kelsie/Downloads/Games h/NombreJuego"
-             list="path-hist" autocomplete="off">
-      <datalist id="path-hist"></datalist>
-    </div>
-    <div class="lf">
-      <label>Idioma</label>
-      <select id="llang">
-        <option value="Spanish" selected>Spanish</option>
-        <option value="English">English</option>
-        <option value="French">French</option>
-        <option value="German">German</option>
-        <option value="Portuguese">Portuguese</option>
-        <option value="Italian">Italian</option>
-        <option value="Chinese">Chinese</option>
-        <option value="Japanese">Japanese</option>
-      </select>
-    </div>
-    <div class="lf">
-      <label>Provider</label>
-      <select id="lprov">
-        <option value="" selected>auto (preflight)</option>
-        <option value="deepl">deepl</option>
-        <option value="openai">openai</option>
-      </select>
-    </div>
-    <button class="btn" id="btn-launch" onclick="launch()">Traducir</button>
-  </div>
-  <div class="lmsg" id="lmsg"></div>
+<header><div class="topbar"><a class="brand" href="{B}/">TL GAMES<span class="edition"> / Taller de traducción</span></a><nav aria-label="Secciones"><a href="{B}/#subir">Subir</a><a href="{B}/#entrada">Entrada</a><a href="{B}/#trabajos">Trabajos</a><a href="{B}/#salida">Salida</a><a href="{B}/#estado">Estado</a></nav></div></header>
+<main>
+<div class="intro"><div><p class="eyebrow">Del original a tu idioma</p><h1>Tus juegos.<br><span>En español.</span></h1></div><div class="intro-note"><p>Sube un ZIP, inicia la traducción y descarga el resultado.</p><p class="muted">Proveedor automático · Destino: español</p></div></div>
+<div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+<div class="grid">
+<section id="subir"><div class="section-head"><span class="number">01</span><h2>Subir juego</h2></div><div class="content"><div id="dropzone" class="dropzone"><strong>Arrastra tu juego aquí</strong><p class="muted">Un archivo .zip con la carpeta del juego.</p><input class="file-input" id="file" type="file" accept=".zip,application/zip"><label class="button secondary" for="file">Elegir ZIP</label></div><p id="upload-name" class="upload-meta muted">Ningún archivo seleccionado.</p><progress id="upload-progress" class="meter" max="100" value="0" aria-label="Progreso de subida"></progress><div class="actions"><button id="upload-button" disabled>Subir juego</button><span id="upload-status" class="muted" role="status" aria-live="polite">Listo para recibir.</span></div></div></section>
+<section id="entrada"><div class="section-head"><span class="number">02</span><h2>Entrada</h2><span id="entrada-count" class="count">—</span></div><div class="content" id="entrada-list"><p class="empty">Cargando juegos…</p></div></section>
+<section id="trabajos" class="wide"><div class="section-head"><span class="number">03</span><h2>Trabajos</h2><span id="jobs-count" class="count">—</span></div><div class="content" id="jobs-list"><p class="empty">Cargando trabajos…</p></div></section>
+<section id="salida" class="wide"><div class="section-head"><span class="number">04</span><h2>Salida</h2><span id="salida-count" class="count">—</span></div><div class="content" id="salida-list"><p class="empty">Cargando paquetes…</p></div></section>
+<section id="estado" class="wide"><div class="section-head"><span class="number">05</span><h2>Estado</h2></div><div class="content"><div id="health" class="status-grid"><p class="empty">Consultando servicios…</p></div></div></section>
 </div>
-<div id="root"></div>
-<div class="footer" id="ts"></div>
-
-<!-- Modal settings -->
-<div class="modal" id="smodal">
-  <div class="mbox">
-    <div class="mhd">
-      <h2>Settings &mdash; pipeline_settings.json</h2>
-      <button class="cl" onclick="closeSettings()">x</button>
-    </div>
-    <div class="mbody">
-      <textarea id="sjson" spellcheck="false"></textarea>
-      <div id="smsg" style="font-size:.75em;margin-top:6px;color:#e3b341;display:none"></div>
-    </div>
-    <div class="mfoot">
-      <button class="btn" onclick="closeSettings()" style="background:#21262d">Cerrar</button>
-      <button class="btn" onclick="saveSettings()">Guardar</button>
-    </div>
-  </div>
-</div>
-
+<footer><span>TL Games / EN → ES</span><span id="sync-status" role="status">Conectando…</span></footer>
+</main>
 <script>
-var ENG = {renpy:"Ren'Py", unity:'Unity', rpgmaker:'RPG Maker', gamemaker:'GameMaker', electron:'Electron', unknown:'?'};
-var READY = {
-  unity: 'Abre el juego -> Settings -> Language -> Spanish.',
-  renpy: 'Lanza el juego normalmente.',
-  rpgmaker: 'Abre el juego y cambia idioma en opciones.'
-};
-var STAGE_LABEL = {analyze:'Analyze', setup:'Setup', translate:'Translate', lint_qa:'Lint/QA', package:'Package'};
-var STAGE_ORDER = ['analyze','setup','translate','lint_qa','package'];
-var STAGE_IC = {pending:'o', running:'>', done:'v', skipped:'-', error:'x'};
-var _jid = null, _jlen = 0;
-
-function elapsed(s, f) {
-  var d = (f || Date.now()/1000) - s;
-  if (d < 60) return Math.round(d) + 's';
-  if (d < 3600) return Math.round(d/60) + 'm ' + Math.round(d%60) + 's';
-  return Math.floor(d/3600) + 'h ' + Math.round((d%3600)/60) + 'm';
+'use strict';
+const B = '{B}';
+const $ = id => document.getElementById(id);
+const stages = {analyze:'Análisis',setup:'Preparación',translate:'Traducción',lint_qa:'Revisión y QA',package:'Empaquetado'};
+const statuses = {running:'En curso',done:'Terminado',error:'Error',unsupported:'No compatible'};
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const size = value => {let n=Number(value)||0, i=0;const units=['B','KB','MB','GB'];while(n>=1024&&i<3){n/=1024;i++;}return `${n.toLocaleString('es',{maximumFractionDigits:1})} ${units[i]}`;};
+const date = seconds => seconds ? new Date(seconds*1000).toLocaleString('es') : '—';
+const money = n => Number(n||0).toLocaleString('es',{style:'currency',currency:'USD',maximumFractionDigits:2});
+function notify(message,error=false){$('notice').textContent=message;$('notice').className='notice'+(error?' error':'');$('notice').hidden=false;}
+function login(){window.location.assign(B+'/login');}
+async function api(path,body){
+  const response=await fetch(B+path,{credentials:'same-origin',...(body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})});
+  if(response.status===401){login();throw new Error('Sesión caducada');}
+  const data=await response.json();if(!response.ok)throw new Error(data.error||`Error HTTP ${response.status}`);return data;
 }
-
-function fmtBytes(n) {
-  if (!n) return '0 B';
-  if (n < 1024) return n + ' B';
-  if (n < 1048576) return (n/1024).toFixed(1) + ' KB';
-  if (n < 1073741824) return (n/1048576).toFixed(1) + ' MB';
-  return (n/1073741824).toFixed(2) + ' GB';
+function render(id,markup){if($(id).innerHTML!==markup)$(id).innerHTML=markup;}
+let entries=[], jobs=[], selected=null, uploading=false, busy=false;
+function renderEntrada(){
+  $('entrada-count').textContent=entries.length;
+  render('entrada-list',entries.map((game,index)=>{
+    const running=jobs.some(j=>j.game_path===game.path&&j.status==='running')||game.job?.status==='running';
+    return `<article class="row"><div class="row-title"><h3>${esc(game.nombre)}</h3><span class="badge ${running?'active':game.paquete?'ok':''}">${running?'En curso':game.paquete?'Paquete disponible':'Listo'}</span></div><div class="actions"><button data-action="translate" data-index="${index}" ${running?'disabled':''}>Traducir</button><button class="secondary" data-action="delete" data-index="${index}" ${running?'disabled':''}>Borrar</button></div></article>`;
+  }).join('')||'<p class="empty">La entrada está vacía. Sube tu primer juego.</p>');
 }
-
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function renderJobs(){
+  $('jobs-count').textContent=jobs.length;
+  render('jobs-list',[...jobs].reverse().map(job=>{
+    const pct=Math.max(0,Math.min(100,Number(job.overall_pct)||0));
+    const issues=[job.error,...(job.errors||[]),job.warning,...(job.warnings||[])].filter(Boolean);
+    return `<article class="row"><div class="row-title"><h3>${esc(job.game_name)}</h3><span class="badge ${job.status==='done'?'ok':job.status==='running'?'active':'error'}">${esc(statuses[job.status]||job.status)}</span></div><div class="job-meta"><span>${esc(stages[job.current_stage]||'En espera')} · ${esc(job.stats?.provider||job.provider||'auto')}</span><strong>${pct}%</strong></div><progress class="meter" value="${pct}" max="100" aria-label="Progreso de ${esc(job.game_name)}"></progress>${issues.map(issue=>`<p class="issue">${esc(typeof issue==='string'?issue:issue.message||JSON.stringify(issue))}</p>`).join('')}<div class="job-foot"><span>${esc(date(job.started_at))} · ${esc(job.job_id)}</span><a href="${B}/pipeline/${encodeURIComponent(job.job_id)}/diagnostico" target="_blank" rel="noopener">Ver diagnóstico</a></div></article>`;
+  }).join('')||'<p class="empty">Todavía no hay trabajos. Inicia una traducción desde Entrada.</p>');
 }
-
-function colorLine(raw) {
-  var t = esc(raw);
-  if (/^\[STAGE\]/.test(raw))                            return '<span class="lh">' + t + '</span>';
-  if (/^\[PROVIDER\]/.test(raw))                         return '<span class="lo">' + t + '</span>';
-  if (/^===/.test(t))                                    return '<span class="lh">' + t + '</span>';
-  if (/^\[\d+\/\d+\]/.test(raw))                        return '<span class="lf2">' + t + '</span>';
-  if (/\[openai\]/i.test(raw))                           return '<span class="lo">' + t + '</span>';
-  if (/cuota agotada|ABORT|BUDGET|ERROR:/i.test(raw))    return '<span class="le">' + t + '</span>';
-  if (/WARN|fallback|SKIP/i.test(raw))                   return '<span class="lw">' + t + '</span>';
-  if (/completad|Listo|copiado|Pipeline listo|done|exito/i.test(raw)) return '<span class="lg">' + t + '</span>';
-  return t;
+async function refreshFiles(){
+  const [input,output]=await Promise.all([api('/entrada'),api('/salida')]);entries=input.entrada;renderEntrada();
+  $('salida-count').textContent=output.salida.length;
+  render('salida-list',output.salida.map(pkg=>`<article class="row"><div class="row-title"><h3>${esc(pkg.nombre)}</h3><span class="badge ok">ZIP</span></div><div class="actions"><a class="button" href="${B}/salida/${encodeURIComponent(pkg.nombre)}" download>Descargar</a><span class="muted">${size(pkg.size)} · ${esc(date(pkg.mtime))}</span></div></article>`).join('')||'<p class="empty">Los paquetes aparecerán aquí al terminar las traducciones.</p>');
 }
-
-function renderChips(stages) {
-  var html = STAGE_ORDER.map(function(s){
-    var st = (stages && stages[s]) || {status:'pending', pct:0};
-    var ic = STAGE_IC[st.status] || 'o';
-    var pct = st.status==='running' && st.pct ? ' '+st.pct+'%' : '';
-    return '<div class="chip '+st.status+'"><span class="ic">'+ic+'</span>'+STAGE_LABEL[s]+pct+'</div>';
-  }).join('');
-  return '<div class="chips">'+html+'</div>';
+let jobState='', filePoll=0;
+async function pollJobs(){
+  try{
+    const data=await api('/jobs');jobs=data.jobs;renderJobs();
+    const state=JSON.stringify(jobs.map(j=>[j.job_id,j.status]));
+    if(state!==jobState||filePoll++%5===0){await refreshFiles();jobState=state;}
+    $('sync-status').textContent='Actualizado '+new Date().toLocaleTimeString('es');
+  }catch(error){$('sync-status').textContent='Sin conexión · reintentando';}
+  finally{setTimeout(pollJobs,2000);}
 }
-
-function renderActiveStagePanel(job) {
-  var cur = job.current_stage;
-  if (!cur) return '';
-  var st = (job.stages || {})[cur] || {};
-  var det = st.details || {};
-  var cls = st.status === 'error' ? 'error' : (st.status === 'done' ? 'done' : '');
-  var pct = st.pct || 0;
-
-  var rows = [];
-  if (cur === 'analyze') {
-    var a = job.analysis || {};
-    if (a.engine) rows.push(['Engine', a.engine + (a.runtime ? ' / '+a.runtime : '')]);
-    if (a.version) rows.push(['Version', 'v' + a.version]);
-    if (a.files_count) rows.push(['Archivos', a.files_count]);
-    if (a.chars_count) rows.push(['Chars traducibles', a.chars_count.toLocaleString()]);
-    if (a.size_gb) rows.push(['Size juego', a.size_gb + ' GB']);
-    if (a.chosen_provider) rows.push(['Provider preflight', a.chosen_provider + ' (' + (a.provider_reason||'') + ')']);
-  } else if (cur === 'translate') {
-    var s = job.stats || {};
-    if (s.current_file) rows.push(['Archivo actual', s.current_file]);
-    if (s.provider) rows.push(['Provider', s.provider]);
-    if (s.total_files) rows.push(['Files', (s.files_done||0) + ' / ' + s.total_files]);
-    if (s.total_strings) rows.push(['Strings', (s.strings_done||0) + ' / ' + s.total_strings]);
-    if (s.openai_spent) rows.push(['OpenAI gastado', '$' + (+s.openai_spent).toFixed(4)]);
-  } else if (cur === 'lint_qa') {
-    if (det.current_file) rows.push(['Archivo actual', det.current_file]);
-    if (det.postprocess_errors != null) rows.push(['Postprocess errors', det.postprocess_errors]);
-    if (det.lint_warnings != null) rows.push(['Lint warnings', det.lint_warnings]);
-    if (det.qa_issues != null) rows.push(['QA issues', det.qa_issues]);
-  } else if (cur === 'package') {
-    if (det.current) rows.push(['Fase', det.current]);
-    if (det.size_mb) rows.push(['ZIP size', det.size_mb + ' MB']);
-    if (det.zip_path) rows.push(['ZIP path', det.zip_path]);
-  } else if (cur === 'setup') {
-    rows.push(['Estado', 'Preparando workspace']);
-  }
-
-  var rowsHtml = rows.map(function(r){
-    return '<div class="srow"><span class="sk">'+esc(r[0])+'</span><span class="sv">'+esc(r[1])+'</span></div>';
-  }).join('');
-
-  return '<div class="spanel '+cls+'">' +
-    '<div class="stitle">'+STAGE_LABEL[cur]+' ('+pct+'%)</div>' +
-    '<div class="sbar-bg"><div class="sbar" style="width:'+pct+'%"></div></div>' +
-    rowsHtml +
-    '</div>';
+async function pollHealth(){
+  try{
+    const health=await api('/health'), dl=health.deepl||{}, oa=health.openai||{}, qa=health.qa||{};
+    const available=!health.deepl_exhausted_today&&dl.available>0;
+    render('health',`<div class="status-item"><h3>DeepL</h3><p class="status-value ${available?'ok':'error'}">${available?'Disponible':health.deepl_exhausted_today?'Cuota agotada':dl.source==='api'?'Sin cuota':'Sin datos'}</p><p class="muted">${Number(dl.available||0).toLocaleString('es')} caracteres disponibles</p></div><div class="status-item"><h3>OpenAI / presupuesto</h3><p class="status-value ${oa.available_usd>0?'ok':'error'}">${money(oa.available_usd)}</p><p class="muted">Gastado ${money(oa.spent_usd)} de ${money(oa.budget_usd)}</p></div><div class="status-item"><h3>QA semántico</h3><p class="status-value ${qa.status==='ok'?'ok':'error'}">${qa.status==='ok'?'Disponible':'Sin conexión'}</p><p class="muted">Backend: ${esc(qa.backend||'desconocido')}${qa.model?' · '+esc(qa.model):''}</p></div>`);
+  }catch(error){render('health','<p class="error">No se pudo consultar el estado. Reintentando…</p>');}
+  finally{setTimeout(pollHealth,30000);}
 }
-
-function renderStats(job) {
-  var a = job.analysis || {};
-  var s = job.stats || {};
-  var avail = a.openai_budget_avail;
-  var budget = 1.50;
-  var spent = +(s.openai_spent || 0);
-  var deepl = a.deepl_quota_avail || 0;
-  var cells = [];
-  cells.push('<div class="stat"><span class="sl">Overall</span><span class="sv">'+(job.overall_pct||0)+'%</span></div>');
-  if (a.chars_count) cells.push('<div class="stat"><span class="sl">Chars</span><span class="sv">'+a.chars_count.toLocaleString()+'</span></div>');
-  cells.push('<div class="stat"><span class="sl">Files</span><span class="sv">'+(s.files_done||0)+' / '+(s.total_files||a.files_count||0)+'</span></div>');
-  if (s.total_strings) cells.push('<div class="stat"><span class="sl">Strings</span><span class="sv">'+(s.strings_done||0)+' / '+s.total_strings+'</span></div>');
-  cells.push('<div class="stat"><span class="sl">Provider</span><span class="sv">'+esc(s.provider||a.chosen_provider||'-')+'</span></div>');
-  if (deepl !== undefined) {
-    var dcls = deepl < 50000 ? ' warn' : '';
-    cells.push('<div class="stat"><span class="sl">DeepL avail</span><span class="sv'+dcls+'">'+deepl.toLocaleString()+' chars</span></div>');
-  }
-  if (avail !== undefined) {
-    var ocls = avail < 0.10 ? ' crit' : (avail < 0.30 ? ' warn' : '');
-    cells.push('<div class="stat"><span class="sl">OpenAI</span><span class="sv'+ocls+'">$'+spent.toFixed(4)+' / $'+budget.toFixed(2)+'</span></div>');
-  }
-  return '<div class="stats">'+cells.join('')+'</div>';
+$('entrada-list').addEventListener('click',async event=>{
+  const button=event.target.closest('button[data-action]');if(!button||busy)return;
+  const game=entries[Number(button.dataset.index)];if(!game)return;
+  const deleting=button.dataset.action==='delete';
+  if(deleting&&!window.confirm(`¿Borrar «${game.nombre}» de Entrada? Los paquetes de Salida se conservan.`))return;
+  busy=true;button.disabled=true;
+  try{
+    if(deleting){await api('/entrada/borrar',{nombre:game.nombre});notify(`Borrado: ${game.nombre}`);}
+    else{await api('/pipeline',{path:game.path,name:game.nombre,provider:'auto',lang:'Spanish'});notify(`Traducción iniciada: ${game.nombre}`);}
+    await refreshFiles();
+  }catch(error){notify(error.message,true);}
+  finally{busy=false;button.disabled=false;}
+});
+function choose(file){
+  if(uploading||!file)return;
+  if(!/\.zip$/i.test(file.name)){notify('Selecciona un archivo ZIP.',true);return;}
+  selected=file;$('upload-name').textContent=`${file.name} · ${size(file.size)}`;$('upload-button').disabled=false;
+  $('upload-progress').value=0;$('upload-status').textContent='Listo para subir.';
 }
-
-function renderEvents(job) {
-  var evs = job.events || [];
-  if (!evs.length) return '';
-  var errs = evs.filter(function(e){ return e.event === 'error' || e.event === 'warn' || e.event === 'provider_switch'; });
-  if (!errs.length) return '';
-  var html = errs.slice(-15).map(function(e){
-    var ts = new Date(e.ts*1000).toLocaleTimeString();
-    var cls = e.event === 'error' ? 'err' : (e.event === 'warn' ? 'warn' : '');
-    var msg = '';
-    if (e.event === 'provider_switch') {
-      msg = '['+e.stage+'] provider '+e.from+' -> '+e.to+' ('+(e.reason||'')+')';
-      cls = 'warn';
-    } else {
-      msg = '['+e.stage+'] '+(e.message || '');
-    }
-    return '<div class="el '+cls+'"><span class="ets">'+ts+'</span>'+esc(msg)+'</div>';
-  }).join('');
-  return '<details class="coll" open><summary>Eventos ('+errs.length+')</summary>' +
-    '<div class="cbody"><div class="elist">'+html+'</div></div></details>';
-}
-
-function renderJob(job) {
-  var st = job.status, run = st === 'running', done = st === 'done', err = (st === 'error' || st === 'unsupported');
-  var eng = (job.engine && job.engine.engine) || 'unknown';
-  var gi = job.game_info || {};
-
-  // Backward compat: si no hay stages, usar logica vieja
-  var hasStages = !!job.stages && Object.keys(job.stages).length > 0;
-  var overall = hasStages ? (job.overall_pct||0) : ((job.stats||{}).pct || 0);
-
-  var tags = [];
-  if (gi.version) tags.push('<span class="tag tv">v' + esc(gi.version) + '</span>');
-  var oc = {linux:'tl', windows:'tw', macos:'tm'};
-  (gi.os || []).forEach(function(o){ tags.push('<span class="tag ' + (oc[o]||'tag') + '">' + o + '</span>'); });
-  if (gi.runtime) {
-    var rc = gi.runtime.toLowerCase().startsWith('il2cpp') ? 'ti2' : gi.runtime.toLowerCase().startsWith('mono') ? 'tmo' : 'tag';
-    tags.push('<span class="tag ' + rc + '">' + esc(gi.runtime) + '</span>');
-  }
-
-  var dp = err ? 100 : Math.max(overall, 2);
-  var bc = run ? 'bar br' : done ? 'bar bd' : 'bar be';
-  var logHtml = (job.progress || []).slice(-200).map(colorLine).join('\n');
-
-  var cs = job.copy_status, cp = esc(job.copy_path || '');
-  var copyLine = '';
-  if (cs === 'copying') copyLine = '<div style="font-size:.73em;color:#e3b341;margin-top:7px">Copiando... ' + cp + '</div>';
-  else if (cs === 'done') copyLine = '<div style="font-size:.73em;color:#3fb950;margin-top:7px">Copia: ' + cp + '</div>';
-  else if (cs === 'error') copyLine = '<div style="font-size:.73em;color:#f85149;margin-top:7px">Copia fallida</div>';
-
-  var zipLine = '';
-  if (job.zip_path) {
-    zipLine = '<div class="zipline">ZIP: ' + esc(job.zip_path) + '</div>';
-  }
-
-  var readyOk = (cs === 'done') || (done && cs === null);
-  var readyTxt = readyOk ? (READY[eng] || 'Traduccion completada.') : '';
-  var errTxt = job.error ? '<div style="color:#f85149;font-size:.73em;margin-top:6px">' + esc(job.error) + '</div>' : '';
-  var warnTxt = job.warning === 'budget_exceeded' ? '<div style="color:#e3b341;font-size:.73em;margin-top:6px">Presupuesto OpenAI alcanzado</div>' : '';
-
-  var spinHtml = run ? '<span class="spin"></span>' : '';
-  var metaTxt = run ? ('corriendo hace ' + elapsed(job.started_at, null)) : ('tiempo: ' + elapsed(job.started_at, job.finished_at) + ' &mdash; ' + job.job_id);
-
-  return '<div class="jp ' + st + '">'
-    + '<div class="jhead">'
-    +   '<div class="jname">' + esc(job.game_name || 'Job') + '</div>'
-    +   '<div class="jbadges">'
-    +     '<span class="eng">' + (ENG[eng] || esc(eng)) + '</span>'
-    +     '<span class="badge b-' + st + '">' + spinHtml + st + '</span>'
-    +   '</div>'
-    + '</div>'
-    + '<div class="jpath">' + esc(job.game_path || '') + '</div>'
-    + '<div class="jmeta">' + metaTxt + '</div>'
-    + (tags.length ? '<div class="tags">' + tags.join('') + '</div>' : '')
-    + (hasStages ? renderChips(job.stages) : '')
-    + '<div class="bar-bg"><div class="' + bc + '" style="width:' + dp + '%">' + (overall ? overall + '%' : '') + '</div></div>'
-    + (hasStages ? renderActiveStagePanel(job) : '')
-    + renderStats(job)
-    + renderEvents(job)
-    + '<details class="coll"><summary>Log (' + (job.progress||[]).length + ')</summary>'
-    +   '<div class="cbody"><div class="log" id="jlog">' + logHtml + '</div></div>'
-    + '</details>'
-    + (job.diagnose_report ? (
-        '<details class="coll"><summary>Diagnose report (post-job)</summary>'
-        + '<div class="cbody"><div class="log" style="height:300px">' + esc(job.diagnose_report) + '</div></div>'
-        + '</details>'
-      ) : '')
-    + copyLine + zipLine + warnTxt + errTxt
-    + (readyTxt ? '<div class="ready">Listo para jugar &mdash; ' + readyTxt + '</div>' : '')
-    + '</div>';
-}
-
-async function tick() {
-  try {
-    var r = await fetch('/jobs');
-    var d = await r.json();
-    var jobs = d.jobs || [];
-
-    var running = jobs.filter(function(j){ return j.status === 'running'; });
-    var target = running.length ? running[running.length-1] : (jobs.length ? jobs[jobs.length-1] : null);
-
-    var btn = document.getElementById('btn-launch');
-    var isRunning = target && target.status === 'running';
-    btn.disabled = !!isRunning;
-    btn.textContent = isRunning ? 'Job activo' : 'Traducir';
-
-    if (!target) {
-      document.getElementById('root').innerHTML = '<div class="empty">Sin actividad reciente.<br><span style="font-size:.88em">Ingresa la ruta del juego y presiona Traducir.</span></div>';
-      document.getElementById('ts').textContent = 'Actualizado: ' + new Date().toLocaleTimeString();
-      return;
-    }
-
-    var curLen = (target.progress || []).length;
-    var curEv = (target.events || []).length;
-    var stateKey = target.job_id + ':' + curLen + ':' + curEv + ':' + (target.overall_pct||0) + ':' + target.current_stage;
-    if (_stateKey !== stateKey) {
-      _stateKey = stateKey;
-      document.getElementById('root').innerHTML = renderJob(target);
-      if (isRunning) {
-        var log = document.getElementById('jlog');
-        if (log) log.scrollTop = log.scrollHeight;
-      }
-    } else if (isRunning) {
-      var el = document.querySelector('.jmeta');
-      if (el) el.textContent = 'corriendo hace ' + elapsed(target.started_at, null);
-    }
-
-    var paths = [...new Set(jobs.map(function(j){ return j.game_path; }).filter(Boolean))];
-    var dl = document.getElementById('path-hist');
-    if (dl.options.length !== paths.length)
-      dl.innerHTML = paths.map(function(p){ return '<option value="' + p.replace(/"/g,'&quot;') + '">'; }).join('');
-
-    document.getElementById('ts').textContent = 'Actualizado: ' + new Date().toLocaleTimeString();
-  } catch(e) {
-    document.getElementById('root').innerHTML = '<div class="empty" style="color:#f85149">Sin conexion con el servidor en localhost:8766</div>';
-  }
-}
-
-var _stateKey = '';
-
-function showMsg(cls, txt) {
-  var m = document.getElementById('lmsg');
-  m.className = 'lmsg on ' + cls;
-  m.textContent = txt;
-}
-
-async function launch() {
-  var path = document.getElementById('lpath').value.trim();
-  var lang = document.getElementById('llang').value;
-  var prov = document.getElementById('lprov').value;
-  var btn = document.getElementById('btn-launch');
-  if (!path) { showMsg('info', 'Escribe la ruta del juego.'); return; }
-  btn.disabled = true; btn.textContent = 'Lanzando...';
-  showMsg('info', 'Detectando engine + preflight...');
-  try {
-    var body = {path: path, lang: lang};
-    if (prov) body.provider = prov;
-    var r = await fetch('/pipeline', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(body)
-    });
-    var d = await r.json();
-    if (r.status === 409) {
-      showMsg('info', 'Ya hay un job corriendo (' + d.existing_job_id + ')');
-      btn.disabled = false; btn.textContent = 'Traducir';
-    } else if (r.ok) {
-      showMsg('ok', 'Job lanzado: ' + d.job_id);
-      document.getElementById('lpath').value = '';
-      _stateKey = '';
-      await tick();
-    } else {
-      showMsg('fail', 'Error: ' + (d.error || r.status));
-      btn.disabled = false; btn.textContent = 'Traducir';
-    }
-  } catch(e) {
-    showMsg('fail', 'Sin conexion con el servidor.');
-    btn.disabled = false; btn.textContent = 'Traducir';
-  }
-}
-
-// Settings modal
-async function showSettings() {
-  try {
-    var r = await fetch('/settings');
-    var d = await r.json();
-    document.getElementById('sjson').value = JSON.stringify(d, null, 2);
-    document.getElementById('smsg').style.display = 'none';
-    document.getElementById('smodal').classList.add('on');
-  } catch(e) {
-    showMsg('fail', 'No pude cargar settings');
-  }
-}
-
-function closeSettings() {
-  document.getElementById('smodal').classList.remove('on');
-}
-
-async function saveSettings() {
-  var txt = document.getElementById('sjson').value;
-  var sm = document.getElementById('smsg');
-  try {
-    var parsed = JSON.parse(txt);
-    var r = await fetch('/settings', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(parsed)
-    });
-    if (r.ok) {
-      sm.textContent = 'Guardado correctamente.';
-      sm.style.color = '#3fb950';
-      sm.style.display = 'block';
-      setTimeout(closeSettings, 1200);
-    } else {
-      var d = await r.json();
-      sm.textContent = 'Error: ' + (d.error || r.status);
-      sm.style.color = '#f85149';
-      sm.style.display = 'block';
-    }
-  } catch(e) {
-    sm.textContent = 'JSON invalido: ' + e.message;
-    sm.style.color = '#f85149';
-    sm.style.display = 'block';
-  }
-}
-
-async function loadHealth() {
-  try {
-    var r = await fetch('/health');
-    var d = await r.json();
-    var summary = 'Ollama: '+d.ollama+' | DeepL: '+(d.deepl && d.deepl.available !== undefined ? d.deepl.available.toLocaleString()+' chars' : '?')+' | OpenAI: $'+((d.openai && d.openai.spent_usd) || 0).toFixed(4)+' / $'+((d.openai && d.openai.budget_usd) || 1.50).toFixed(2);
-    alert(summary);
-  } catch(e) {
-    alert('Sin conexion al server.');
-  }
-}
-
-document.getElementById('lpath').addEventListener('keydown', function(e){ if (e.key === 'Enter') launch(); });
-document.getElementById('smodal').addEventListener('click', function(e){ if (e.target === this) closeSettings(); });
-tick();
-setInterval(tick, 2000);
+$('file').addEventListener('change',event=>choose(event.target.files[0]));
+for(const type of ['dragenter','dragover'])$('dropzone').addEventListener(type,event=>{event.preventDefault();if(!uploading)$('dropzone').classList.add('drag');});
+for(const type of ['dragleave','drop'])$('dropzone').addEventListener(type,event=>{event.preventDefault();$('dropzone').classList.remove('drag');});
+$('dropzone').addEventListener('drop',event=>choose(event.dataTransfer.files[0]));
+$('upload-button').addEventListener('click',()=>{
+  if(!selected||uploading)return;
+  uploading=true;$('upload-button').disabled=true;$('file').disabled=true;$('upload-status').textContent='Subiendo…';
+  const xhr=new XMLHttpRequest();xhr.open('POST',B+'/upload');xhr.setRequestHeader('Content-Type','application/zip');xhr.setRequestHeader('X-Nombre',encodeURIComponent(selected.name));
+  xhr.upload.onprogress=event=>{if(event.lengthComputable){const pct=Math.round(event.loaded/event.total*100);$('upload-progress').value=pct;$('upload-status').textContent=pct===100?'Extrayendo ZIP…':`Subiendo ${pct}%`;}};
+  xhr.onload=async()=>{
+    if(xhr.status===401){login();return;}
+    try{const data=JSON.parse(xhr.responseText);if(xhr.status<200||xhr.status>=300)throw new Error(data.error||'No se pudo subir');notify(`Juego recibido: ${data.nombre} · ${size(data.size)}`);$('upload-status').textContent='Subida completa.';selected=null;$('file').value='';await refreshFiles();}
+    catch(error){notify(error.message,true);$('upload-status').textContent='Error de subida.';}
+    finally{uploading=false;$('file').disabled=false;$('upload-button').disabled=!selected;}
+  };
+  xhr.onerror=()=>{uploading=false;$('file').disabled=false;$('upload-button').disabled=false;$('upload-status').textContent='Conexión interrumpida.';notify('No se pudo completar la subida. Revisa la conexión y vuelve a intentarlo.',true);};
+  xhr.send(selected);
+});
+pollJobs();pollHealth();
 </script>
 </body>
 </html>
