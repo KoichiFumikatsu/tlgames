@@ -148,6 +148,15 @@ def extract_strings(data_dir: Path) -> dict:
                 t = data["gameTitle"]
                 if isinstance(t, str) and t.strip():
                     entries.append({"path": ["gameTitle"], "text": t})
+            terms = data.get("terms")
+            if isinstance(terms, dict):
+                for grupo in ("basic", "commands", "params"):
+                    for i, t in enumerate(terms.get(grupo) or []):
+                        if isinstance(t, str) and t.strip() and _is_english(t):
+                            entries.append({"path": ["terms", grupo, i], "text": t})
+                for k, t in (terms.get("messages") or {}).items():
+                    if isinstance(t, str) and t.strip() and _is_english(t):
+                        entries.append({"path": ["terms", "messages", k], "text": t})
 
         if entries:
             result[fname] = entries

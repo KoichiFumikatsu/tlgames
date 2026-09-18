@@ -34,6 +34,12 @@
     "run_after_job": true,
     "timeout_sec": 60
   },
+  "unity": {
+    "xunity_lang": "es",
+    "xunity_endpoint": "GoogleTranslateV2",
+    "xunity_cache_dir": "/home/koilinux/apps/unity-tl",
+    "xunity_pretranslate": true
+  },
   "renpy": {
     "force_language_if_no_selector": true,
     "unrpa_bin": "/home/koilinux/projects/tlgames/.venv/bin/unrpa",

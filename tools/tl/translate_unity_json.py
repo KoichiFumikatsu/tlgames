@@ -41,6 +41,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent  # repo root
 sys.path.insert(0, str(ROOT / "tools" / "tl"))
 from _env import load_env  # type: ignore
+from style_es import con_estilo  # type: ignore
 load_env()
 
 # ── Constantes ────────────────────────────────────────────────────────────────
@@ -266,6 +267,8 @@ OPENAI_BATCH_PROMPT = (
     "5. N inputs → exactamente N outputs, mismo orden.\n"
     "6. Si un string es solo símbolos/placeholders, devuélvelo tal cual.\n"
 )
+OPENAI_SYSTEM_PROMPT = con_estilo(OPENAI_SYSTEM_PROMPT)
+OPENAI_BATCH_PROMPT = con_estilo(OPENAI_BATCH_PROMPT)
 
 
 class OpenAIBudgetExceeded(Exception):

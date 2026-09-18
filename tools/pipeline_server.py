@@ -1302,16 +1302,25 @@ def _v2_analyze(job, game_path: Path, engine: str, settings: dict,
     job["game_info"] = ginfo
     tracker.set_pct("analyze", 20)
 
-    # Unity: verificar sistema JSON nativo
+    # Unity: sistema JSON nativo si existe; si no, XUnity.AutoTranslator (builds Mono)
     if engine == "unity":
         unity_json = detect_unity_json_tl(game_path)
-        if not unity_json:
-            tracker.end("analyze", status="error",
-                        details={"reason": "unity_sin_sistema_json_nativo"})
-            job["status"] = "unsupported"
-            job["error"] = "Unity sin sistema JSON nativo — requiere playbook manual"
-            return
-        job["unity_json"] = unity_json
+        if unity_json:
+            job["unity_json"] = unity_json
+            job["unity_mode"] = "json"
+        else:
+            sys.path.insert(0, str(TL_TOOLS))
+            import unity_xunity
+            build = unity_xunity.detectar_build(game_path)
+            if "error" in build or build["runtime"] != "mono":
+                motivo = build.get("error") or f"build {build['runtime']} (XUnity automático sólo cubre Mono; IL2CPP necesita BepInEx 6, manual)"
+                tracker.end("analyze", status="error", details={"reason": "unity_no_soportado", "build": build})
+                job["status"] = "unsupported"
+                job["error"] = f"Unity sin sistema JSON nativo y {motivo}"
+                return
+            job["unity_mode"] = "xunity"
+            job["unity_build"] = build
+            job["progress"].append(f"  Unity sin JSON nativo → XUnity.AutoTranslator (build {build['runtime']} {build['arch']}, {Path(build['data_dir']).name})")
 
     # Ren'Py: si script empaquetado, unpack + decompile primero
     if engine == "renpy":
@@ -1634,8 +1643,62 @@ def _v2_renpy_translate(job, game_path: Path, provider: str, tracker: StageTrack
     tracker.set_pct("translate", 100)
 
 
+_XU_PROG_RE = re.compile(r"\[PROGRESS\] strings=(\d+)/(\d+) pct=(\d+)")
+_XU_RES_RE = re.compile(r"\[XUNITY\] estaticos=(\d+) traducidos=(\d+) exportados=(\d+) archivo=(\S+)")
+
+
+def _v2_unity_xunity_translate(job, game_path: Path, provider: str, tracker: StageTracker):
+    """Unity genérico: instala BepInEx + XUnity y pre-traduce los textos estáticos (tools/tl/unity_xunity.py)."""
+    job.setdefault("stats", {})
+    job["stats"].update({"total_files": 1, "files_done": 0, "strings_done": 0, "total_strings": 0,
+                         "current_file": "XUnity", "provider": provider.title(), "openai_spent": 0.0})
+    cmd = [sys.executable, str(TL_TOOLS / "unity_xunity.py"), str(game_path), "--provider", provider,
+           "--lang", str(_settings_get_safe("unity.xunity_lang", "es")),
+           "--endpoint", str(_settings_get_safe("unity.xunity_endpoint", "GoogleTranslateV2")),
+           "--cache-dir", str(_settings_get_safe("unity.xunity_cache_dir", str(Path.home() / "apps" / "unity-tl")))]
+    if not _settings_get_safe("unity.xunity_pretranslate", True):
+        cmd.append("--no-pretranslate")
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=str(ROOT))
+    _timer = threading.Timer(7200, lambda: proc.kill())
+    _timer.start()
+    try:
+        for raw in proc.stdout:
+            line = raw.rstrip()
+            if not line: continue
+            job["progress"].append(f"  {line}")
+            m = _XU_PROG_RE.search(line)
+            if m:
+                sd, ts, pct = (int(x) for x in m.groups())
+                job["stats"].update({"strings_done": sd, "total_strings": ts, "pct": pct})
+                tracker.set_pct("translate", pct, current_file="XUnity estáticos")
+            m2 = _XU_RES_RE.search(line)
+            if m2:
+                job["xunity"] = {"estaticos": int(m2.group(1)), "traducidos": int(m2.group(2)),
+                                 "exportados": int(m2.group(3)), "archivo": m2.group(4)}
+                job["stats"].update({"strings_done": int(m2.group(2)), "total_strings": int(m2.group(1))})
+            m3 = _OAPI_SPENT_RE.search(line)
+            if m3:
+                job["stats"]["openai_spent"] = float(m3.group(1))
+    finally:
+        _timer.cancel()
+    proc.wait()
+    rc = proc.returncode
+    if rc == -9:
+        job["status"] = "error"
+        job["error"] = "Timeout en XUnity (>2h)"
+    elif rc != 0:
+        job["status"] = "error"
+        job["error"] = f"unity_xunity salio con codigo {rc}: " + next((l for l in reversed(job["progress"]) if "[ABORT]" in l), "").strip()
+    else:
+        job["stats"]["files_done"] = 1
+    tracker.set_pct("translate", 100)
+
+
 def _v2_unity_translate(job, game_path: Path, lang: str, ntfy_topic: str,
                         tracker: StageTracker):
+    if job.get("unity_mode") == "xunity":
+        _v2_unity_xunity_translate(job, game_path, job.get("provider") or "auto", tracker)
+        return
     info = job.get("unity_json") or {}
     job.setdefault("stats", {})
     job["stats"].update({
