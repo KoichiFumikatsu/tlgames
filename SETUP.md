@@ -313,3 +313,18 @@ y el pipeline pasa al siguiente proveedor. Cadena automática del pipeline Ren'P
 **DeepL → Groq → OpenAI** (si el preflight elige OpenAI por falta de cupo DeepL,
 Groq va antes por ser gratis). Un juego de 500k chars por Groq tarda ~25 min como
 mínimo por el límite de tokens.
+
+## Port Android (Ren'Py) por inyección en el APK oficial
+
+Si el juego Ren'Py tiene versión Android, se sube su `.apk` oficial al mismo dropzone del taller
+(o `POST /upload` con `Content-Type: application/vnd.android.package-archive`), queda en
+`entrada/<nombre>.apk` y se vincula a la carpeta del juego con «Vincular APK oficial…»
+(`POST /entrada/apk {nombre, apk}` → `entrada/<juego>.apk`). Al empaquetar, `tools/tl/apk_patch.py`:
+compila `game/tl/<lang>` con el SDK, copia el APK sin la firma vieja ni traducción previa, agrega
+`assets/x-game/x-tl/x-<lang>/…` y `x-_force_<lang>.rpyc` sin comprimir (así los lee `renpy/loader.py`
+en Android), alinea con `zipalign` y firma v1+v2+v3 con `apksigner` (build-tools r34 en
+`~/apps/android-tl/build-tools`; `uber-apk-signer.jar` como alternativa) usando el keystore propio
+`~/apps/android-tl/tlgames.jks` (clave en `keystore.pass`, ambos 600; se crean una sola vez —
+**hacerles backup**: con otra llave las actualizaciones no instalan encima). Sale
+`salida/<juego>[-vX]-spanish.apk`; el jugador debe desinstalar el original. Ren'Py 7 (Python 2):
+se inyectan `.rpy` sin compilar y el job avisa. Settings: `android.enabled`. Nunca es fatal para el job.

@@ -2048,6 +2048,7 @@ def _v2_port_android(job: dict, game_path: Path, output_dir: Path, tracker: Stag
         pending.replace(apk_out)
         res["apk"] = str(apk_out)
         job["apk_path"] = str(apk_out)
+        job["progress"].append(f"  [APK] guardado como {apk_out.name}")
         if res.get("aviso"):
             emit_event(job, "package", "warn", message="APK: " + res["aviso"])
         return res
