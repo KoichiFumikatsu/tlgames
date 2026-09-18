@@ -65,7 +65,7 @@ def _pe_arch(exe: Path) -> str:
             if sig != b"PE\0\0":
                 return "x64"
             machine = struct.unpack("<H", fh.read(2))[0]
-    except OSError:
+    except (OSError, struct.error):
         return "x64"
     return "x86" if machine == 0x14C else "x64"
 

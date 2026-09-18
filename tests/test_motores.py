@@ -65,6 +65,8 @@ def test_detectar_build_mono_x64_x86_e_il2cpp(tmp_path):
     assert unity_xunity.detectar_build(_juego_unity(tmp_path / "b", machine=0x14C))["arch"] == "x86"
     assert unity_xunity.detectar_build(_juego_unity(tmp_path / "c", il2cpp=True))["runtime"] == "il2cpp"
     assert "error" in unity_xunity.detectar_build(tmp_path / "nada")
+    (tmp_path / "Juego" / "Juego.exe").write_bytes(b"MZ")      # exe truncado/raro → x64 por defecto, sin explotar
+    assert unity_xunity.detectar_build(tmp_path / "Juego")["arch"] == "x64"
 
 
 def test_extraer_estaticos_filtra_ruido(tmp_path):
