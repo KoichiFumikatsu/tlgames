@@ -62,6 +62,22 @@ def detokenize(text: str, mapping: list[tuple[str, str]]) -> str:
         text = pat.sub(lambda m, o=original: o, text)
     return text
 
+_NL_DESPUES = re.compile(r"(\\n)\.?[ \t]+")   # "\n. Por favor" / "\n Por favor" → "\nPor favor"
+_NL_ANTES = re.compile(r"[ \t]+(\\n)")        # "Store \n" → "Store\n"
+
+
+def normalizar_saltos(source: str, target: str) -> str:
+    """El MT trata el sentinela de \\n como palabra y le pega '. ' o espacios alrededor.
+    Se limpian sólo cuando el source no los tiene (respeta "\\n " o " \\n" originales)."""
+    if "\\n" not in target:
+        return target
+    if not re.search(r"\\n\.?[ \t]", source):
+        target = _NL_DESPUES.sub(r"\1", target)
+    if not re.search(r"[ \t]\\n", source):
+        target = _NL_ANTES.sub(r"\1", target)
+    return target
+
+
 def parse_dialogue_file(path: str) -> list[DialogueBlock]:
     """Parsea un .rpy de dialogos (script.rpy style)."""
     with open(path, encoding="utf-8") as fh:

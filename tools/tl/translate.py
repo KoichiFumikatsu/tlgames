@@ -38,7 +38,7 @@ from _env import load_env  # type: ignore
 load_env()
 from lib_rpy import (  # type: ignore
     parse_dialogue_file, parse_strings_file,
-    tokenize, detokenize, write_target_line,
+    tokenize, detokenize, write_target_line, normalizar_saltos,
 )
 from _env import load_env  # type: ignore
 load_env()
@@ -578,7 +578,7 @@ def translate_batch_openai(srcs: list, cache: dict, glossary: dict, api_key: str
         tr_tok = translated_tokenized[i]
         if tr_tok is None:
             tr_tok = src
-        detok = detokenize(tr_tok, t_mapping)
+        detok = normalizar_saltos(src, detokenize(tr_tok, t_mapping))
         out_text = restore_glossary(detok, g_targets)
         results.append(out_text)
     return results
@@ -747,7 +747,7 @@ def translate_batch_gemini(srcs: list, gem_cache: dict, glossary: dict, api_key:
         tr_tok = translated_tokenized[i]
         if tr_tok is None:
             tr_tok = src  # último recurso
-        detok = detokenize(tr_tok, t_mapping)
+        detok = normalizar_saltos(src, detokenize(tr_tok, t_mapping))
         out = restore_glossary(detok, g_targets)
         out = out.replace("\r\n", "\\n").replace("\r", "\\n").replace("\n", "\\n")
         results.append(out)
@@ -783,7 +783,7 @@ def translate_text(src: str, cache: dict, glossary: dict, provider: str, email: 
             cache[f"gemini|{GEMINI_MODEL}|{tokenized}"] = mt_out
     else:
         mt_out = mm_translate(tokenized, cache, email=email)
-    detok = detokenize(mt_out, t_mapping)
+    detok = normalizar_saltos(src, detokenize(mt_out, t_mapping))
     out = restore_glossary(detok, g_targets)
     out = out.replace("\r\n", "\\n").replace("\r", "\\n").replace("\n", "\\n")
     return out

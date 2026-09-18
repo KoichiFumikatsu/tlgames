@@ -141,3 +141,13 @@ def test_groq_retry_after_y_cupo_por_minuto(monkeypatch):
     qa_renpy._groq_esperar_cupo(2000)          # 6500 + 2000 > 7000 → duerme hasta que expire la ventana
     assert len(dormido) == 1 and 58 < dormido[0] <= 60 and len(qa_renpy._groq_ventana) == 1
     qa_renpy._groq_ventana.clear()
+
+
+def test_normalizar_saltos_quita_el_punto_que_mete_deepl():
+    import lib_rpy
+    f = lib_rpy.normalizar_saltos
+    assert f("Contacting App Store\\nPlease Wait...", "Contactar con App Store\\n. Por favor, espera...") == "Contactar con App Store\\nPor favor, espera..."
+    assert f("\\nMade with Ren'Py", "\\n. Creado con Ren'Py") == "\\nCreado con Ren'Py"
+    assert f("A: x.\\nB: y\\n\\nC: z", "A: x.\\n B: y\\n\\n. C: z") == "A: x.\\nB: y\\n\\nC: z"
+    assert f("Line one \\n two", "Línea uno \\n dos") == "Línea uno \\n dos"     # el source ya tenía espacios: se respetan
+    assert f("sin saltos", "sin saltos. ") == "sin saltos. "
