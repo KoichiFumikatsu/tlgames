@@ -29,6 +29,9 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from style_es import con_estilo  # noqa: E402
+
 ROOT = Path(__file__).parent
 sys.path.insert(0, str(ROOT))
 from _env import load_env  # type: ignore
@@ -181,10 +184,15 @@ def save_cache(cache: dict, provider: str):
     else:
         _save(CACHE_MM, cache)
 
-def load_glossary() -> dict:
-    if not GLOSSARY_FILE.exists():
+def glossary_path() -> Path:
+    """Glosario del juego (--glossary / TL_GLOSSARY) o, si no hay, el global del repo."""
+    return Path(os.environ.get("TL_GLOSSARY") or GLOSSARY_FILE)
+
+def load_glossary(path: Path | None = None) -> dict:
+    path = Path(path) if path else glossary_path()
+    if not path.exists():
         return {}
-    data = json.loads(GLOSSARY_FILE.read_text(encoding="utf-8"))
+    data = json.loads(path.read_text(encoding="utf-8"))
     # Construir mapa source->target filtrando vacios
     mapping = {}
     for section in ("characters", "terms"):
@@ -267,6 +275,7 @@ def deepl_translate(text: str, cache: dict, api_key: str) -> str:
         "source_lang": "EN",
         "target_lang": "ES",
         "preserve_formatting": "1",
+        "formality": "prefer_less",   # tuteo (guía de estilo); prefer_ = no falla si el idioma no lo soporta
     }).encode("utf-8")
     current_key = deepl_active_key() if DEEPL_KEY_POOL else api_key
     last_err = None
@@ -323,6 +332,7 @@ GEMINI_SYSTEM_PROMPT = (
     "7. Contenido adulto/explícito: tradúcelo fielmente sin censurar ni suavizar.\n"
     "8. Si recibes un texto vacío o solo placeholders, devuélvelo tal cual.\n"
 )
+GEMINI_SYSTEM_PROMPT = con_estilo(GEMINI_SYSTEM_PROMPT)
 
 GEMINI_BATCH_SYSTEM_PROMPT = (
     "Eres un traductor profesional EN→ES para novelas visuales adultas (Ren'Py).\n"
@@ -339,6 +349,7 @@ GEMINI_BATCH_SYSTEM_PROMPT = (
     "9. Contenido adulto/explícito: tradúcelo fielmente sin censurar ni suavizar.\n"
     "10. Si un string viene vacío o es solo placeholders/símbolos, devuélvelo tal cual.\n"
 )
+GEMINI_BATCH_SYSTEM_PROMPT = con_estilo(GEMINI_BATCH_SYSTEM_PROMPT)
 
 class GeminiBlocked(Exception):
     """Gemini se negó a traducir (PROHIBITED_CONTENT, SAFETY, RECITATION).
@@ -1116,7 +1127,11 @@ def main():
     ap.add_argument("--batch-size", type=int, default=GEMINI_BATCH_SIZE,
                     help=f"strings por request en provider=gemini/openai (default {GEMINI_BATCH_SIZE})")
     ap.add_argument("--format", choices=["auto", "dialogue", "strings"], default="auto")
+    ap.add_argument("--glossary", default=os.environ.get("TL_GLOSSARY", ""),
+                    help="glosario del juego (json); default TL_GLOSSARY o el global del repo")
     args = ap.parse_args()
+    if args.glossary:
+        os.environ["TL_GLOSSARY"] = args.glossary
 
     if args.provider == "deepl" and not args.deepl_key:
         sys.exit("--provider deepl requiere --deepl-key o variable DEEPL_API_KEY")

@@ -207,12 +207,74 @@ def _qa_dispatch(pairs: list[dict], batch_idx: int) -> list[str]:
     return ollama_qa(pairs, batch_idx)
 
 
-def qa_file(path: Path) -> dict:
-    """QA completo de un archivo .rpy. Retorna dict con resultados."""
+_ISSUE_RE = re.compile(r"^\s*\[(\d+)\]\s*([A-ZÁÉÍÓÚÑ]+)\s*:\s*(.+?)\s*(?:→|->)\s*(.+?)\s*$")
+_TAG_RE = re.compile(r"\{[^{}]+\}|\[[^\[\]]+\]|\|[A-Za-z0-9_]+\|")
+
+
+def _limpiar_fragmento(s: str) -> str:
+    s = s.strip()
+    while len(s) >= 2 and s[0] == s[-1] and s[0] in "\"'`«»“”":
+        s = s[1:-1].strip()
+    return s
+
+
+def parse_issue(line: str) -> dict | None:
+    """'[N] TIPO: malo → bueno' → {"n","tipo","malo","bueno"}; None si no tiene ese formato."""
+    m = _ISSUE_RE.match(line)
+    if not m:
+        return None
+    malo, bueno = _limpiar_fragmento(m.group(3)), _limpiar_fragmento(m.group(4))
+    if not malo or not bueno or malo == bueno:
+        return None
+    return {"n": int(m.group(1)), "tipo": m.group(2), "malo": malo, "bueno": bueno}
+
+
+def proponer_correcciones(pairs: list[dict], issues: list[str]) -> list[dict]:
+    """Convierte los issues del LLM en reemplazos seguros sobre el target del par N:
+    el fragmento malo aparece exactamente una vez, y el resultado conserva tags/variables y \\n."""
+    out = []
+    for raw in issues:
+        it = parse_issue(raw)
+        if not it or not 1 <= it["n"] <= len(pairs):
+            continue
+        p = pairs[it["n"] - 1]
+        target = p["target"]
+        malo, bueno = it["malo"], it["bueno"]
+        if target.count(malo) != 1:
+            continue
+        if '"' in bueno.replace('\\"', ""):
+            continue   # comilla sin escapar rompería el .rpy
+        nuevo = target.replace(malo, bueno)
+        if nuevo == target or _TAG_RE.findall(nuevo) != _TAG_RE.findall(target) or nuevo.count("\\n") != target.count("\\n"):
+            continue
+        out.append({"n": it["n"], "tipo": it["tipo"], "location": p["location"], "source": p["source"],
+                    "target": target, "nuevo": nuevo, "raw": raw})
+    return out
+
+
+def aplicar_correcciones(path: Path, propuestas: list[dict]) -> int:
+    """Reescribe los `new "..."` corregidos en el .rpy. Devuelve cuántos aplicó."""
+    if not propuestas:
+        return 0
+    content = path.read_text(encoding="utf-8-sig", errors="replace")
+    aplicadas = 0
+    for c in propuestas:
+        bloque = re.compile(r'(old\s+"' + re.escape(c["source"]) + r'"\s*\n\s+new\s+")' + re.escape(c["target"]) + r'"')
+        content, n = bloque.subn(lambda m, nuevo=c["nuevo"]: m.group(1) + nuevo + '"', content, count=1)
+        aplicadas += n
+        c["aplicada"] = bool(n)
+    if aplicadas:
+        path.write_text(content, encoding="utf-8")
+    return aplicadas
+
+
+def qa_file(path: Path, fix: bool = False) -> dict:
+    """QA completo de un archivo .rpy. Retorna dict con resultados.
+    Con fix=True aplica al archivo las sugerencias seguras del LLM (ver proponer_correcciones)."""
     pairs = parse_rpy(path)
     translated = len(pairs)
     if translated == 0:
-        return {"file": str(path), "translated": 0, "issues": [], "batches": 0}
+        return {"file": str(path), "translated": 0, "issues": [], "batches": 0, "fixes": [], "fixed": 0}
 
     issues = []
     batches = (translated + BATCH_SIZE - 1) // BATCH_SIZE
@@ -223,16 +285,20 @@ def qa_file(path: Path) -> dict:
         issues.extend(found)
         print(f"{len(found)} issues")
 
-    return {"file": str(path), "translated": translated, "issues": issues, "batches": batches}
+    fixes = proponer_correcciones(pairs, issues)
+    fixed = aplicar_correcciones(path, fixes) if fix else 0
+    if fixes:
+        print(f"  correcciones: {len(fixes)} propuestas, {fixed} aplicadas")
+    return {"file": str(path), "translated": translated, "issues": issues, "batches": batches, "fixes": fixes, "fixed": fixed}
 
 
-def qa_directory(directory: Path) -> list[dict]:
+def qa_directory(directory: Path, fix: bool = False) -> list[dict]:
     """QA de todos los .rpy en un directorio."""
     results = []
     rpy_files = sorted(directory.glob("**/*.rpy"))
     for rpy in rpy_files:
         print(f"\n[{rpy.name}]")
-        results.append(qa_file(rpy))
+        results.append(qa_file(rpy, fix=fix))
     return results
 
 
@@ -241,10 +307,12 @@ def render_report(results: list[dict], target_path: Path | None = None) -> str:
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     total_translated = sum(r["translated"] for r in results)
     total_issues = sum(len(r["issues"]) for r in results)
+    total_fixed = sum(r.get("fixed", 0) for r in results)
 
     lines = [
         f"# QA Semántico — Ren'Py",
-        f"Generado: {now}  |  Archivos: {len(results)}  |  Pares revisados: {total_translated}  |  Issues: {total_issues}",
+        f"Generado: {now}  |  Archivos: {len(results)}  |  Pares revisados: {total_translated}  |  Issues: {total_issues}"
+        + (f"  |  Corregidos automáticamente: {total_fixed}" if total_fixed else ""),
         "",
     ]
 
@@ -254,8 +322,9 @@ def render_report(results: list[dict], target_path: Path | None = None) -> str:
         lines.append(f"## {Path(r['file']).name} — {r['translated']} pares — {status}")
         if file_issues:
             lines.append("")
+            corregidos = {f["raw"] for f in r.get("fixes", []) if f.get("aplicada")}
             for issue in file_issues:
-                lines.append(f"- {issue}")
+                lines.append(f"- {issue}" + ("  ✔ corregido" if issue in corregidos else ""))
         lines.append("")
 
     report = "\n".join(lines)

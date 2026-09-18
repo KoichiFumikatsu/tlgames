@@ -61,6 +61,7 @@ class QAHandler(BaseHTTPRequestHandler):
 
         file_path = body.get("file")
         dir_path = body.get("dir")
+        fix = bool(body.get("fix", False))
 
         if not file_path and not dir_path:
             self.send_json(400, {"error": "Se requiere 'file' o 'dir' en el body"})
@@ -72,19 +73,20 @@ class QAHandler(BaseHTTPRequestHandler):
                 if not target.is_dir():
                     self.send_json(400, {"error": f"Directorio no encontrado: {dir_path}"})
                     return
-                results = qa_renpy.qa_directory(target)
+                results = qa_renpy.qa_directory(target, fix=fix)
             else:
                 target = Path(file_path)
                 if not target.exists():
                     self.send_json(400, {"error": f"Archivo no encontrado: {file_path}"})
                     return
-                results = [qa_renpy.qa_file(target)]
+                results = [qa_renpy.qa_file(target, fix=fix)]
 
             report = qa_renpy.render_report(results)
             total_issues = sum(len(r["issues"]) for r in results)
 
             self.send_json(200, {
                 "issues_total": total_issues,
+                "fixed_total": sum(r.get("fixed", 0) for r in results),
                 "files": len(results),
                 "report": report,
                 "results": results,

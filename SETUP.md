@@ -267,3 +267,22 @@ python -m pytest -q
 
 `pytest` es una dependencia exclusiva de pruebas. La suite usa HTTP en localhost,
 carpetas temporales y proveedores simulados; no modifica la configuración real.
+
+## Calidad de traducción Ren'Py
+
+Tres piezas, todas encendidas por defecto en `tools/pipeline_settings.json`:
+
+- **Glosario por juego** (`renpy.game_glossary`): en la etapa `setup`,
+  `tools/tl/game_glossary.py` escanea los `Character("Nombre")` de los `.rpy` del
+  juego (fuera de `tl/`) y escribe `<juego>/tl-es-glossary.json` con los nombres
+  protegidos (`target == source`). `translate.py` lo recibe por `TL_GLOSSARY`
+  (o `--glossary`); sin esa variable usa el glosario global del repo, como antes.
+  Rótulos genéricos (`Mom`, `???`, `Narrator`…) se dejan traducir.
+- **Guía de estilo** (`tools/tl/style_es.py`): tuteo, nombres intactos,
+  onomatopeyas, mayúsculas enfáticas, sin calcos. Se anexa a los system prompts
+  de OpenAI/Gemini; DeepL recibe `formality=prefer_less`.
+- **Corrección automática post-QA** (`qa.autofix`): el pipeline manda
+  `{"dir": ..., "fix": true}` a `qa_server`. Cada aviso `[N] TIPO: malo → bueno`
+  del LLM se aplica al `new "..."` del par N sólo si el fragmento aparece una vez
+  y el resultado conserva tags `{}`/`[]`/`|x|` y los `\n`. El reporte marca los
+  avisos aplicados con `✔ corregido` y el job guarda `qa_fixed`.

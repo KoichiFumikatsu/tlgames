@@ -27,7 +27,8 @@
   },
   "qa": {
     "timeout_sec": 1800,
-    "backend": "groq"
+    "backend": "groq",
+    "autofix": true
   },
   "diagnose": {
     "run_after_job": true,
@@ -37,7 +38,8 @@
     "force_language_if_no_selector": true,
     "unrpa_bin": "/home/koilinux/projects/tlgames/.venv/bin/unrpa",
     "unrpyc_script": "/home/koilinux/.local/share/unrpyc/unrpyc-master/unrpyc.py",
-    "auto_unpack": true
+    "auto_unpack": true,
+    "game_glossary": true
   },
   "stage_weights": {
     "renpy": {

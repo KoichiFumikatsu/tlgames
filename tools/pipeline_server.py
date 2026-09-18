@@ -1399,11 +1399,35 @@ def _v2_analyze(job, game_path: Path, engine: str, settings: dict,
     tracker.end("analyze", details=job["analysis"])
 
 
+def _translate_env(job: dict) -> dict:
+    """Entorno para translate.py: glosario del juego (nombres protegidos) si se generó en setup."""
+    env = dict(os.environ)
+    if job.get("glossary"):
+        env["TL_GLOSSARY"] = job["glossary"]
+    return env
+
+
+def _renpy_game_glossary(job: dict, game_path: Path) -> int:
+    """Genera <juego>/tl-es-glossary.json con los Character() del juego. Devuelve cuántos nombres."""
+    sys.path.insert(0, str(TL_TOOLS))
+    import game_glossary
+    out = game_path / "tl-es-glossary.json"
+    data = game_glossary.generar(game_path / "game", out)
+    job["glossary"] = str(out)
+    job["glossary_names"] = sorted(data["characters"])
+    return len(data["characters"])
+
+
 def _v2_setup(job, game_path: Path, engine: str, settings: dict, tracker: StageTracker):
     tracker.start("setup")
-    # Por ahora minimal — los scripts engine hacen su propio prep cuando arrancan
+    if engine == "renpy" and _settings_get_safe("renpy.game_glossary", True):
+        try:
+            n = _renpy_game_glossary(job, game_path)
+            job["progress"].append(f"  Glosario del juego: {n} nombres protegidos" + (f" ({', '.join(job['glossary_names'][:8])}{'…' if n > 8 else ''})" if n else ""))
+        except Exception as e:
+            emit_event(job, "setup", "warn", message=f"glosario del juego no generado: {e}")
     tracker.set_pct("setup", 100)
-    tracker.end("setup")
+    tracker.end("setup", details={"glossary_names": len(job.get("glossary_names") or [])})
 
 
 def _v2_translate(job, game_path: Path, lang: str, engine: str,
@@ -1537,7 +1561,7 @@ def _v2_renpy_translate(job, game_path: Path, provider: str, tracker: StageTrack
 
         proc = subprocess.Popen(
             [sys.executable, str(TL_TOOLS / "translate.py"), str(rpy), "--provider", active],
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=str(ROOT),
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=str(ROOT), env=_translate_env(job),
         )
         out_lines = []
         try:
@@ -1566,7 +1590,7 @@ def _v2_renpy_translate(job, game_path: Path, provider: str, tracker: StageTrack
                 proc2 = subprocess.Popen(
                     [sys.executable, str(TL_TOOLS / "translate.py"), str(rpy),
                      "--provider", "openai"],
-                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=str(ROOT),
+                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=str(ROOT), env=_translate_env(job),
                 )
                 for line in proc2.stdout:
                     line = line.rstrip()
@@ -1801,9 +1825,10 @@ def _v2_lint_qa(job, game_path: Path, engine: str, settings: dict, tracker: Stag
 
     tracker.set_pct("lint_qa", 90, current="qa_semantico_ollama")
     qa_issues = 0
+    qa_fixed = 0
     qa_timeout = int(_settings_get_safe("qa.timeout_sec", 600))
     try:
-        payload = json.dumps({"dir": str(tl_path)}).encode()
+        payload = json.dumps({"dir": str(tl_path), "fix": bool(_settings_get_safe("qa.autofix", True))}).encode()
         req = urllib.request.Request(
             "http://localhost:8765/qa", data=payload,
             headers={"Content-Type": "application/json"}, method="POST",
@@ -1811,8 +1836,12 @@ def _v2_lint_qa(job, game_path: Path, engine: str, settings: dict, tracker: Stag
         with urllib.request.urlopen(req, timeout=qa_timeout) as resp:
             qa_data = json.loads(resp.read())
         qa_issues = qa_data.get("issues_total", 0)
+        qa_fixed = qa_data.get("fixed_total", 0)
         job["qa_report"] = qa_data.get("report", "")
         job["qa_issues"] = qa_issues
+        job["qa_fixed"] = qa_fixed
+        if qa_fixed:
+            job["progress"].append(f"  QA: {qa_fixed} de {qa_issues} avisos corregidos automáticamente")
     except Exception as e:
         emit_event(job, "lint_qa", "warn",
                    message=f"qa_server no respondio en {qa_timeout}s: {e} (continuando sin QA semantico)")
@@ -1821,6 +1850,7 @@ def _v2_lint_qa(job, game_path: Path, engine: str, settings: dict, tracker: Stag
         "postprocess_errors": pp_errors,
         "lint_warnings": lint_warnings,
         "qa_issues": qa_issues,
+        "qa_fixed": qa_fixed,
     })
 
 
