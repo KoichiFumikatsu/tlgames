@@ -205,7 +205,7 @@ def test_entrada_jobs_packages_delete(server):
     assert server.call("POST", "/entrada/borrar", {"nombre": "Title"}).status == 200
     assert not game.exists()
     assert (server.salida / "Title-v1.2-spanish.zip").exists()
-    assert server.call("GET", "/entrada").json() == {"entrada": []}
+    assert server.call("GET", "/entrada").json() == {"entrada": [], "apks_sueltos": []}
 
 
 def test_pipeline_contract_and_delete_running(server):

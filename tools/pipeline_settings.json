@@ -25,6 +25,9 @@
     "max_size_gb": 5,
     "compress_below_mb": 500
   },
+  "android": {
+    "enabled": true
+  },
   "qa": {
     "timeout_sec": 1800,
     "backend": "groq",

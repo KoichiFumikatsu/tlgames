@@ -23,7 +23,7 @@ main{max-width:1240px;margin:auto;padding:38px 28px 60px}.intro{display:grid;gri
 <div class="intro"><div><p class="eyebrow">Del original a tu idioma</p><h1>Tus juegos.<br><span>En español.</span></h1></div><div class="intro-note"><p>Sube un ZIP, inicia la traducción y descarga el resultado.</p><p class="muted">Proveedor automático · Destino: español</p></div></div>
 <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
 <div class="grid">
-<section id="subir"><div class="section-head"><span class="number">01</span><h2>Subir juego</h2></div><div class="content"><div id="dropzone" class="dropzone"><strong>Arrastra tu juego aquí</strong><p class="muted">Un archivo .zip con la carpeta del juego.</p><input class="file-input" id="file" type="file" accept=".zip,application/zip"><label class="button secondary" for="file">Elegir ZIP</label></div><p id="upload-name" class="upload-meta muted">Ningún archivo seleccionado.</p><progress id="upload-progress" class="meter" max="100" value="0" aria-label="Progreso de subida"></progress><div class="actions"><button id="upload-button" disabled>Subir juego</button><span id="upload-status" class="muted" role="status" aria-live="polite">Listo para recibir.</span></div></div></section>
+<section id="subir"><div class="section-head"><span class="number">01</span><h2>Subir juego</h2></div><div class="content"><div id="dropzone" class="dropzone"><strong>Arrastra tu juego aquí</strong><p class="muted">Un .zip con la carpeta del juego. Si el juego es Ren'Py y tiene versión Android, sube también su .apk oficial: se le inyecta la traducción y sale un APK en español.</p><input class="file-input" id="file" type="file" accept=".zip,.apk,application/zip,application/vnd.android.package-archive"><label class="button secondary" for="file">Elegir ZIP o APK</label></div><p id="upload-name" class="upload-meta muted">Ningún archivo seleccionado.</p><progress id="upload-progress" class="meter" max="100" value="0" aria-label="Progreso de subida"></progress><div class="actions"><button id="upload-button" disabled>Subir juego</button><span id="upload-status" class="muted" role="status" aria-live="polite">Listo para recibir.</span></div></div></section>
 <section id="entrada"><div class="section-head"><span class="number">02</span><h2>Entrada</h2><span id="entrada-count" class="count">—</span></div><div class="content" id="entrada-list"><p class="empty">Cargando juegos…</p></div></section>
 <section id="trabajos" class="wide"><div class="section-head"><span class="number">03</span><h2>Trabajos</h2><span id="jobs-count" class="count">—</span></div><div class="content" id="jobs-list"><p class="empty">Cargando trabajos…</p></div></section>
 <section id="salida" class="wide"><div class="section-head"><span class="number">04</span><h2>Salida</h2><span id="salida-count" class="count">—</span></div><div class="content" id="salida-list"><p class="empty">Cargando paquetes…</p></div></section>
@@ -49,12 +49,12 @@ async function api(path,body){
   const data=await response.json();if(!response.ok)throw new Error(data.error||`Error HTTP ${response.status}`);return data;
 }
 function render(id,markup){if($(id).innerHTML!==markup)$(id).innerHTML=markup;}
-let entries=[], jobs=[], selected=null, uploading=false, busy=false;
+let entries=[], apksSueltos=[], jobs=[], selected=null, uploading=false, busy=false;
 function renderEntrada(){
   $('entrada-count').textContent=entries.length;
   render('entrada-list',entries.map((game,index)=>{
     const running=jobs.some(j=>j.game_path===game.path&&j.status==='running')||game.job?.status==='running';
-    return `<article class="row"><div class="row-title"><h3>${esc(game.nombre)}</h3><span class="badge ${running?'active':game.paquete?'ok':''}">${running?'En curso':game.paquete?'Paquete disponible':'Listo'}</span></div><div class="actions"><button data-action="translate" data-index="${index}" ${running?'disabled':''}>Traducir</button><button class="secondary" data-action="delete" data-index="${index}" ${running?'disabled':''}>Borrar</button></div></article>`;
+    return `<article class="row"><div class="row-title"><h3>${esc(game.nombre)}</h3><span class="badge ${running?'active':game.paquete?'ok':''}">${running?'En curso':game.paquete?'Paquete disponible':'Listo'}</span>${game.apk?'<span class="badge ok">APK</span>':''}</div>${!game.apk&&apksSueltos.length?`<div class="actions"><select data-apk-for="${esc(game.nombre)}" aria-label="Vincular APK a ${esc(game.nombre)}"><option value="">Vincular APK oficial…</option>${apksSueltos.map(a=>`<option value="${esc(a.nombre)}">${esc(a.nombre)} · ${size(a.size)}</option>`).join('')}</select></div>`:''}<div class="actions"><button data-action="translate" data-index="${index}" ${running?'disabled':''}>Traducir</button><button class="secondary" data-action="delete" data-index="${index}" ${running?'disabled':''}>Borrar</button></div></article>`;
   }).join('')||'<p class="empty">La entrada está vacía. Sube tu primer juego.</p>');
 }
 const JOBS_PER_PAGE=8;let jobsPage=0;
@@ -68,7 +68,7 @@ function stepDetail(name, st, job){
     case 'setup': return d.glossary_names!=null?`${d.glossary_names} nombres protegidos`:'';
     case 'translate': { const parts=[]; if(s.total_files) parts.push(`${s.files_done||0}/${s.total_files} archivos`); if(s.total_strings) parts.push(`${s.strings_done||0}/${s.total_strings} strings`); if(st.status==='running'&&s.current_file) parts.push(s.current_file); if(s.provider) parts.push(s.provider); if(s.provider_chain&&s.provider_chain.length>1) parts.push('cadena '+s.provider_chain.join('→')); if(s.openai_spent) parts.push(`US$${Number(s.openai_spent).toFixed(3)}`); return parts.join(' · '); }
     case 'lint_qa': { const parts=[]; if(d.postprocess_errors!=null) parts.push(`postprocess ${d.postprocess_errors}`); if(d.lint_warnings!=null) parts.push(`lint ${d.lint_warnings} avisos`); if(d.qa_issues!=null) parts.push(`QA ${d.qa_issues} avisos${d.qa_fixed?`, ${d.qa_fixed} corregidos`:''}`); if(d.issues_total!=null) parts.push(`lint ${d.issues_total} avisos`); return parts.join(' · ')||(st.status==='running'?(d.current||'revisando'):''); }
-    case 'package': return d.zip_path?`${d.zip_path.split('/').pop()}${d.size_mb?` · ${d.size_mb} MB`:''}`:(d.reason||d.current||'');
+    case 'package': return (d.zip_path?`${d.zip_path.split('/').pop()}${d.size_mb?` · ${d.size_mb} MB`:''}`:(d.reason||d.current||''))+(d.apk?` · Android: ${d.apk.apk.split('/').pop()} (${d.apk.size_mb} MB)`:'');
   }
   return '';
 }
@@ -93,6 +93,11 @@ function renderJobs(){
     return `<article class="row"><div class="row-title"><h3>${esc(job.game_name)}</h3><span class="badge ${job.status==='done'?'ok':job.status==='running'?'active':'error'}">${esc(statuses[job.status]||job.status)}</span></div><div class="job-meta"><span>${esc(stages[job.current_stage]||'En espera')} · ${esc(job.stats?.provider||job.provider||'auto')}</span><strong>${pct}%</strong></div><progress class="meter" value="${pct}" max="100" aria-label="Progreso de ${esc(job.game_name)}"></progress>${renderSteps(job)}${renderDiag(job)}${issues.map(issue=>`<p class="issue">${esc(typeof issue==='string'?issue:issue.message||JSON.stringify(issue))}</p>`).join('')}<div class="job-foot"><span>${esc(date(job.started_at))} · ${esc(job.job_id)}</span><a href="${B}/pipeline/${encodeURIComponent(job.job_id)}/diagnostico" target="_blank" rel="noopener">Ver diagnóstico</a></div></article>`;
   }).join('')+pager||'<p class="empty">Todavía no hay trabajos. Inicia una traducción desde Entrada.</p>');
 }
+$('entrada-list').addEventListener('change',async e=>{
+  const sel=e.target.closest('[data-apk-for]');if(!sel||!sel.value)return;
+  try{await api('/entrada/apk',{nombre:sel.dataset.apkFor,apk:sel.value});notify(`APK vinculado a ${sel.dataset.apkFor}`);await refreshFiles();}
+  catch(err){notify(err.message,true);}
+});
 $('jobs-list').addEventListener('click',async e=>{
   const ap=e.target.closest('[data-aprobar]');
   if(ap){const job=jobs.find(j=>j.job_id===ap.dataset.aprobar);if(!job||!job.diagnostico||!job.diagnostico.receta_propuesta)return;ap.disabled=true;
@@ -101,9 +106,9 @@ $('jobs-list').addEventListener('click',async e=>{
     return;}
   const b=e.target.closest('[data-page]');if(!b||b.disabled)return;jobsPage=Number(b.dataset.page);renderJobs();});
 async function refreshFiles(){
-  const [input,output]=await Promise.all([api('/entrada'),api('/salida')]);entries=input.entrada;renderEntrada();
+  const [input,output]=await Promise.all([api('/entrada'),api('/salida')]);entries=input.entrada;apksSueltos=input.apks_sueltos||[];renderEntrada();
   $('salida-count').textContent=output.salida.length;
-  render('salida-list',output.salida.map(pkg=>`<article class="row"><div class="row-title"><h3>${esc(pkg.nombre)}</h3><span class="badge ok">ZIP</span></div><div class="actions"><a class="button" href="${B}/salida/${encodeURIComponent(pkg.nombre)}" download>Descargar</a><span class="muted">${size(pkg.size)} · ${esc(date(pkg.mtime))}</span></div></article>`).join('')||'<p class="empty">Los paquetes aparecerán aquí al terminar las traducciones.</p>');
+  render('salida-list',output.salida.map(pkg=>`<article class="row"><div class="row-title"><h3>${esc(pkg.nombre)}</h3><span class="badge ok">${pkg.tipo==='android'?'APK · Android':'ZIP · PC'}</span></div><div class="actions"><a class="button" href="${B}/salida/${encodeURIComponent(pkg.nombre)}" download>Descargar</a><span class="muted">${size(pkg.size)} · ${esc(date(pkg.mtime))}</span></div></article>`).join('')||'<p class="empty">Los paquetes aparecerán aquí al terminar las traducciones.</p>');
 }
 let jobState='', filePoll=0;
 async function pollJobs(){
@@ -138,7 +143,7 @@ $('entrada-list').addEventListener('click',async event=>{
 });
 function choose(file){
   if(uploading||!file)return;
-  if(!/\.zip$/i.test(file.name)){notify('Selecciona un archivo ZIP.',true);return;}
+  if(!/\.(zip|apk)$/i.test(file.name)){notify('Selecciona un archivo ZIP o APK.',true);return;}
   selected=file;$('upload-name').textContent=`${file.name} · ${size(file.size)}`;$('upload-button').disabled=false;
   $('upload-progress').value=0;$('upload-status').textContent='Listo para subir.';
 }
@@ -149,11 +154,11 @@ $('dropzone').addEventListener('drop',event=>choose(event.dataTransfer.files[0])
 $('upload-button').addEventListener('click',()=>{
   if(!selected||uploading)return;
   uploading=true;$('upload-button').disabled=true;$('file').disabled=true;$('upload-status').textContent='Subiendo…';
-  const xhr=new XMLHttpRequest();xhr.open('POST',B+'/upload');xhr.setRequestHeader('Content-Type','application/zip');xhr.setRequestHeader('X-Nombre',encodeURIComponent(selected.name));
-  xhr.upload.onprogress=event=>{if(event.lengthComputable){const pct=Math.round(event.loaded/event.total*100);$('upload-progress').value=pct;$('upload-status').textContent=pct===100?'Extrayendo ZIP…':`Subiendo ${pct}%`;}};
+  const xhr=new XMLHttpRequest();xhr.open('POST',B+'/upload');xhr.setRequestHeader('Content-Type',/\.apk$/i.test(selected.name)?'application/vnd.android.package-archive':'application/zip');xhr.setRequestHeader('X-Nombre',encodeURIComponent(selected.name));
+  xhr.upload.onprogress=event=>{if(event.lengthComputable){const pct=Math.round(event.loaded/event.total*100);$('upload-progress').value=pct;$('upload-status').textContent=pct===100?(/\.apk$/i.test(selected.name)?'Guardando APK…':'Extrayendo ZIP…'):`Subiendo ${pct}%`;}};
   xhr.onload=async()=>{
     if(xhr.status===401){login();return;}
-    try{const data=JSON.parse(xhr.responseText);if(xhr.status<200||xhr.status>=300)throw new Error(data.error||'No se pudo subir');notify(`Juego recibido: ${data.nombre} · ${size(data.size)}`);$('upload-status').textContent='Subida completa.';selected=null;$('file').value='';await refreshFiles();}
+    try{const data=JSON.parse(xhr.responseText);if(xhr.status<200||xhr.status>=300)throw new Error(data.error||'No se pudo subir');notify(data.apk?`APK recibido: ${data.apk}. Vincúlalo a su juego en Entrada.`:`Juego recibido: ${data.nombre} · ${size(data.size)}`);$('upload-status').textContent='Subida completa.';selected=null;$('file').value='';await refreshFiles();}
     catch(error){notify(error.message,true);$('upload-status').textContent='Error de subida.';}
     finally{uploading=false;$('file').disabled=false;$('upload-button').disabled=!selected;}
   };

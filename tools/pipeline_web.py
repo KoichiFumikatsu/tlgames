@@ -252,16 +252,19 @@ class PublicHandlerMixin:
             length = int(self.headers["Content-Length"])
             if length <= 0:
                 raise ValueError("El ZIP está vacío")
-            if self.headers.get_content_type() not in ("application/zip", "application/octet-stream", "application/x-zip-compressed"):
+            ctype = self.headers.get_content_type()
+            if ctype not in ("application/zip", "application/octet-stream", "application/x-zip-compressed", "application/vnd.android.package-archive"):
                 self._discard_small_body()
                 raise ValueError("Enviar el ZIP como cuerpo binario, sin multipart")
             disposition = Message()
             disposition["Content-Disposition"] = self.headers.get("Content-Disposition", "")
-            name = unquote(self.headers.get("X-Nombre") or disposition.get_filename() or "juego.zip")
-            name = _game_name(re.sub(r"(?i)\.zip$", "", name))
+            crudo = unquote(self.headers.get("X-Nombre") or disposition.get_filename() or "juego.zip")
             root = entrada_dir()
             root.mkdir(parents=True, exist_ok=True)
             self.connection.settimeout(120)
+            if ctype == "application/vnd.android.package-archive" or crudo.lower().endswith(".apk"):
+                return self._upload_apk(root, _game_name(re.sub(r"(?i)\.apk$", "", crudo)), length)
+            name = _game_name(re.sub(r"(?i)\.zip$", "", crudo))
             with tempfile.TemporaryDirectory(prefix=".upload-", dir=root) as temp:
                 temp = Path(temp)
                 archive = temp / "upload.zip"
@@ -281,6 +284,51 @@ class PublicHandlerMixin:
             self.close_connection = True
             self.send_json(400, {"error": str(exc)})
 
+    def _upload_apk(self, root, name, length):
+        """APK oficial del juego (Ren'Py): queda en entrada/<nombre>.apk, sin extraer. Se vincula a un juego después."""
+        with tempfile.NamedTemporaryFile(prefix=".upload-", suffix=".apk", dir=root, delete=False) as tmp:
+            temp = Path(tmp.name)
+            copy_upload(self.rfile, tmp, length)
+        try:
+            with zipfile.ZipFile(temp) as zf:
+                if not any(n.startswith("assets/x-game/") for n in zf.namelist()[:5000]) and "AndroidManifest.xml" not in zf.namelist():
+                    raise ValueError("El archivo no parece un APK de Ren'Py")
+            with FILES_LOCK:
+                target = safe_child(root, name + ".apk")
+                temp.replace(target)
+        except Exception:
+            temp.unlink(missing_ok=True)
+            raise
+        self.send_json(201, {"nombre": name, "apk": target.name, "size": length, "path": str(target)})
+
+    def _vincular_apk(self, body):
+        """Renombra entrada/<apk>.apk a entrada/<juego>.apk para que el pipeline lo encuentre."""
+        try:
+            root = entrada_dir()
+            juego = safe_child(root, body.get("nombre"))
+            apk = safe_child(root, body.get("apk"))
+            with FILES_LOCK:
+                if not juego.is_dir():
+                    return self.send_json(404, {"error": "Juego no encontrado"})
+                if not apk.is_file() or apk.suffix.lower() != ".apk":
+                    return self.send_json(404, {"error": "APK no encontrado"})
+                destino = juego.with_suffix(".apk") if juego.suffix != ".apk" else juego.parent / (juego.name + ".apk")
+                destino = root / f"{juego.name}.apk"
+                if apk != destino:
+                    apk.replace(destino)
+            self.send_json(200, {"ok": True, "apk": destino.name})
+        except (ValueError, OSError) as exc:
+            self.send_json(400, {"error": str(exc)})
+
+    def _apks_sueltos(self, root, juegos):
+        """APKs en entrada/ que no corresponden a ninguna carpeta de juego (todavía sin vincular)."""
+        nombres = {j + ".apk" for j in juegos}
+        out = []
+        for p in sorted(root.glob("*.apk")) if root.is_dir() else []:
+            if p.is_file() and not p.name.startswith(".upload-") and p.name not in nombres:
+                out.append({"nombre": p.name, "size": p.stat().st_size})
+        return out
+
     def _list_salida(self):
         root = self.output_dir()
         result = []
@@ -290,9 +338,9 @@ class PublicHandlerMixin:
                     path = safe_child(root, path.name)
                 except ValueError:
                     continue
-                if path.is_file() and path.suffix.lower() == ".zip":
+                if path.is_file() and path.suffix.lower() in (".zip", ".apk"):
                     info = path.stat()
-                    result.append({"nombre": path.name, "size": info.st_size, "mtime": info.st_mtime,
+                    result.append({"nombre": path.name, "size": info.st_size, "mtime": info.st_mtime, "tipo": "android" if path.suffix.lower() == ".apk" else "pc",
                                    "download": _base() + "/salida/" + quote(path.name, safe="")})
         return result
 
@@ -312,12 +360,13 @@ class PublicHandlerMixin:
                 matches = [j for j in jobs if Path(j.get("game_path", "")).resolve() == path.resolve()]
                 job = max(matches, key=lambda j: j.get("started_at", 0), default=None)
                 names = [p["nombre"] for p in packages if (
-                    p["nombre"] == path.name + "-spanish.zip"
-                    or re.fullmatch(re.escape(path.name) + r"-v.+-spanish\.zip", p["nombre"])
-                    or any(j.get("zip_path") and Path(j["zip_path"]).name == p["nombre"] for j in matches))]
+                    p["nombre"] in (path.name + "-spanish.zip", path.name + "-spanish.apk")
+                    or re.fullmatch(re.escape(path.name) + r"-v.+-spanish\.(zip|apk)", p["nombre"])
+                    or any(j.get("zip_path") and Path(j["zip_path"]).name == p["nombre"] for j in matches)
+                    or any(j.get("apk_path") and Path(j["apk_path"]).name == p["nombre"] for j in matches))]
                 result.append({"nombre": path.name, "path": str(path), "paquete": bool(names),
-                               "paquetes": names, "job": job})
-        self.send_json(200, {"entrada": result})
+                               "paquetes": names, "job": job, "apk": (root / f"{path.name}.apk").is_file()})
+        self.send_json(200, {"entrada": result, "apks_sueltos": self._apks_sueltos(root, [r["nombre"] for r in result])})
 
     def _delete_entrada(self, body):
         try:
@@ -337,14 +386,14 @@ class PublicHandlerMixin:
     def _download(self, name):
         try:
             path = safe_child(self.output_dir(), unquote(name))
-            if path.suffix.lower() != ".zip" or not path.is_file():
+            if path.suffix.lower() not in (".zip", ".apk") or not path.is_file():
                 return self.send_json(404, {"error": "Paquete no encontrado"})
             source = path.open("rb")
         except (ValueError, OSError):
             return self.send_json(404, {"error": "Paquete no encontrado"})
         with source:
             self.send_response(200)
-            self.send_header("Content-Type", "application/zip")
+            self.send_header("Content-Type", "application/vnd.android.package-archive" if path.suffix.lower() == ".apk" else "application/zip")
             self.send_header("Content-Length", str(os.fstat(source.fileno()).st_size))
             self.send_header("Content-Disposition", "attachment; filename*=UTF-8''" + quote(path.name, safe=""))
             self.end_headers()

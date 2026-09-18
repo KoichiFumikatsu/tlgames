@@ -2015,14 +2015,46 @@ def _v2_package(job, game_path: Path, settings: dict, tracker: StageTracker):
         pending_zip.replace(zip_path)
         size_mb = zip_path.stat().st_size / (1024 ** 2)
         job["zip_path"] = str(zip_path)
+        apk = _v2_port_android(job, game_path, output_dir, tracker)
         tracker.end("package", details={
             "zip_path": str(zip_path), "size_mb": round(size_mb, 1),
-            "copy_path": job.get("copy_path"),
+            "copy_path": job.get("copy_path"), **({"apk": apk} if apk else {}),
         })
     else:
         emit_event(job, "package", "warn", message=f"ZIP fallo (rc={proc.returncode})")
         tracker.end("package", status="error", details={"rc": proc.returncode})
     pending_zip.unlink(missing_ok=True)
+
+
+def _v2_port_android(job: dict, game_path: Path, output_dir: Path, tracker: StageTracker) -> dict | None:
+    """Ren'Py con APK oficial en la entrada → APK traducido en salida (inyección + firma). Nunca es fatal."""
+    if (job.get("engine") or {}).get("engine") != "renpy" or not _settings_get_safe("android.enabled", True):
+        return None
+    sys.path.insert(0, str(TL_TOOLS))
+    import apk_patch
+    apk_in = apk_patch.buscar_apk(game_path)
+    if not apk_in:
+        return None
+    sdk = find_renpy_sdk()
+    if not sdk:
+        emit_event(job, "package", "warn", message="APK: SDK de Ren'Py no encontrado; no se pudo portar")
+        return None
+    tracker.set_pct("package", 96, current="apk android")
+    ver = (job.get("game_info") or {}).get("version") or ""
+    apk_out = output_dir / (game_path.name + (f"-v{ver}" if ver else "") + "-spanish.apk")
+    pending = apk_out.with_suffix(".apk.part")
+    try:
+        res = apk_patch.portar(sdk, game_path, apk_in, pending, (job.get("lang") or "Spanish").lower(), log=lambda m: job["progress"].append(f"  {m}"))
+        pending.replace(apk_out)
+        res["apk"] = str(apk_out)
+        job["apk_path"] = str(apk_out)
+        if res.get("aviso"):
+            emit_event(job, "package", "warn", message="APK: " + res["aviso"])
+        return res
+    except Exception as e:
+        pending.unlink(missing_ok=True)
+        emit_event(job, "package", "warn", message=f"APK Android no generado: {str(e)[:200]}")
+        return None
 
 
 # ── Job runner ────────────────────────────────────────────────────────────────
@@ -2327,6 +2359,9 @@ class Handler(PublicHandlerMixin, BaseHTTPRequestHandler):
     def _post_json(self, path, body):
         if path == "/entrada/borrar":
             return self._delete_entrada(body)
+
+        if path == "/entrada/apk":
+            return self._vincular_apk(body)
 
         if path == "/incidencias/aprobar":
             sys.path.insert(0, str(TL_TOOLS))
