@@ -126,6 +126,6 @@ def test_web_sube_y_vincula_apk(server):
     assert server.call("POST", "/entrada/apk", {"nombre": "Juego", "apk": "no.apk"}).status == 404
     assert server.call("POST", "/upload", b"no es apk", headers={"Content-Type": "application/vnd.android.package-archive", "X-Nombre": "x.apk"}).status == 400
     assert not list(server.entrada.glob(".upload-*"))
-    (server.salida / "Juego-spanish.apk").write_bytes(b"PK")
+    (server.salida / "Juego-spanish.apk").write_bytes(b"PK"); (server.salida / ".Juego-spanish.part.apk").write_bytes(b"PK")
     s = server.call("GET", "/salida").json()["salida"]
-    assert s[0]["tipo"] == "android" and server.call("GET", "/salida/Juego-spanish.apk").headers.get("Content-Type") == "application/vnd.android.package-archive"
+    assert len(s) == 1 and s[0]["tipo"] == "android" and server.call("GET", "/salida/Juego-spanish.apk").headers.get("Content-Type") == "application/vnd.android.package-archive"

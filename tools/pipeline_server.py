@@ -2042,7 +2042,7 @@ def _v2_port_android(job: dict, game_path: Path, output_dir: Path, tracker: Stag
     tracker.set_pct("package", 96, current="apk android")
     ver = (job.get("game_info") or {}).get("version") or ""
     apk_out = output_dir / (game_path.name + (f"-v{ver}" if ver else "") + "-spanish.apk")
-    pending = apk_out.with_suffix(".apk.part")
+    pending = output_dir / f".{apk_out.stem}.part.apk"   # el firmador exige extensión .apk; oculto hasta terminar
     try:
         res = apk_patch.portar(sdk, game_path, apk_in, pending, (job.get("lang") or "Spanish").lower(), log=lambda m: job["progress"].append(f"  {m}"))
         pending.replace(apk_out)

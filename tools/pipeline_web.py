@@ -338,7 +338,7 @@ class PublicHandlerMixin:
                     path = safe_child(root, path.name)
                 except ValueError:
                     continue
-                if path.is_file() and path.suffix.lower() in (".zip", ".apk"):
+                if path.is_file() and path.suffix.lower() in (".zip", ".apk") and not path.name.startswith("."):
                     info = path.stat()
                     result.append({"nombre": path.name, "size": info.st_size, "mtime": info.st_mtime, "tipo": "android" if path.suffix.lower() == ".apk" else "pc",
                                    "download": _base() + "/salida/" + quote(path.name, safe="")})
