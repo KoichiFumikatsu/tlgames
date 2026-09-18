@@ -37,9 +37,27 @@ GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODEL = "openai/gpt-oss-20b"  # free tier; los llama-3.x ya no existen en la cuenta (2026-09-17)
 
 MODEL = OLLAMA_MODEL  # backward compat con codigo antiguo
-BATCH_SIZE = 40  # pares por llamada al LLM
+BATCH_SIZE = 20  # pares por llamada al LLM (Groq free: 8k tokens/min → lotes chicos)
 BACKEND = "auto"  # 'auto' | 'groq' | 'ollama'
 GROQ_RATE_LIMIT_DELAY = 2.0  # segundos entre requests para respetar 30/min
+GROQ_TOKENS_POR_MINUTO = 7000  # margen bajo el límite real (8000 TPM en openai/gpt-oss-20b, 2026-09-17)
+_groq_ventana: list = []   # (timestamp, tokens estimados) de los últimos 60 s
+
+
+def _tokens_estimados(texto: str) -> int:
+    return len(texto) // 3 + 400   # ~3 chars/token en ES/EN + system prompt + respuesta
+
+
+def _groq_esperar_cupo(tokens: int):
+    """Duerme lo justo para no pasar GROQ_TOKENS_POR_MINUTO en la ventana móvil de 60 s."""
+    while True:
+        ahora = time.time()
+        _groq_ventana[:] = [(t, n) for t, n in _groq_ventana if ahora - t < 60]
+        usados = sum(n for _, n in _groq_ventana)
+        if usados + tokens <= GROQ_TOKENS_POR_MINUTO or not _groq_ventana:
+            _groq_ventana.append((ahora, tokens))
+            return
+        time.sleep(max(0.5, 60 - (ahora - _groq_ventana[0][0]) + 0.2))
 
 # Tags y variables que no se traducen — se ignoran en la evaluación de género
 PROTECTED_RE = re.compile(r"\{[^{}]+\}|\[[^\[\]]+\]|\|[A-Za-z0-9_]+\|")
@@ -150,12 +168,14 @@ def groq_qa(pairs: list[dict], batch_idx: int) -> list[str]:
         time.sleep(GROQ_RATE_LIMIT_DELAY - elapsed)
     _groq_last_call_ts = time.time()
 
+    contenido = _build_user_content(pairs, batch_idx)
+    _groq_esperar_cupo(_tokens_estimados(SYSTEM_PROMPT + contenido))
     payload = {
         "model": GROQ_MODEL,
         "temperature": 0.1,
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": _build_user_content(pairs, batch_idx)},
+            {"role": "user", "content": contenido},
         ],
     }
     req = urllib.request.Request(
@@ -169,32 +189,46 @@ def groq_qa(pairs: list[dict], batch_idx: int) -> list[str]:
             "Accept": "application/json",
         },
     )
-    try:
-        with urllib.request.urlopen(req, timeout=60) as resp:
-            result = json.loads(resp.read())
-            text = result["choices"][0]["message"]["content"].strip()
-            if text == "OK":
-                return []
-            return [line for line in text.splitlines() if line.strip() and line.strip() != "OK"]
-    except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", errors="replace")[:300] if e.fp else ""
-        if e.code == 429:
-            # Rate limit hit — esperar y reintentar 1 vez
-            time.sleep(5)
-            try:
-                with urllib.request.urlopen(req, timeout=60) as resp:
-                    result = json.loads(resp.read())
-                    text = result["choices"][0]["message"]["content"].strip()
-                    return [] if text == "OK" else [
-                        l for l in text.splitlines() if l.strip() and l.strip() != "OK"
-                    ]
-            except Exception as e2:
-                return [f"[ERROR] Groq 429 reintento fallo: {e2}"]
-        return [f"[ERROR] Groq HTTP {e.code}: {body}"]
-    except urllib.error.URLError as e:
-        return [f"[ERROR] Groq no disponible: {e}"]
-    except Exception as e:
-        return [f"[ERROR] Llamada Groq fallida: {e}"]
+    # 429 (tokens/min): respetar Retry-After y reintentar hasta 4 veces
+    for intento in range(5):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                result = json.loads(resp.read())
+                text = result["choices"][0]["message"]["content"].strip()
+                if text == "OK":
+                    return []
+                return [line for line in text.splitlines() if line.strip() and line.strip() != "OK"]
+        except urllib.error.HTTPError as e:
+            body = e.read().decode("utf-8", errors="replace")[:300] if e.fp else ""
+            if e.code == 429 and intento < 4:
+                espera = _retry_after(e.headers.get("Retry-After"), body, default=15.0 * (intento + 1))
+                print(f"  Groq 429 — espero {espera:.0f}s", flush=True)
+                time.sleep(espera)
+                continue
+            return [f"[ERROR] Groq HTTP {e.code}: {body}"]
+        except urllib.error.URLError as e:
+            return [f"[ERROR] Groq no disponible: {e}"]
+        except Exception as e:
+            return [f"[ERROR] Llamada Groq fallida: {e}"]
+    return ["[ERROR] Groq 429 persistente"]
+
+
+_RETRY_MSG_RE = re.compile(r"try again in ([\d.]+)(m|s|ms)")
+
+
+def _retry_after(header: str | None, body: str, default: float) -> float:
+    """Segundos a esperar según Retry-After o el texto 'Please try again in 12.3s' de Groq."""
+    if header:
+        try:
+            return min(120.0, max(1.0, float(header)))
+        except ValueError:
+            pass
+    m = _RETRY_MSG_RE.search(body or "")
+    if m:
+        n, u = float(m.group(1)), m.group(2)
+        seg = n * 60 if u == "m" else (n / 1000 if u == "ms" else n)
+        return min(120.0, max(1.0, seg + 1))
+    return default
 
 
 def _qa_dispatch(pairs: list[dict], batch_idx: int) -> list[str]:

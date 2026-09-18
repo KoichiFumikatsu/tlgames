@@ -124,3 +124,20 @@ def test_qa_file_con_fix_y_reporte(tmp_path, monkeypatch):
     informe = qa_renpy.render_report([r])
     assert "Issues: 2  |  Corregidos automáticamente: 1" in informe and "El aventurero\"  ✔ corregido" in informe
     assert "- [2] LITERAL: algo raro → mejor\n" in informe
+
+
+def test_groq_retry_after_y_cupo_por_minuto(monkeypatch):
+    assert qa_renpy._retry_after("7", "", 15.0) == 7.0
+    assert qa_renpy._retry_after(None, "Rate limit reached... Please try again in 12.5s. Visit...", 15.0) == 13.5
+    assert qa_renpy._retry_after(None, "Please try again in 1m2.3s", 15.0) == 61.0 or qa_renpy._retry_after(None, "try again in 1.5m", 15.0) == 91.0
+    assert qa_renpy._retry_after(None, "", 15.0) == 15.0
+    dormido = []
+    monkeypatch.setattr(qa_renpy.time, "sleep", lambda s: dormido.append(s))
+    qa_renpy._groq_ventana.clear()
+    qa_renpy._groq_esperar_cupo(4000); qa_renpy._groq_esperar_cupo(2500)
+    assert dormido == []
+    reloj = [qa_renpy._groq_ventana[0][0]]
+    monkeypatch.setattr(qa_renpy.time, "time", lambda: reloj[0] + (61 if dormido else 1))
+    qa_renpy._groq_esperar_cupo(2000)          # 6500 + 2000 > 7000 → duerme hasta que expire la ventana
+    assert len(dormido) == 1 and 58 < dormido[0] <= 60 and len(qa_renpy._groq_ventana) == 1
+    qa_renpy._groq_ventana.clear()
