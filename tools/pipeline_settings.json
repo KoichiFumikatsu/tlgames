@@ -45,7 +45,9 @@
     "unrpa_bin": "/home/koilinux/projects/tlgames/.venv/bin/unrpa",
     "unrpyc_script": "/home/koilinux/.local/share/unrpyc/unrpyc-master/unrpyc.py",
     "auto_unpack": true,
-    "game_glossary": true
+    "game_glossary": true,
+    "lint_gate": true,
+    "lint_gate_intentos": 3
   },
   "stage_weights": {
     "renpy": {

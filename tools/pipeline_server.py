@@ -1919,11 +1919,34 @@ def _v2_lint_qa(job, game_path: Path, engine: str, settings: dict, tracker: Stag
         emit_event(job, "lint_qa", "warn",
                    message=f"qa_server no respondio en {qa_timeout}s: {e} (continuando sin QA semantico)")
 
+    # Puerta final: `renpy lint` carga el juego con la traducción; si una línea traducida lo rompe, se revierte al inglés
+    puerta = {}
+    if _settings_get_safe("renpy.lint_gate", True):
+        sdk = find_renpy_sdk()
+        if sdk:
+            tracker.set_pct("lint_qa", 95, current="renpy lint")
+            try:
+                sys.path.insert(0, str(TL_TOOLS))
+                import renpy_lint_gate
+                lang_code = (job.get("lang") or "Spanish").lower()
+                puerta = renpy_lint_gate.puerta(sdk, game_path, lang_code, int(_settings_get_safe("renpy.lint_gate_intentos", 3)),
+                                                log=lambda m: job["progress"].append(f"  {m}"))
+                if puerta["revertidas"]:
+                    emit_event(job, "lint_qa", "warn", message=f"renpy lint: {len(puerta['revertidas'])} línea(s) traducida(s) rompían el juego y volvieron al inglés")
+                if not puerta["ok"]:
+                    job.setdefault("warnings", []).append("renpy lint sigue fallando tras revertir: ver detalle de Revisión y QA")
+                    emit_event(job, "lint_qa", "warn", message="renpy lint falló y el error no está en la traducción: " + puerta["salida"][-300:].strip())
+            except Exception as e:
+                emit_event(job, "lint_qa", "warn", message=f"renpy lint no se pudo ejecutar: {e}")
+        else:
+            job["progress"].append("  renpy lint omitido: SDK no encontrado")
+
     tracker.end("lint_qa", details={
         "postprocess_errors": pp_errors,
         "lint_warnings": lint_warnings,
         "qa_issues": qa_issues,
         "qa_fixed": qa_fixed,
+        "renpy_lint": ({"ok": puerta.get("ok"), "intentos": puerta.get("intentos"), "revertidas": puerta.get("revertidas", [])[:20]} if puerta else None),
     })
 
 
@@ -2004,6 +2027,53 @@ def _v2_package(job, game_path: Path, settings: dict, tracker: StageTracker):
 
 # ── Job runner ────────────────────────────────────────────────────────────────
 
+def _texto_falla(job: dict) -> str:
+    avisos = [str(e.get("message", "")) for e in job.get("events", []) if e.get("event") in ("warn", "error")]
+    return "\n".join([str(job.get("error") or "")] + avisos[-10:] + [str(l) for l in job.get("progress", [])[-60:]])
+
+
+def _diagnosticar_job(job: dict, game_path: Path) -> bool:
+    """Si el job falló (o dejó avisos), busca la causa en el catálogo o pregunta al doctor (Groq), aplica la acción
+    segura si la hay y deja job['diagnostico']. Devuelve True si conviene reintentar el pipeline."""
+    fallo = job.get("status") in ("error", "unsupported")
+    avisos = [e for e in job.get("events", []) if e.get("event") in ("warn", "error")]
+    if not fallo and not avisos:
+        return False
+    sys.path.insert(0, str(TL_TOOLS))
+    import incidencias, doctor
+    texto = _texto_falla(job)
+    etapa = job.get("current_stage") or "pipeline"
+    receta = incidencias.analizar(texto)
+    diag = {"origen": "catalogo" if receta else "doctor", "fallo": fallo, "etapa": etapa}
+    if receta:
+        diag.update(receta_id=receta["id"], causa=receta["causa"], que_hacer=receta["que_hacer"], fragmento=receta.get("fragmento", ""))
+    else:
+        d = doctor.diagnosticar(str(job.get("error") or ""), texto, incidencias.catalogo(), (job.get("engine") or {}).get("engine", ""))
+        if d.get("error"):
+            diag.update(causa="No está en el catálogo y el doctor no respondió (" + d["error"] + ").",
+                        que_hacer="Revisar el log en «Ver diagnóstico»; si se repite, pegar el error al asistente.", doctor_error=d["error"])
+        else:
+            diag.update(causa=d["causa"], que_hacer=d["que_hacer"], confianza=d["confianza"], receta_propuesta=d.get("receta_propuesta"), modelo=d.get("modelo"))
+            if d.get("receta_id"):
+                receta = next((r for r in incidencias.catalogo() if r["id"] == d["receta_id"]), None)
+                if receta:
+                    receta = {**receta, "captura": "", "fragmento": ""}
+                    diag["receta_id"] = receta["id"]
+    reintentar = False
+    if receta and fallo and receta.get("accion"):
+        ok, resultado = incidencias.aplicar(receta, game_path)
+        diag.update(accion=receta["accion"], accion_ok=ok, resultado=resultado)
+        reintentar = ok and bool(receta.get("reintentar"))
+    elif receta and not fallo and receta.get("accion") == "reiniciar_qa":
+        ok, resultado = incidencias.aplicar(receta, game_path)
+        diag.update(accion="reiniciar_qa", accion_ok=ok, resultado=resultado)
+    job["diagnostico"] = diag
+    incidencias.registrar(job.get("job_id", "?"), etapa, diag.get("receta_id"), diag.get("causa", ""), diag.get("accion"),
+                          str(diag.get("resultado", "")), diag["origen"], diag.get("fragmento", ""))
+    job["progress"].append(f"[DIAGNÓSTICO] {diag.get('causa', '')[:160]}" + (f" → {diag.get('resultado')}" if diag.get("resultado") else ""))
+    return reintentar and not job.get("reintentado", False)
+
+
 def run_job(job_id: str, game_path_str: str, provider: str,
             lang: str = "Spanish", ntfy_topic: str = "",
             pipeline_version: str = "v2", force_provider: str | None = None):
@@ -2016,6 +2086,14 @@ def run_job(job_id: str, game_path_str: str, provider: str,
         # force_provider ya viene resuelto: None => preflight decide
         run_pipeline_v2(job, game_path, lang=lang, ntfy_topic=ntfy_topic,
                         force_provider=force_provider)
+        # Falla → catálogo/doctor → acción segura → un reintento
+        if _diagnosticar_job(job, game_path) and not job.get("reintentado"):
+            job["reintentado"] = True
+            job["progress"].append("↻ Reintento tras la acción automática")
+            job["status"] = "running"; job["error"] = None; job["stages"] = _empty_stages(); job["current_stage"] = None
+            run_pipeline_v2(job, game_path, lang=lang, ntfy_topic=ntfy_topic, force_provider=force_provider)
+            if job["status"] in ("error", "unsupported"):
+                _diagnosticar_job(job, game_path)
         job["finished_at"] = time.time()
         _run_diagnose(job)
         _persist_job(job)
@@ -2187,6 +2265,11 @@ class Handler(PublicHandlerMixin, BaseHTTPRequestHandler):
                 return
             self.send_json(200, _s.get_all())
 
+        elif path == "/incidencias":
+            sys.path.insert(0, str(TL_TOOLS))
+            import incidencias
+            self.send_json(200, {"incidencias": incidencias.ultimas(50), "catalogo": [{k: r.get(k) for k in ("id", "causa", "que_hacer", "accion")} for r in incidencias.catalogo()]})
+
         elif path == "/jobs":
             with _jobs_lock:
                 live = {jid: _jobs[jid] for jid in _jobs_order[-50:]}
@@ -2244,6 +2327,19 @@ class Handler(PublicHandlerMixin, BaseHTTPRequestHandler):
     def _post_json(self, path, body):
         if path == "/entrada/borrar":
             return self._delete_entrada(body)
+
+        if path == "/incidencias/aprobar":
+            sys.path.insert(0, str(TL_TOOLS))
+            import incidencias
+            receta = body.get("receta") if isinstance(body.get("receta"), dict) else None
+            if not receta or not receta.get("patron"):
+                self.send_json(400, {"error": "falta receta.patron"})
+                return
+            try:
+                self.send_json(200, {"ok": True, "receta": incidencias.aprobar_receta(receta)})
+            except Exception as e:
+                self.send_json(400, {"error": f"receta inválida: {e}"})
+            return
 
         if path == "/health":
             self.send_json(200, {"status": "ok"})
