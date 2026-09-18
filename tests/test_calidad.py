@@ -103,6 +103,7 @@ def test_parse_y_correcciones_seguras(tmp_path):
         "[9] CALCO: x → y",                           # índice fuera de rango
         "esto no es un issue",
         "[1] TUTEO: no está → no está",               # malo == bueno
+        "[1] LITERAL: 'sonrió' → 'son-rió'",           # cosmético (guiones) → se descarta
     ]
     props = qa_renpy.proponer_correcciones(pairs, issues)
     assert [(p["n"], p["nuevo"]) for p in props] == [(1, "El aventurero sonrió."), (2, "Tiene sentido, {i}Eris{/i}.")]

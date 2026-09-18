@@ -276,6 +276,8 @@ def proponer_correcciones(pairs: list[dict], issues: list[str]) -> list[dict]:
         malo, bueno = it["malo"], it["bueno"]
         if target.count(malo) != 1:
             continue
+        if re.sub(r"[\s\-]", "", malo.lower()) == re.sub(r"[\s\-]", "", bueno.lower()):
+            continue   # cambio cosmético (guiones/espacios): el modelo chico se inventa "in-jugable"
         if '"' in bueno.replace('\\"', ""):
             continue   # comilla sin escapar rompería el .rpy
         nuevo = target.replace(malo, bueno)
