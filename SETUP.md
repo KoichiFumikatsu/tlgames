@@ -301,3 +301,15 @@ Tres piezas, todas encendidas por defecto en `tools/pipeline_settings.json`:
 - **RPG Maker MV/MZ**: además de base de datos, eventos y mapas, ahora se traducen los
   `terms` de `System.json` (basic/commands/params/messages). Los prompts OpenAI de Unity y
   RPG Maker llevan la misma guía de estilo que Ren'Py (`tools/tl/style_es.py`).
+
+## Groq como tercer proveedor (gratis)
+
+`translate.py --provider groq` usa el endpoint compatible con OpenAI de Groq con
+`openai/gpt-oss-120b` (env `GROQ_MODEL_TL`), sin costo. Límites del free tier
+(cabeceras `x-ratelimit-*`, 2026-09-17): 1000 requests/día y 8.000 tokens/minuto
+por modelo, compartidos con el briefing. El cliente respeta una ventana móvil de
+7.000 tokens/min y los `Retry-After`; un 429 diario aborta el archivo (`[ABORT]`)
+y el pipeline pasa al siguiente proveedor. Cadena automática del pipeline Ren'Py:
+**DeepL → Groq → OpenAI** (si el preflight elige OpenAI por falta de cupo DeepL,
+Groq va antes por ser gratis). Un juego de 500k chars por Groq tarda ~25 min como
+mínimo por el límite de tokens.
