@@ -154,7 +154,7 @@ def test_normalizar_saltos_quita_el_punto_que_mete_deepl():
     assert f("sin saltos", "sin saltos. ") == "sin saltos. "
 
 
-def test_groq_como_provider_de_traduccion(monkeypatch):
+def test_groq_como_provider_de_traduccion(monkeypatch, tmp_path):
     visto = {}
 
     class R:
@@ -167,6 +167,7 @@ def test_groq_como_provider_de_traduccion(monkeypatch):
         return R(json.dumps({"choices": [{"message": {"content": "```json\n{\"items\": [\"Hola ZT000Z\", \"Adiós\"]}\n```"}}], "usage": {"prompt_tokens": 50, "completion_tokens": 10}}).encode())
     monkeypatch.setattr(translate.urllib.request, "urlopen", urlopen)
     monkeypatch.setattr(translate, "_BACKEND", "groq")
+    monkeypatch.setattr(translate, "GROQ_USAGE_FILE", tmp_path / "groq_usage.json")
     monkeypatch.setattr(translate.time, "sleep", lambda s: None)
     translate._groq_ventana.clear()
     cache = {}
@@ -174,6 +175,15 @@ def test_groq_como_provider_de_traduccion(monkeypatch):
     assert out == ["Hola ZT000Z", "Adiós"] and visto["url"] == translate.GROQ_API
     assert "response_format" not in visto["body"] and '{"items": [...]}' in visto["body"]["messages"][0]["content"]
     assert cache["openai|openai/gpt-oss-120b|Bye"] == "Adiós"
+    uso = json.loads((tmp_path / "groq_usage.json").read_text())
+    assert uso["tokens"] == 60 and uso["requests"] == 1
+    # cupo diario reservado agotado → GroqExhausted sin llamar a la API
+    monkeypatch.setattr(translate, "GROQ_TOKENS_POR_DIA", 100)
+    visto.clear()
+    with pytest.raises(translate.GroqExhausted):
+        translate.openai_translate_batch(["Something new"], {}, "gsk_x", "openai/gpt-oss-120b")
+    assert not visto
+    monkeypatch.setattr(translate, "GROQ_TOKENS_POR_DIA", 150000)
     # 429 diario → GroqExhausted (el caller imprime [ABORT] y el pipeline pasa a OpenAI)
     import urllib.error, io, email
     def urlopen429(req, timeout=0):

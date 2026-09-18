@@ -90,7 +90,11 @@ RETRY_BACKOFF = [2, 5, 15]
 # ---- Groq (compatible OpenAI; gratis: 1000 req/día y 8k tokens/min por modelo, 2026-09-17) ----
 GROQ_API = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODEL = os.environ.get("GROQ_MODEL_TL", "openai/gpt-oss-120b")
-GROQ_TOKENS_POR_MINUTO = 7000     # margen bajo el límite real
+GROQ_TOKENS_POR_MINUTO = 7000     # margen bajo el límite real (8K TPM)
+# 200K tokens/día por modelo (consola Groq, 2026-09-18), compartidos con el briefing (radar, curso, palabras usan
+# el mismo gpt-oss-120b): la traducción se reserva 150K y para sola antes del 429 diario.
+GROQ_TOKENS_POR_DIA = int(os.environ.get("GROQ_TPD_TL", "150000"))
+GROQ_USAGE_FILE = CACHE_DIR / "groq_usage.json"
 _groq_ventana: list = []          # (timestamp, tokens estimados) de los últimos 60 s
 _BACKEND = "openai"               # "openai" | "groq": lo fija main() con --provider groq
 
@@ -101,6 +105,36 @@ class GroqExhausted(Exception):
 
 def _tokens_estimados(texto: str) -> int:
     return len(texto) // 3 + 300
+
+
+def _groq_usage_load() -> dict:
+    hoy = time.strftime("%Y-%m-%d", time.gmtime())   # Groq reinicia el día en UTC
+    try:
+        u = json.loads(GROQ_USAGE_FILE.read_text(encoding="utf-8"))
+        if u.get("fecha") == hoy:
+            return u
+    except Exception:
+        pass
+    return {"fecha": hoy, "tokens": 0, "requests": 0}
+
+
+def _groq_usage_add(tokens: int) -> dict:
+    u = _groq_usage_load()
+    u["tokens"] += tokens
+    u["requests"] += 1
+    try:
+        GROQ_USAGE_FILE.write_text(json.dumps(u), encoding="utf-8")
+    except OSError:
+        pass
+    return u
+
+
+def _groq_reservar(estimado: int):
+    """Corta antes del 429 diario si el lote no cabe en el cupo reservado; luego respeta los tokens/min."""
+    u = _groq_usage_load()
+    if u["tokens"] + estimado > GROQ_TOKENS_POR_DIA:
+        raise GroqExhausted(f"cupo diario de Groq reservado para traducción agotado ({u['tokens']}/{GROQ_TOKENS_POR_DIA} tokens hoy)")
+    _groq_esperar_cupo(estimado)
 
 
 def _groq_esperar_cupo(tokens: int):
@@ -551,7 +585,8 @@ def openai_translate_batch(tokenized_list: list, cache: dict, api_key: str,
         # gpt-oss en Groq no acepta response_format: se pide el JSON en el prompt y se parsea tolerante
         body.pop("response_format", None)
         body["messages"][0]["content"] += '\nDevuelve un objeto JSON {"items": [...]} con el array de traducciones, sin texto adicional.'
-        _groq_esperar_cupo(_tokens_estimados(body["messages"][0]["content"] + body["messages"][1]["content"]) * 2)
+        entrada_est = _tokens_estimados(body["messages"][0]["content"] + body["messages"][1]["content"])
+        _groq_reservar(entrada_est + len(body["messages"][1]["content"]) // 3)   # + salida ≈ el texto a traducir
     payload = json.dumps(body).encode("utf-8")
     req = urllib.request.Request(
         GROQ_API if _BACKEND == "groq" else OPENAI_API,
@@ -591,7 +626,8 @@ def openai_translate_batch(tokenized_list: list, cache: dict, api_key: str,
                 cache[f"openai|{model}|{todo_texts[j]}"] = tr
             # Log gasto en cada batch para visibilidad
             if _BACKEND == "groq":
-                print(f"  [groq] lote ok (in={pt} out={ct}) | {model}", flush=True)
+                u = _groq_usage_add(pt + ct)
+                print(f"  [groq] lote ok (in={pt} out={ct}) | hoy {u['tokens']}/{GROQ_TOKENS_POR_DIA} tokens, {u['requests']} req | {model}", flush=True)
                 return out
             print(f"  [openai] +${cost_added:.5f} (in={pt} out={ct}) | total=${cost_total:.4f} / ${OPENAI_BUDGET_USD:.2f}", flush=True)
             if cost_total >= OPENAI_BUDGET_USD:
@@ -1222,6 +1258,8 @@ def main():
         global _BACKEND
         _BACKEND = "groq"
         args.provider, args.openai_key, args.openai_model = "openai", args.groq_key, args.groq_model
+        if args.batch_size == GEMINI_BATCH_SIZE:
+            args.batch_size = 40   # el system prompt (~700 tokens) se repite por lote: lotes más grandes rinden más cupo diario
 
     # Override budget si se especifico via CLI o env
     OPENAI_BUDGET_USD = float(args.openai_budget)
