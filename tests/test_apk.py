@@ -93,6 +93,7 @@ def test_buscar_apk_y_firmar_usa_keystore_propio(tmp_path, monkeypatch):
     assert apk_patch.buscar_apk(game) == tmp_path / "Juego.apk"
     monkeypatch.setattr(apk_patch, "ANDROID_DIR", tmp_path / "and"); monkeypatch.setattr(apk_patch, "SIGNER_JAR", tmp_path / "and" / "uber.jar")
     monkeypatch.setattr(apk_patch, "KEYSTORE", tmp_path / "and" / "k.jks"); monkeypatch.setattr(apk_patch, "KEYSTORE_PASS_FILE", tmp_path / "and" / "k.pass")
+    monkeypatch.setattr(apk_patch, "BUILD_TOOLS", tmp_path / "and" / "bt")   # sin build-tools → cae a uber-apk-signer
     (tmp_path / "and").mkdir(); (tmp_path / "and" / "uber.jar").write_bytes(b"jar")
     cmds = []
     def run(cmd, **k):
@@ -129,3 +130,23 @@ def test_web_sube_y_vincula_apk(server):
     (server.salida / "Juego-spanish.apk").write_bytes(b"PK"); (server.salida / ".Juego-spanish.part.apk").write_bytes(b"PK")
     s = server.call("GET", "/salida").json()["salida"]
     assert len(s) == 1 and s[0]["tipo"] == "android" and server.call("GET", "/salida/Juego-spanish.apk").headers.get("Content-Type") == "application/vnd.android.package-archive"
+
+
+def test_firmar_con_build_tools(tmp_path, monkeypatch):
+    bt = tmp_path / "bt"; bt.mkdir(); (bt / "zipalign").write_bytes(b"x"); (bt / "apksigner").write_bytes(b"x")
+    monkeypatch.setattr(apk_patch, "BUILD_TOOLS", bt); monkeypatch.setattr(apk_patch, "ANDROID_DIR", tmp_path)
+    monkeypatch.setattr(apk_patch, "KEYSTORE", tmp_path / "k.jks"); monkeypatch.setattr(apk_patch, "KEYSTORE_PASS_FILE", tmp_path / "k.pass")
+    (tmp_path / "k.jks").write_bytes(b"ks")
+    apk = tmp_path / "j.apk"; apk.write_bytes(b"PK")
+    cmds = []
+    def run(cmd, **k):
+        cmds.append(cmd)
+        if cmd[0].endswith("zipalign"):
+            Path(cmd[-1]).write_bytes(b"PK-aligned")
+        if cmd[0].endswith("apksigner"):
+            (tmp_path / "j.apk.idsig").write_bytes(b"sig")
+        return type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+    monkeypatch.setattr(apk_patch.subprocess, "run", run)
+    apk_patch.firmar(apk, log=lambda m: None)
+    assert cmds[0][1:5] == ["-p", "-f", "4", str(apk)] and cmds[1][1] == "sign" and "--min-sdk-version" in cmds[1] and cmds[1][-1] == str(apk)
+    assert apk.read_bytes() == b"PK-aligned" and not (tmp_path / "j.apk.idsig").exists() and not (tmp_path / "j.aligned.apk").exists()

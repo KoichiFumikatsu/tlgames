@@ -119,17 +119,37 @@ def asegurar_keystore(log=print) -> Path:
     return KEYSTORE
 
 
+BUILD_TOOLS = ANDROID_DIR / "build-tools"
+MIN_SDK = int(os.environ.get("APK_MIN_SDK", "21"))
+
+
 def firmar(apk: Path, log=print) -> None:
-    if not SIGNER_JAR.exists():
-        raise RuntimeError(f"falta {SIGNER_JAR} (uber-apk-signer)")
+    """zipalign + apksigner (build-tools de Android); si no están, uber-apk-signer. Firma v1+v2+v3 con nuestra llave."""
     ks = asegurar_keystore(log)
     clave = clave_keystore()
+    zipalign, apksigner = BUILD_TOOLS / "zipalign", BUILD_TOOLS / "apksigner"
+    if zipalign.exists() and apksigner.exists():
+        alineado = apk.with_name(apk.stem + ".aligned" + apk.suffix)
+        r = subprocess.run([str(zipalign), "-p", "-f", "4", str(apk), str(alineado)], capture_output=True, text=True, timeout=900)
+        if r.returncode != 0:
+            raise RuntimeError("zipalign falló: " + (r.stderr or r.stdout)[-300:])
+        alineado.replace(apk)
+        r = subprocess.run([str(apksigner), "sign", "--ks", str(ks), "--ks-key-alias", ALIAS, "--ks-pass", f"pass:{clave}", "--key-pass", f"pass:{clave}",
+                            "--min-sdk-version", str(MIN_SDK), str(apk)], capture_output=True, text=True, timeout=900)
+        if r.returncode != 0:
+            raise RuntimeError("apksigner falló: " + (r.stderr or r.stdout)[-400:])
+        for idsig in apk.parent.glob(apk.name + ".idsig"):
+            idsig.unlink()
+        log("[APK] alineado y firmado (apksigner)")
+        return
+    if not SIGNER_JAR.exists():
+        raise RuntimeError(f"faltan {BUILD_TOOLS}/zipalign+apksigner o {SIGNER_JAR}")
     r = subprocess.run(["java", "-jar", str(SIGNER_JAR), "--apks", str(apk), "--ks", str(ks), "--ksAlias", ALIAS, "--ksPass", clave,
                         "--ksKeyPass", clave, "--allowResign", "--overwrite"], capture_output=True, text=True, timeout=900)
     salida = (r.stdout or "") + (r.stderr or "")
     if r.returncode != 0 or "signed" not in salida.lower():
         raise RuntimeError("firma falló: " + salida[-400:])
-    log("[APK] alineado y firmado")
+    log("[APK] alineado y firmado (uber-apk-signer)")
 
 
 def portar(sdk: Path, game_path: Path, apk_in: Path, apk_out: Path, lang: str = "spanish", log=print) -> dict:
