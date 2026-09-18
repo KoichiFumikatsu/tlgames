@@ -1539,6 +1539,51 @@ def _renpy_backup_user_persistent(game_path: Path) -> str | None:
     return None
 
 
+_PROVIDER_LABEL = {"deepl": "DeepL", "groq": "Groq", "openai": "OpenAI"}
+_ORDEN_PROVIDERS = ["deepl", "groq", "openai"]
+
+
+def _provider_disponible(p: str) -> bool:
+    return bool({"deepl": os.environ.get("DEEPL_API_KEY"), "groq": os.environ.get("GROQ_API_KEY"),
+                 "openai": os.environ.get("OPENAI_API_KEY")}.get(p))
+
+
+def _cadena_providers(provider: str) -> list[str]:
+    """Orden automático DeepL → Groq (gratis, 8k tokens/min) → OpenAI, empezando por el provider elegido.
+    Si el preflight eligió OpenAI (DeepL sin cupo), Groq va antes por ser gratis."""
+    inicio = _ORDEN_PROVIDERS.index(provider) if provider in _ORDEN_PROVIDERS else 0
+    cadena = [p for p in _ORDEN_PROVIDERS[inicio:] if _provider_disponible(p)]
+    if provider == "openai" and _provider_disponible("groq") and "groq" not in cadena:
+        cadena.insert(0, "groq")
+    return cadena or [provider]
+
+
+def _run_translate_file(job: dict, rpy: Path, provider: str) -> tuple[bool, bool]:
+    """Corre translate.py sobre un .rpy. Devuelve (ok, cuota_agotada)."""
+    proc = subprocess.Popen(
+        [sys.executable, str(TL_TOOLS / "translate.py"), str(rpy), "--provider", provider],
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=str(ROOT), env=_translate_env(job),
+    )
+    out_lines = []
+    try:
+        for line in proc.stdout:
+            line = line.rstrip()
+            if not line: continue
+            out_lines.append(line)
+            job["progress"].append(f"  {line}")
+            m = _OAPI_SPENT_RE.search(line)
+            if m:
+                job["stats"]["openai_spent"] = float(m.group(1))
+    finally:
+        proc.wait(timeout=1800)
+    out = "\n".join(out_lines)
+    failed = proc.returncode != 0 or "[ABORT]" in out
+    if not failed:
+        return True, False
+    agotado = ("456" in out or "agotad" in out or "[ABORT]" in out or "Groq 429" in out or "BUDGET" in out)
+    return False, agotado
+
+
 def _v2_renpy_translate(job, game_path: Path, provider: str, tracker: StageTracker):
     tl_path = Path(job["tl_path"])
     rpy_files = sorted(tl_path.rglob("*.rpy"))
@@ -1558,8 +1603,10 @@ def _v2_renpy_translate(job, game_path: Path, provider: str, tracker: StageTrack
         "openai_spent": 0.0,
     })
 
-    active = provider
-    deepl_exhausted = False
+    cadena = _cadena_providers(provider)
+    idx = 0
+    job["stats"]["provider"] = _PROVIDER_LABEL.get(cadena[idx], cadena[idx].title())
+    job["stats"]["provider_chain"] = cadena
     files_done = 0
 
     for i, rpy in enumerate(rpy_files, 1):
@@ -1568,56 +1615,19 @@ def _v2_renpy_translate(job, game_path: Path, provider: str, tracker: StageTrack
         job["stats"]["files_done"] = i - 1
         tracker.set_pct("translate", pct, current_file=rpy.name)
 
-        proc = subprocess.Popen(
-            [sys.executable, str(TL_TOOLS / "translate.py"), str(rpy), "--provider", active],
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=str(ROOT), env=_translate_env(job),
-        )
-        out_lines = []
-        try:
-            for line in proc.stdout:
-                line = line.rstrip()
-                if not line: continue
-                out_lines.append(line)
-                job["progress"].append(f"  {line}")
-                m = _OAPI_SPENT_RE.search(line)
-                if m:
-                    job["stats"]["openai_spent"] = float(m.group(1))
-        finally:
-            proc.wait(timeout=1800)
-
-        failed = proc.returncode != 0 or any("[ABORT]" in l for l in out_lines)
-        if failed:
-            out = "\n".join(out_lines)
-            deepl_fail = active == "deepl" and (
-                "456" in out or "agotadas" in out or "[ABORT]" in out)
-            if deepl_fail and not deepl_exhausted:
-                deepl_exhausted = True
+        while True:
+            ok, agotado = _run_translate_file(job, rpy, cadena[idx])
+            if ok:
+                files_done += 1
+                break
+            if agotado and idx + 1 < len(cadena):
                 emit_event(job, "translate", "provider_switch",
-                           **{"from": "deepl", "to": "openai", "reason": "quota_exhausted"})
-                active = "openai"
-                job["stats"]["provider"] = "OpenAI"
-                proc2 = subprocess.Popen(
-                    [sys.executable, str(TL_TOOLS / "translate.py"), str(rpy),
-                     "--provider", "openai"],
-                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=str(ROOT), env=_translate_env(job),
-                )
-                for line in proc2.stdout:
-                    line = line.rstrip()
-                    if line:
-                        job["progress"].append(f"  {line}")
-                        m = _OAPI_SPENT_RE.search(line)
-                        if m: job["stats"]["openai_spent"] = float(m.group(1))
-                proc2.wait(timeout=1800)
-                if proc2.returncode == 0:
-                    files_done += 1
-                else:
-                    emit_event(job, "translate", "warn",
-                               message=f"openai fallo en {rpy.name}")
-            else:
-                emit_event(job, "translate", "warn",
-                           message=f"{rpy.name} fallo ({active})")
-        else:
-            files_done += 1
+                           **{"from": cadena[idx], "to": cadena[idx + 1], "reason": "quota_exhausted"})
+                idx += 1
+                job["stats"]["provider"] = _PROVIDER_LABEL.get(cadena[idx], cadena[idx].title())
+                continue
+            emit_event(job, "translate", "warn", message=f"{rpy.name} fallo ({cadena[idx]})")
+            break
 
     job["stats"]["files_done"] = files_done
 

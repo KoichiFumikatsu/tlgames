@@ -152,3 +152,44 @@ def test_normalizar_saltos_quita_el_punto_que_mete_deepl():
     assert f("A: x.\\nB: y\\n\\nC: z", "A: x.\\n B: y\\n\\n. C: z") == "A: x.\\nB: y\\n\\nC: z"
     assert f("Line one \\n two", "Línea uno \\n dos") == "Línea uno \\n dos"     # el source ya tenía espacios: se respetan
     assert f("sin saltos", "sin saltos. ") == "sin saltos. "
+
+
+def test_groq_como_provider_de_traduccion(monkeypatch):
+    visto = {}
+
+    class R:
+        def __init__(self, body): self.body = body
+        def __enter__(self): return self
+        def __exit__(self, *a): pass
+        def read(self): return self.body
+    def urlopen(req, timeout=0):
+        visto["url"] = req.full_url; visto["body"] = json.loads(req.data)
+        return R(json.dumps({"choices": [{"message": {"content": "```json\n{\"items\": [\"Hola ZT000Z\", \"Adiós\"]}\n```"}}], "usage": {"prompt_tokens": 50, "completion_tokens": 10}}).encode())
+    monkeypatch.setattr(translate.urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(translate, "_BACKEND", "groq")
+    monkeypatch.setattr(translate.time, "sleep", lambda s: None)
+    translate._groq_ventana.clear()
+    cache = {}
+    out = translate.openai_translate_batch(["Hello ZT000Z", "Bye"], cache, "gsk_x", "openai/gpt-oss-120b")
+    assert out == ["Hola ZT000Z", "Adiós"] and visto["url"] == translate.GROQ_API
+    assert "response_format" not in visto["body"] and '{"items": [...]}' in visto["body"]["messages"][0]["content"]
+    assert cache["openai|openai/gpt-oss-120b|Bye"] == "Adiós"
+    # 429 diario → GroqExhausted (el caller imprime [ABORT] y el pipeline pasa a OpenAI)
+    import urllib.error, io, email
+    def urlopen429(req, timeout=0):
+        raise urllib.error.HTTPError(req.full_url, 429, "Too Many Requests", email.message_from_string("Retry-After: 3"), io.BytesIO(b'{"error":{"message":"Rate limit reached ... requests per day (RPD): Limit 1000"}}'))
+    monkeypatch.setattr(translate.urllib.request, "urlopen", urlopen429)
+    with pytest.raises(translate.GroqExhausted):
+        translate.openai_translate_batch(["Other"], {}, "gsk_x", "openai/gpt-oss-120b")
+
+
+def test_cadena_de_providers(monkeypatch):
+    import pipeline_server as ps
+    for k, v in {"DEEPL_API_KEY": "d", "GROQ_API_KEY": "g", "OPENAI_API_KEY": "o"}.items():
+        monkeypatch.setenv(k, v)
+    assert ps._cadena_providers("deepl") == ["deepl", "groq", "openai"]
+    assert ps._cadena_providers("openai") == ["groq", "openai"]      # DeepL sin cupo → Groq gratis antes que OpenAI
+    monkeypatch.delenv("GROQ_API_KEY")
+    assert ps._cadena_providers("deepl") == ["deepl", "openai"] and ps._cadena_providers("groq") == ["openai"]
+    monkeypatch.delenv("OPENAI_API_KEY"); monkeypatch.delenv("DEEPL_API_KEY")
+    assert ps._cadena_providers("deepl") == ["deepl"]

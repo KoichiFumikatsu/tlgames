@@ -87,6 +87,63 @@ RATE_LIMIT_SEC_GEMINI = 4.1  # 15 RPM en gemini-2.5-flash-lite (~4s entre reques
 MAX_CONSEC_ERRORS = 3
 RETRY_BACKOFF = [2, 5, 15]
 
+# ---- Groq (compatible OpenAI; gratis: 1000 req/día y 8k tokens/min por modelo, 2026-09-17) ----
+GROQ_API = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = os.environ.get("GROQ_MODEL_TL", "openai/gpt-oss-120b")
+GROQ_TOKENS_POR_MINUTO = 7000     # margen bajo el límite real
+_groq_ventana: list = []          # (timestamp, tokens estimados) de los últimos 60 s
+_BACKEND = "openai"               # "openai" | "groq": lo fija main() con --provider groq
+
+
+class GroqExhausted(Exception):
+    """Cuota diaria de Groq agotada (o 429 persistente): el caller cambia de provider."""
+
+
+def _tokens_estimados(texto: str) -> int:
+    return len(texto) // 3 + 300
+
+
+def _groq_esperar_cupo(tokens: int):
+    """Duerme lo justo para no pasar GROQ_TOKENS_POR_MINUTO en la ventana móvil de 60 s."""
+    while True:
+        ahora = time.time()
+        _groq_ventana[:] = [(t, n) for t, n in _groq_ventana if ahora - t < 60]
+        if sum(n for _, n in _groq_ventana) + tokens <= GROQ_TOKENS_POR_MINUTO or not _groq_ventana:
+            _groq_ventana.append((ahora, tokens))
+            return
+        time.sleep(max(0.5, 60 - (ahora - _groq_ventana[0][0]) + 0.2))
+
+
+_RETRY_MSG_RE = re.compile(r"try again in ([\d.]+)(m|s|ms)")
+
+
+def _groq_retry_after(header, body: str, default: float) -> float:
+    if header:
+        try:
+            return min(120.0, max(1.0, float(header)))
+        except ValueError:
+            pass
+    m = _RETRY_MSG_RE.search(body or "")
+    if m:
+        n, u = float(m.group(1)), m.group(2)
+        return min(120.0, max(1.0, (n * 60 if u == "m" else n / 1000 if u == "ms" else n) + 1))
+    return default
+
+
+def _parsear_items(content: str) -> list:
+    """JSON {"items": [...]} o array suelto, tolerando cercas ``` y texto alrededor."""
+    c = content.strip()
+    c = re.sub(r"^```(?:json)?\s*|\s*```$", "", c)
+    try:
+        obj = json.loads(c)
+    except json.JSONDecodeError:
+        i, j = c.find("["), c.rfind("]")
+        if i < 0 or j < i:
+            raise
+        obj = json.loads(c[i:j + 1])
+    return obj.get("items", []) if isinstance(obj, dict) else obj
+
+
 # ---- OpenAI ----
 OPENAI_API = "https://api.openai.com/v1/chat/completions"
 OPENAI_MODEL = "gpt-4.1-nano"  # default mas barato: $0.10/1M in, $0.40/1M out
@@ -458,9 +515,9 @@ def openai_translate_batch(tokenized_list: list, cache: dict, api_key: str,
     if not todo_texts:
         return out
 
-    # Pre-flight: si ya pasamos el budget, abortar antes de gastar
+    # Pre-flight: si ya pasamos el budget, abortar antes de gastar (Groq es gratis: no aplica)
     usage = _openai_load_usage()
-    if usage["total_cost_usd"] >= OPENAI_BUDGET_USD:
+    if _BACKEND != "groq" and usage["total_cost_usd"] >= OPENAI_BUDGET_USD:
         raise OpenAIBudgetExceeded(
             f"Presupuesto OpenAI ${OPENAI_BUDGET_USD:.4f} alcanzado. "
             f"Gasto actual: ${usage['total_cost_usd']:.4f}. "
@@ -490,9 +547,14 @@ def openai_translate_batch(tokenized_list: list, cache: dict, api_key: str,
             },
         },
     }
+    if _BACKEND == "groq":
+        # gpt-oss en Groq no acepta response_format: se pide el JSON en el prompt y se parsea tolerante
+        body.pop("response_format", None)
+        body["messages"][0]["content"] += '\nDevuelve un objeto JSON {"items": [...]} con el array de traducciones, sin texto adicional.'
+        _groq_esperar_cupo(_tokens_estimados(body["messages"][0]["content"] + body["messages"][1]["content"]) * 2)
     payload = json.dumps(body).encode("utf-8")
     req = urllib.request.Request(
-        OPENAI_API,
+        GROQ_API if _BACKEND == "groq" else OPENAI_API,
         data=payload,
         headers={
             "Authorization": f"Bearer {api_key}",
@@ -501,6 +563,7 @@ def openai_translate_batch(tokenized_list: list, cache: dict, api_key: str,
         },
     )
     last_err = None
+    groq_429 = 0
     for delay in [0] + RETRY_BACKOFF:
         if delay:
             time.sleep(delay)
@@ -510,11 +573,10 @@ def openai_translate_batch(tokenized_list: list, cache: dict, api_key: str,
             usage_obj = data.get("usage") or {}
             pt = int(usage_obj.get("prompt_tokens", 0))
             ct = int(usage_obj.get("completion_tokens", 0))
-            cost_added, cost_total = _openai_track(model, pt, ct)
+            cost_added, cost_total = (0.0, _openai_load_usage()["total_cost_usd"]) if _BACKEND == "groq" else _openai_track(model, pt, ct)
             content = data["choices"][0]["message"].get("content", "")
             try:
-                parsed_obj = json.loads(content)
-                parsed = parsed_obj.get("items", [])
+                parsed = _parsear_items(content)
             except json.JSONDecodeError as je:
                 raise BatchSizeMismatch(f"respuesta no es JSON: {je}; raw[:200]={content[:200]!r}")
             if not isinstance(parsed, list):
@@ -528,6 +590,9 @@ def openai_translate_batch(tokenized_list: list, cache: dict, api_key: str,
                 out[idx] = tr
                 cache[f"openai|{model}|{todo_texts[j]}"] = tr
             # Log gasto en cada batch para visibilidad
+            if _BACKEND == "groq":
+                print(f"  [groq] lote ok (in={pt} out={ct}) | {model}", flush=True)
+                return out
             print(f"  [openai] +${cost_added:.5f} (in={pt} out={ct}) | total=${cost_total:.4f} / ${OPENAI_BUDGET_USD:.2f}", flush=True)
             if cost_total >= OPENAI_BUDGET_USD:
                 raise OpenAIBudgetExceeded(
@@ -539,6 +604,15 @@ def openai_translate_batch(tokenized_list: list, cache: dict, api_key: str,
                 raise RuntimeError(f"OpenAI HTTP {e.code}: {e.read().decode(errors='ignore')[:300]}")
             if e.code == 429:
                 body_err = e.read().decode(errors='ignore')[:300]
+                if _BACKEND == "groq":
+                    groq_429 += 1
+                    if "per day" in body_err.lower() or "requests per day" in body_err.lower() or groq_429 > 3:
+                        raise GroqExhausted(f"Groq 429: {body_err[:160]}")
+                    espera = _groq_retry_after(e.headers.get("Retry-After"), body_err, 15.0 * groq_429)
+                    print(f"\n  [groq 429] espero {espera:.0f}s", flush=True)
+                    time.sleep(espera)
+                    last_err = e
+                    continue
                 # Rate limit (no quota): backoff corto y reintentar
                 print(f"\n  [openai 429] {body_err[:120]}; retry in {delay or 2}s", flush=True)
                 last_err = e
@@ -547,7 +621,7 @@ def openai_translate_batch(tokenized_list: list, cache: dict, api_key: str,
             continue
         except BatchSizeMismatch:
             raise
-        except OpenAIBudgetExceeded:
+        except (OpenAIBudgetExceeded, GroqExhausted):
             raise
         except Exception as e:
             last_err = e
@@ -825,8 +899,8 @@ def process_dialogue(path: Path, limit: int, dry: bool, provider: str, email: st
                     [b.source for b in chunk], cache, glossary, api_key, openai_model,
                 )
                 consec_err = 0
-            except OpenAIBudgetExceeded as e:
-                print(f"\n  [BUDGET] {e}")
+            except (OpenAIBudgetExceeded, GroqExhausted) as e:
+                print(f"\n  [{'ABORT' if isinstance(e, GroqExhausted) else 'BUDGET'}] {e}")
                 save_cache(cache, provider)
                 if not dry:
                     path.write_text("".join(lines), encoding="utf-8")
@@ -979,8 +1053,8 @@ def process_strings(path: Path, limit: int, dry: bool, provider: str, email: str
                     [b.source for b in chunk], cache, glossary, api_key, openai_model,
                 )
                 consec_err = 0
-            except OpenAIBudgetExceeded as e:
-                print(f"\n  [BUDGET] {e}")
+            except (OpenAIBudgetExceeded, GroqExhausted) as e:
+                print(f"\n  [{'ABORT' if isinstance(e, GroqExhausted) else 'BUDGET'}] {e}")
                 save_cache(cache, provider)
                 if not dry:
                     path.write_text("".join(lines), encoding="utf-8")
@@ -1110,7 +1184,9 @@ def main():
     ap.add_argument("file", help="archivo .rpy a traducir")
     ap.add_argument("--dry", action="store_true", help="no escribir archivo")
     ap.add_argument("--limit", type=int, default=0, help="max bloques vacios a traducir")
-    ap.add_argument("--provider", choices=["deepl", "mymemory", "gemini", "openai"], default="deepl")
+    ap.add_argument("--provider", choices=["deepl", "mymemory", "gemini", "openai", "groq"], default="deepl")
+    ap.add_argument("--groq-key", default=os.environ.get("GROQ_API_KEY", ""), help="key de Groq (o GROQ_API_KEY)")
+    ap.add_argument("--groq-model", default=GROQ_MODEL, help=f"modelo en Groq (default {GROQ_MODEL}; env GROQ_MODEL_TL)")
     ap.add_argument("--email", default="", help="email para subir cuota MyMemory")
     ap.add_argument("--deepl-key", default=os.environ.get("DEEPL_API_KEY", ""),
                     help="API key de DeepL (o env DEEPL_API_KEY)")
@@ -1139,6 +1215,13 @@ def main():
         sys.exit("--provider gemini requiere --gemini-key o variable GEMINI_API_KEY")
     if args.provider == "openai" and not args.openai_key:
         sys.exit("--provider openai requiere --openai-key o variable OPENAI_API_KEY")
+    if args.provider == "groq":
+        # Groq = mismo camino que OpenAI (chat/completions por lotes) con otro endpoint, modelo y sin costo
+        if not args.groq_key:
+            sys.exit("--provider groq requiere --groq-key o variable GROQ_API_KEY")
+        global _BACKEND
+        _BACKEND = "groq"
+        args.provider, args.openai_key, args.openai_model = "openai", args.groq_key, args.groq_model
 
     # Override budget si se especifico via CLI o env
     OPENAI_BUDGET_USD = float(args.openai_budget)
