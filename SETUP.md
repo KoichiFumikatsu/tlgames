@@ -286,3 +286,18 @@ Tres piezas, todas encendidas por defecto en `tools/pipeline_settings.json`:
   del LLM se aplica al `new "..."` del par N sólo si el fragmento aparece una vez
   y el resultado conserva tags `{}`/`[]`/`|x|` y los `\n`. El reporte marca los
   avisos aplicados con `✔ corregido` y el job guarda `qa_fixed`.
+
+## Motores: Unity genérico y RPG Maker
+
+- **Unity sin sistema JSON nativo** ya no queda en `unsupported`: `tools/tl/unity_xunity.py`
+  detecta el build (Mono/IL2CPP, x64/x86 por cabecera PE), descarga a `unity.xunity_cache_dir`
+  (default `~/apps/unity-tl`) BepInEx 5.4.23.3 y XUnity.AutoTranslator 5.4.5, los extrae en la
+  raíz del juego, escribe `BepInEx/config/AutoTranslatorConfig.ini` (`Language=es`,
+  `FromLanguage=en`, `Endpoint=` según `unity.xunity_endpoint`, default `GoogleTranslateV2`
+  para lo que no se pre-tradujo) y, si `unity.xunity_pretranslate`, extrae los textos
+  estáticos de `level*`/`*.assets`/`resources` y los traduce (DeepL → OpenAI) a
+  `BepInEx/Translation/es/Text/_static.txt`. Sólo builds Mono; IL2CPP necesita BepInEx 6 y
+  queda marcado como no soportado con el motivo. El paquete de salida incluye BepInEx.
+- **RPG Maker MV/MZ**: además de base de datos, eventos y mapas, ahora se traducen los
+  `terms` de `System.json` (basic/commands/params/messages). Los prompts OpenAI de Unity y
+  RPG Maker llevan la misma guía de estilo que Ren'Py (`tools/tl/style_es.py`).

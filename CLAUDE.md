@@ -88,7 +88,14 @@ curl -s -X POST http://localhost:8765/qa -H "Content-Type: application/json" \
   -d '{"dir": "/ruta/absoluta"}'
 ```
 
-El QA usa Ollama `llama3.2:3b` en CPU local. Para JSONL Naninovel (Unity): `python3 tools/unity/lint_naninovel_jsonl.py <archivo.jsonl>`.
+El QA usa Groq `openai/gpt-oss-20b` si hay `GROQ_API_KEY` (8k tokens/min: lotes de 20 pares, ventana móvil de tokens, reintentos con Retry-After); si no, Ollama `llama3.2:3b` en CPU local. Con `"fix": true` en el body (el pipeline lo manda si `qa.autofix`) aplica al `.rpy` las sugerencias seguras `[N] TIPO: malo → bueno` y marca `✔ corregido` en el reporte. Para JSONL Naninovel (Unity): `python3 tools/unity/lint_naninovel_jsonl.py <archivo.jsonl>`.
+
+### Calidad y motores (2026-09-17)
+
+- Ren'Py: glosario por juego (`tools/tl/game_glossary.py`, nombres de `Character()` protegidos, `TL_GLOSSARY`), guía de estilo compartida (`tools/tl/style_es.py`, en todos los prompts OpenAI/Gemini; DeepL `formality=prefer_less`), `lib_rpy.normalizar_saltos()` para el `
+` literal, autofix post-QA. Detalle en `SETUP.md`.
+- Unity con JSON nativo (`StreamingAssets/Translations/English`): `tools/tl/translate_unity_json.py`. Unity sin JSON nativo: `tools/tl/unity_xunity.py` instala BepInEx 5 + XUnity.AutoTranslator (sólo builds Mono; IL2CPP sigue manual), escribe `AutoTranslatorConfig.ini` y pre-traduce los textos estáticos a `BepInEx/Translation/es/Text/_static.txt`. Zips cacheados en `~/apps/unity-tl/`.
+- RPG Maker MV/MZ: `tools/tl/translate_rpgmaker.py` (data/*.json: base de datos, eventos, mapas, `System.json` gameTitle + terms) + `lint_rpgmaker.py`.
 
 ### Version Tracker
 
