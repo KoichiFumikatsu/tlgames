@@ -304,6 +304,10 @@ def aplicar_correcciones(path: Path, propuestas: list[dict]) -> int:
     return aplicadas
 
 
+class CupoAgotado(Exception):
+    """Cupo diario de Groq (200K tokens/día por modelo) agotado: el QA se corta y queda parcial, sin bloquear el paquete."""
+
+
 def qa_file(path: Path, fix: bool = False) -> dict:
     """QA completo de un archivo .rpy. Retorna dict con resultados.
     Con fix=True aplica al archivo las sugerencias seguras del LLM (ver proponer_correcciones)."""
@@ -318,6 +322,13 @@ def qa_file(path: Path, fix: bool = False) -> dict:
         chunk = pairs[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]
         print(f"  lote {i+1}/{batches} ({len(chunk)} pares)...", end=" ", flush=True)
         found = _qa_dispatch(chunk, i)
+        if any("per day" in f.lower() or "429 persistente" in f for f in found if f.startswith("[ERROR]")):
+            issues.extend(x for x in found if not x.startswith("[ERROR]"))
+            fixes = proponer_correcciones(pairs, issues)
+            fixed = aplicar_correcciones(path, fixes) if fix else 0
+            r = {"file": str(path), "translated": translated, "issues": issues, "batches": batches, "fixes": fixes, "fixed": fixed,
+                 "parcial": f"cupo diario de Groq agotado en el lote {i + 1}/{batches}"}
+            raise CupoAgotado(r)
         issues.extend(found)
         print(f"{len(found)} issues")
 
@@ -332,9 +343,16 @@ def qa_directory(directory: Path, fix: bool = False) -> list[dict]:
     """QA de todos los .rpy en un directorio."""
     results = []
     rpy_files = sorted(directory.glob("**/*.rpy"))
-    for rpy in rpy_files:
+    for n, rpy in enumerate(rpy_files):
         print(f"\n[{rpy.name}]")
-        results.append(qa_file(rpy, fix=fix))
+        try:
+            results.append(qa_file(rpy, fix=fix))
+        except CupoAgotado as e:
+            parcial = e.args[0]
+            parcial["parcial"] += f"; {len(rpy_files) - n - 1} archivo(s) sin revisar"
+            results.append(parcial)
+            print("  " + parcial["parcial"])
+            break
     return results
 
 

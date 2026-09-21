@@ -203,3 +203,21 @@ def test_cadena_de_providers(monkeypatch):
     assert ps._cadena_providers("deepl") == ["deepl", "openai"] and ps._cadena_providers("groq") == ["openai"]
     monkeypatch.delenv("OPENAI_API_KEY"); monkeypatch.delenv("DEEPL_API_KEY")
     assert ps._cadena_providers("deepl") == ["deepl"]
+
+
+def test_qa_se_corta_limpio_si_groq_agota_el_cupo_diario(tmp_path, monkeypatch):
+    for n in ("a", "b", "c"):
+        (tmp_path / f"{n}.rpy").write_text(RPY, encoding="utf-8")
+    llamadas = []
+    def dispatch(pairs, i):
+        llamadas.append(i)
+        if len(llamadas) == 2:
+            return ["[ERROR] Groq HTTP 429: rate limit reached ... tokens per day (TPD): Limit 200000"]
+        return ['[1] GÉNERO: "La aventurero" → "El aventurero"']
+    monkeypatch.setattr(qa_renpy, "_qa_dispatch", dispatch)
+    monkeypatch.setattr(qa_renpy, "BATCH_SIZE", 2)
+    res = qa_renpy.qa_directory(tmp_path, fix=True)
+    assert len(res) == 1 and res[0]["fixed"] == 1 and res[0]["parcial"] == "cupo diario de Groq agotado en el lote 2/2; 2 archivo(s) sin revisar"
+    assert not any(i.startswith("[ERROR]") for i in res[0]["issues"]) and len(llamadas) == 2
+    with pytest.raises(qa_renpy.CupoAgotado):
+        qa_renpy.qa_file(tmp_path / "c.rpy")

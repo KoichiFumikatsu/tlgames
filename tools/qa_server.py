@@ -79,13 +79,17 @@ class QAHandler(BaseHTTPRequestHandler):
                 if not target.exists():
                     self.send_json(400, {"error": f"Archivo no encontrado: {file_path}"})
                     return
-                results = [qa_renpy.qa_file(target, fix=fix)]
+                try:
+                    results = [qa_renpy.qa_file(target, fix=fix)]
+                except qa_renpy.CupoAgotado as e:
+                    results = [e.args[0]]
 
             report = qa_renpy.render_report(results)
             total_issues = sum(len(r["issues"]) for r in results)
 
             self.send_json(200, {
                 "issues_total": total_issues,
+                "parcial": next((r["parcial"] for r in results if r.get("parcial")), ""),
                 "fixed_total": sum(r.get("fixed", 0) for r in results),
                 "files": len(results),
                 "report": report,

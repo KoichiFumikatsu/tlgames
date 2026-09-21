@@ -1956,6 +1956,9 @@ def _v2_lint_qa(job, game_path: Path, engine: str, settings: dict, tracker: Stag
         job["qa_fixed"] = qa_fixed
         if qa_fixed:
             job["progress"].append(f"  QA: {qa_fixed} de {qa_issues} avisos corregidos automáticamente")
+        if qa_data.get("parcial"):
+            job["qa_parcial"] = qa_data["parcial"]
+            emit_event(job, "lint_qa", "warn", message=f"QA parcial: {qa_data['parcial']} (cupo diario de Groq; el paquete sale igual)")
     except Exception as e:
         emit_event(job, "lint_qa", "warn",
                    message=f"qa_server no respondio en {qa_timeout}s: {e} (continuando sin QA semantico)")
@@ -1987,6 +1990,7 @@ def _v2_lint_qa(job, game_path: Path, engine: str, settings: dict, tracker: Stag
         "lint_warnings": lint_warnings,
         "qa_issues": qa_issues,
         "qa_fixed": qa_fixed,
+        "qa_parcial": job.get("qa_parcial"),
         "renpy_lint": ({"ok": puerta.get("ok"), "intentos": puerta.get("intentos"), "revertidas": puerta.get("revertidas", [])[:20]} if puerta else None),
     })
 
