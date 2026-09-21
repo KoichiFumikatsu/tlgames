@@ -97,6 +97,19 @@ def _game_name(name):
     return name
 
 
+class _Acotado:
+    """Lector que entrega como mucho `restante` bytes del archivo (para respuestas 206 con Range)."""
+    def __init__(self, fh, restante):
+        self.fh, self.restante = fh, restante
+
+    def read(self, n=-1):
+        if self.restante <= 0:
+            return b""
+        trozo = self.fh.read(self.restante if n is None or n < 0 else min(n, self.restante))
+        self.restante -= len(trozo)
+        return trozo
+
+
 def copy_upload(source, destination, length):
     remaining = length
     while remaining:
@@ -392,9 +405,27 @@ class PublicHandlerMixin:
         except (ValueError, OSError):
             return self.send_json(404, {"error": "Paquete no encontrado"})
         with source:
-            self.send_response(200)
+            total = os.fstat(source.fileno()).st_size
+            inicio, fin = 0, total - 1
+            rango = re.fullmatch(r"bytes=(\d*)-(\d*)", (self.headers.get("Range") or "").strip())
+            parcial = False
+            if rango and total and (rango.group(1) or rango.group(2)):   # reanudar descargas grandes (500 MB por Funnel se cortan)
+                if rango.group(1):
+                    inicio = int(rango.group(1)); fin = int(rango.group(2)) if rango.group(2) else total - 1
+                else:
+                    inicio = max(0, total - int(rango.group(2)))
+                fin = min(fin, total - 1)
+                if inicio > fin or inicio >= total:
+                    self.send_response(416); self.send_header("Content-Range", f"bytes */{total}"); self.send_header("Content-Length", "0"); self.end_headers()
+                    return
+                parcial = True
+            self.send_response(206 if parcial else 200)
             self.send_header("Content-Type", "application/vnd.android.package-archive" if path.suffix.lower() == ".apk" else "application/zip")
-            self.send_header("Content-Length", str(os.fstat(source.fileno()).st_size))
+            self.send_header("Accept-Ranges", "bytes")
+            self.send_header("Content-Length", str(fin - inicio + 1))
+            if parcial:
+                self.send_header("Content-Range", f"bytes {inicio}-{fin}/{total}")
             self.send_header("Content-Disposition", "attachment; filename*=UTF-8''" + quote(path.name, safe=""))
             self.end_headers()
-            shutil.copyfileobj(source, self.wfile, CHUNK_SIZE)
+            source.seek(inicio)
+            shutil.copyfileobj(_Acotado(source, fin - inicio + 1), self.wfile, CHUNK_SIZE)

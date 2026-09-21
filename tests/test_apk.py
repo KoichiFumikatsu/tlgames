@@ -150,3 +150,16 @@ def test_firmar_con_build_tools(tmp_path, monkeypatch):
     apk_patch.firmar(apk, log=lambda m: None)
     assert cmds[0][1:5] == ["-p", "-f", "4", str(apk)] and cmds[1][1] == "sign" and "--min-sdk-version" in cmds[1] and cmds[1][-1] == str(apk)
     assert apk.read_bytes() == b"PK-aligned" and not (tmp_path / "j.apk.idsig").exists() and not (tmp_path / "j.aligned.apk").exists()
+
+
+def test_descarga_con_rango_para_reanudar(server):
+    (server.salida / "Juego-spanish.zip").write_bytes(bytes(range(256)) * 4)   # 1024 bytes
+    r = server.call("GET", "/salida/Juego-spanish.zip")
+    assert r.status == 200 and r.headers.get("Accept-Ranges") == "bytes" and len(r.body) == 1024
+    r = server.call("GET", "/salida/Juego-spanish.zip", headers={"Range": "bytes=1000-"})
+    assert r.status == 206 and r.headers.get("Content-Range") == "bytes 1000-1023/1024" and r.body == (bytes(range(256)) * 4)[1000:]
+    r = server.call("GET", "/salida/Juego-spanish.zip", headers={"Range": "bytes=0-9"})
+    assert r.status == 206 and r.body == bytes(range(10)) and r.headers.get("Content-Length") == "10"
+    r = server.call("GET", "/salida/Juego-spanish.zip", headers={"Range": "bytes=-4"})
+    assert r.status == 206 and r.body == bytes([252, 253, 254, 255])
+    assert server.call("GET", "/salida/Juego-spanish.zip", headers={"Range": "bytes=5000-"}).status == 416
