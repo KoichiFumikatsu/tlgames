@@ -108,10 +108,24 @@ def parse_rpy(path: Path) -> list[dict]:
         r'#\s*([^\n]+)\n\s+old\s+"((?:[^"\\]|\\.)*)"\s*\n\s+new\s+"((?:[^"\\]|\\.)*)"',
         re.DOTALL,
     )
-    for m in pattern.finditer(content):
-        location = m.group(1).strip()
-        source = m.group(2)
-        target = m.group(3)
+    candidatos = [(m.group(1).strip(), m.group(2), m.group(3), None) for m in pattern.finditer(content)]
+    # Bloques de diálogo: '# who "src"' seguido de 'who "tgt"' (con o sin atributos/sufijo)
+    lineas = content.splitlines()
+    for i, l in enumerate(lineas):
+        s = l.strip()
+        if not s.startswith("#") or '"' not in s or i + 1 >= len(lineas):
+            continue
+        orig = _partir(s.lstrip("#").strip())
+        j = i + 1
+        while j < len(lineas) and not lineas[j].strip():
+            j += 1
+        if j >= len(lineas) or lineas[j].strip().startswith(("#", "old ", "new ", "translate ")):
+            continue
+        tr = _partir(lineas[j].strip())
+        if not orig or not tr:
+            continue
+        candidatos.append((f"{Path(path).name}:{j + 1}", orig[1], tr[1], j + 1))
+    for location, source, target, linea in candidatos:
         # Saltar no traducidos (target vacío o igual al source)
         clean_src = PROTECTED_RE.sub("", source).strip()
         clean_tgt = PROTECTED_RE.sub("", target).strip()
@@ -120,8 +134,16 @@ def parse_rpy(path: Path) -> list[dict]:
         # Saltar pares de 1-2 palabras (nombres de stats, atributos): poco contexto para QA semántico
         if len(clean_src.split()) <= 2 and len(clean_tgt.split()) <= 2:
             continue
-        pairs.append({"location": location, "source": source, "target": target})
+        pairs.append({"location": location, "source": source, "target": target, **({"linea": linea} if linea else {})})
     return pairs
+
+
+_DIALOGO_RE = re.compile(r'^([^"]*?)\s*"((?:[^"\\]|\\.)*)"\s*([^"]*?)\s*$')
+
+
+def _partir(s: str):
+    m = _DIALOGO_RE.match(s)
+    return (m.group(1).strip(), m.group(2), m.group(3).strip()) if m else None
 
 
 def _build_user_content(pairs: list[dict], batch_idx: int) -> str:
@@ -317,7 +339,7 @@ def proponer_correcciones(pairs: list[dict], issues: list[str]) -> list[dict]:
         if nuevo == target or _TAG_RE.findall(nuevo) != _TAG_RE.findall(target) or nuevo.count("\\n") != target.count("\\n"):
             continue
         out.append({"n": it["n"], "tipo": it["tipo"], "location": p["location"], "source": p["source"],
-                    "target": target, "nuevo": nuevo, "raw": raw})
+                    "target": target, "nuevo": nuevo, "raw": raw, **({"linea": p["linea"]} if p.get("linea") else {})})
     return out
 
 
@@ -327,9 +349,25 @@ def aplicar_correcciones(path: Path, propuestas: list[dict]) -> int:
         return 0
     content = path.read_text(encoding="utf-8-sig", errors="replace")
     aplicadas = 0
+    lineas = None
     for c in propuestas:
+        if c.get("linea"):   # diálogo: se reemplaza el texto de esa línea conservando prefijo/sufijo
+            lineas = content.splitlines(keepends=True) if lineas is None else lineas
+            idx = c["linea"] - 1
+            p = _partir(lineas[idx].strip()) if 0 <= idx < len(lineas) else None
+            n = 0
+            if p and p[1] == c["target"]:
+                indent = lineas[idx][: len(lineas[idx]) - len(lineas[idx].lstrip())]
+                lineas[idx] = f'{indent}{p[0] + " " if p[0] else ""}"{c["nuevo"]}"{" " + p[2] if p[2] else ""}\n'
+                n = 1
+            content = "".join(lineas) if n else content
+            aplicadas += n
+            c["aplicada"] = bool(n)
+            continue
         bloque = re.compile(r'(old\s+"' + re.escape(c["source"]) + r'"\s*\n\s+new\s+")' + re.escape(c["target"]) + r'"')
         content, n = bloque.subn(lambda m, nuevo=c["nuevo"]: m.group(1) + nuevo + '"', content, count=1)
+        if n:
+            lineas = None
         aplicadas += n
         c["aplicada"] = bool(n)
     if aplicadas:

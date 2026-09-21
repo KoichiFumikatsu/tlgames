@@ -246,3 +246,40 @@ def test_qa_rota_modelos_groq_y_cae_a_openai(monkeypatch):
     assert qa_renpy.groq_qa(pares, 3)[0].startswith("[ERROR] Groq HTTP 429: cupo diario agotado")
     assert "(x)" not in qa_renpy._build_user_content(pares, 0)      # sin ubicación: menos tokens por par
     qa_renpy._groq_agotados.clear()
+
+
+DIALOGO = '''# game/x.rpy:5
+translate spanish start_1:
+
+    # ve neu "Hello there, [mc]!"
+    ve neu "Hola ahí, [mc]!"
+
+# game/x.rpy:7
+translate spanish start_2:
+
+    # s "Sure, thing." nointeract
+    s "Sure, thing." nointeract
+
+# game/x.rpy:9
+translate spanish start_3:
+
+    # "She makes sense of it all." with vpunch
+    "Ella hace sentido de todo." with vpunch
+'''
+
+
+def test_dialogo_con_atributos_y_sufijos_se_parsea_traduce_y_revisa(tmp_path):
+    import lib_rpy
+    rpy = tmp_path / "x.rpy"; rpy.write_text(DIALOGO, encoding="utf-8")
+    bloques = lib_rpy.parse_dialogue_file(str(rpy))
+    assert [(b.char, b.source, b.current_target) for b in bloques] == [("ve neu", "Hello there, [mc]!", "Hola ahí, [mc]!"), ("s", "Sure, thing.", "Sure, thing."), ("", "She makes sense of it all.", "Ella hace sentido de todo.")]
+    assert lib_rpy.write_target_line('    ve neu "x"\n', "¡Hola!") == '    ve neu "¡Hola!"\n'
+    assert lib_rpy.write_target_line('    s "x" nointeract\n', 'Dijo "sí"') == '    s "Dijo \\"sí\\"" nointeract\n'
+    assert lib_rpy.write_target_line('    "x" with vpunch\n', "Narra.") == '    "Narra." with vpunch\n'
+    # QA: los diálogos entran (antes solo old/new) y las correcciones se aplican en su línea conservando prefijo y sufijo
+    pares = qa_renpy.parse_rpy(rpy)
+    assert [(p["source"], p["target"], p.get("linea")) for p in pares] == [("Hello there, [mc]!", "Hola ahí, [mc]!", 5), ("She makes sense of it all.", "Ella hace sentido de todo.", 15)]
+    props = qa_renpy.proponer_correcciones(pares, ['[2] CALCO: "hace sentido de todo" → "le encuentra sentido a todo"', "[1] LITERAL: Hola ahí → Hola"])
+    assert qa_renpy.aplicar_correcciones(rpy, props) == 2
+    texto = rpy.read_text(encoding="utf-8")
+    assert '    "Ella le encuentra sentido a todo." with vpunch' in texto and '    ve neu "Hola, [mc]!"' in texto and 's "Sure, thing." nointeract' in texto

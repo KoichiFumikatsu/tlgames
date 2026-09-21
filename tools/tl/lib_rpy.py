@@ -19,6 +19,19 @@ TOKEN_PATTERNS = [
     (re.compile(r"%\([a-zA-Z_]+\)[sd]"), "PCT"),       # %(name)s formatting
 ]
 
+# Línea de diálogo Ren'Py: [quién [atributos…]] "texto" [nointeract | with X | (multiple=2) …]
+# El prefijo y el sufijo no llevan comillas; el texto admite \" escapadas.
+DIALOGO_RE = re.compile(r'^([^"]*?)\s*"((?:[^"\\]|\\.)*)"\s*([^"]*?)\s*$')
+
+
+def partir_dialogo(linea: str):
+    """(prefijo, texto, sufijo) de una línea de diálogo ya sin indentación ni '#', o None."""
+    m = DIALOGO_RE.match(linea.strip())
+    if not m:
+        return None
+    return m.group(1).strip(), m.group(2), m.group(3).strip()
+
+
 @dataclass
 class DialogueBlock:
     """Bloque 'translate spanish <label>:' del script.rpy."""
@@ -112,22 +125,15 @@ def parse_dialogue_file(path: str) -> list[DialogueBlock]:
         if comment_line is None or target_line is None:
             i += 1
             continue
-        # Extraer char y source del comentario
-        cm = re.match(r'#\s*(\S+)?\s*"(.*)"\s*$', lines[comment_line].strip())
-        if not cm:
-            # Caso narrador: # "..."
-            cm = re.match(r'#\s*"(.*)"\s*$', lines[comment_line].strip())
-            if not cm:
-                i += 1
-                continue
-            char = ""
-            source = cm.group(1)
-        else:
-            char = cm.group(1) or ""
-            source = cm.group(2)
-        # Extraer target actual
-        tm = re.match(r'(\S+)?\s*"(.*)"\s*$', lines[target_line].strip())
-        current = tm.group(2) if tm else ""
+        # Extraer char y source del comentario: '# ve neu "texto" nointeract' → char "ve neu"
+        cp = partir_dialogo(lines[comment_line].strip().lstrip("#"))
+        if not cp:
+            i += 1
+            continue
+        char, source, _ = cp
+        # Extraer target actual (misma forma, con o sin atributos/sufijo)
+        tp = partir_dialogo(lines[target_line])
+        current = tp[1] if tp else ""
         blocks.append(DialogueBlock(
             label=label, char=char, source=source,
             line_start=line_start, line_comment=comment_line,
@@ -179,14 +185,12 @@ def write_target_line(original_line: str, new_text: str) -> str:
     if rest.startswith("new ") or rest.startswith("old "):
         prefix = rest.split('"', 1)[0]
         return f'{indent}{prefix}"{_escape(new_text)}"\n'
-    # Caso 'char "..."' o '"..."'
-    m = re.match(r'(\S+)?\s*"(.*)"\s*$', rest)
-    if not m:
+    # Caso 'char [atributos] "..." [sufijo]' o '"..."': se conservan prefijo y sufijo
+    p = partir_dialogo(rest)
+    if not p:
         return original_line
-    char = m.group(1) or ""
-    if char:
-        return f'{indent}{char} "{_escape(new_text)}"\n'
-    return f'{indent}"{_escape(new_text)}"\n'
+    prefijo, _, sufijo = p
+    return f'{indent}{prefijo + " " if prefijo else ""}"{_escape(new_text)}"{" " + sufijo if sufijo else ""}\n'
 
 def _escape(text: str) -> str:
     """Escapa comillas internas sin tocar las ya escapadas."""
