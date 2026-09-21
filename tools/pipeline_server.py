@@ -1956,6 +1956,8 @@ def _v2_lint_qa(job, game_path: Path, engine: str, settings: dict, tracker: Stag
         job["qa_fixed"] = qa_fixed
         if qa_fixed:
             job["progress"].append(f"  QA: {qa_fixed} de {qa_issues} avisos corregidos automáticamente")
+        if (qa_data.get("openai") or {}).get("in"):
+            job["progress"].append(f"  QA: Groq agotado ({', '.join(qa_data.get('groq_agotados') or [])}) → OpenAI {qa_data['openai']['in'] + qa_data['openai']['out']} tokens ≈ US${qa_data['openai']['usd']}")
         if qa_data.get("parcial"):
             job["qa_parcial"] = qa_data["parcial"]
             emit_event(job, "lint_qa", "warn", message=f"QA parcial: {qa_data['parcial']} (cupo diario de Groq; el paquete sale igual)")

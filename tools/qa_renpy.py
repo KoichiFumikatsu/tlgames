@@ -35,9 +35,19 @@ OLLAMA_MODEL = "llama3.2:3b"
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODEL = "openai/gpt-oss-20b"  # free tier; los llama-3.x ya no existen en la cuenta (2026-09-17)
+# Cada modelo de Groq tiene su propio cupo diario (200K tokens/día): se rota cuando uno se agota. gpt-oss-120b va de
+# último porque lo comparten el briefing y la traducción. Env GROQ_QA_MODELS="a,b,c" para cambiar el orden.
+GROQ_MODELS = [m.strip() for m in os.environ.get("GROQ_QA_MODELS", "openai/gpt-oss-20b,qwen/qwen3.8-27b,openai/gpt-oss-120b").split(",") if m.strip()]
+_groq_agotados: set = set()          # modelos sin cupo diario (se limpia al cambiar el día UTC)
+_groq_agotados_dia = ""
+# Respaldo de pago cuando todo Groq se agota (gpt-4.1-nano: US$0,10/1M entrada, 0,40 salida → un juego grande ≈ US$0,05)
+OPENAI_URL = "https://api.openai.com/v1/chat/completions"
+OPENAI_QA_MODEL = os.environ.get("OPENAI_QA_MODEL", "gpt-4.1-nano")
+OPENAI_QA_FALLBACK = os.environ.get("QA_OPENAI_FALLBACK", "1") not in ("0", "false", "no")
+_openai_tokens = {"in": 0, "out": 0}
 
 MODEL = OLLAMA_MODEL  # backward compat con codigo antiguo
-BATCH_SIZE = 20  # pares por llamada al LLM (Groq free: 8k tokens/min → lotes chicos)
+BATCH_SIZE = 30  # pares por llamada al LLM (el pacing por tokens/min ya cuida el 8k TPM de Groq)
 BACKEND = "auto"  # 'auto' | 'groq' | 'ollama'
 GROQ_RATE_LIMIT_DELAY = 2.0  # segundos entre requests para respetar 30/min
 GROQ_TOKENS_POR_MINUTO = 7000  # margen bajo el límite real (8000 TPM en openai/gpt-oss-20b, 2026-09-17)
@@ -120,7 +130,7 @@ def _build_user_content(pairs: list[dict], batch_idx: int) -> str:
         n = batch_idx * BATCH_SIZE + i
         src = p["source"].replace("\n", "\\n")
         tgt = p["target"].replace("\n", "\\n")
-        lines.append(f"[{n}] EN: {src!r} | ES: {tgt!r}  ({p['location']})")
+        lines.append(f"[{n}] EN: {src!r} | ES: {tgt!r}")
     return "Revisa estas traducciones:\n" + "\n".join(lines)
 
 
@@ -155,62 +165,85 @@ def ollama_qa(pairs: list[dict], batch_idx: int) -> list[str]:
 _groq_last_call_ts = 0.0
 
 
-def groq_qa(pairs: list[dict], batch_idx: int) -> list[str]:
-    """Envía un lote a Groq API (OpenAI-compatible). Free tier 30 req/min."""
-    global _groq_last_call_ts
-    api_key = os.environ.get("GROQ_API_KEY", "").strip()
-    if not api_key:
-        return ["[ERROR] GROQ_API_KEY no configurada en .env"]
+def _modelos_groq() -> list[str]:
+    """Modelos con cupo diario disponible (el cupo se reinicia a las 00:00 UTC)."""
+    global _groq_agotados_dia
+    hoy = time.strftime("%Y-%m-%d", time.gmtime())
+    if hoy != _groq_agotados_dia:
+        _groq_agotados.clear()
+        _groq_agotados_dia = hoy
+    orden = [GROQ_MODEL] + [m for m in GROQ_MODELS if m != GROQ_MODEL] if GROQ_MODEL not in GROQ_MODELS else GROQ_MODELS
+    return [m for m in orden if m not in _groq_agotados]
 
-    # Rate limit: 30 req/min = 1 cada 2s. Espera si necesario.
-    elapsed = time.time() - _groq_last_call_ts
-    if elapsed < GROQ_RATE_LIMIT_DELAY:
-        time.sleep(GROQ_RATE_LIMIT_DELAY - elapsed)
-    _groq_last_call_ts = time.time()
 
-    contenido = _build_user_content(pairs, batch_idx)
-    _groq_esperar_cupo(_tokens_estimados(SYSTEM_PROMPT + contenido))
-    payload = {
-        "model": GROQ_MODEL,
-        "temperature": 0.1,
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": contenido},
-        ],
-    }
-    req = urllib.request.Request(
-        GROQ_URL,
-        data=json.dumps(payload).encode(),
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}",
-            # Cloudflare frente a Groq bloquea User-Agent "Python-urllib/X.Y" con error 1010
-            "User-Agent": "tlgames-qa/1.0 (+https://localhost:8765/qa)",
-            "Accept": "application/json",
-        },
-    )
-    # 429 (tokens/min): respetar Retry-After y reintentar hasta 4 veces
+def _chat(url: str, api_key: str, model: str, contenido: str, ua: str) -> tuple[list[str] | None, str, dict]:
+    """Una llamada chat/completions. Devuelve (lineas|None, error, usage). Reintenta 429 por minuto con Retry-After;
+    error 'per day' = cupo diario agotado (el caller rota de modelo)."""
+    payload = {"model": model, "temperature": 0.1,
+               "messages": [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": contenido}]}
+    req = urllib.request.Request(url, data=json.dumps(payload).encode(),
+                                 headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}", "User-Agent": ua, "Accept": "application/json"})
     for intento in range(5):
         try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
+            with urllib.request.urlopen(req, timeout=90) as resp:
                 result = json.loads(resp.read())
                 text = result["choices"][0]["message"]["content"].strip()
+                usage = result.get("usage") or {}
                 if text == "OK":
-                    return []
-                return [line for line in text.splitlines() if line.strip() and line.strip() != "OK"]
+                    return [], "", usage
+                return [line for line in text.splitlines() if line.strip() and line.strip() != "OK"], "", usage
         except urllib.error.HTTPError as e:
             body = e.read().decode("utf-8", errors="replace")[:300] if e.fp else ""
+            if e.code == 429 and "per day" in body.lower():
+                return None, "per day", {}
             if e.code == 429 and intento < 4:
                 espera = _retry_after(e.headers.get("Retry-After"), body, default=15.0 * (intento + 1))
-                print(f"  Groq 429 — espero {espera:.0f}s", flush=True)
+                print(f"  {model} 429 — espero {espera:.0f}s", flush=True)
                 time.sleep(espera)
                 continue
-            return [f"[ERROR] Groq HTTP {e.code}: {body}"]
+            return None, f"HTTP {e.code}: {body}", {}
         except urllib.error.URLError as e:
-            return [f"[ERROR] Groq no disponible: {e}"]
+            return None, f"no disponible: {e}", {}
         except Exception as e:
-            return [f"[ERROR] Llamada Groq fallida: {e}"]
-    return ["[ERROR] Groq 429 persistente"]
+            return None, f"fallo: {e}", {}
+    return None, "429 persistente", {}
+
+
+def groq_qa(pairs: list[dict], batch_idx: int) -> list[str]:
+    """Lote de QA: modelos de Groq en rotación (cada uno con su cupo diario) y, si todos se agotan, OpenAI nano."""
+    global _groq_last_call_ts
+    api_key = os.environ.get("GROQ_API_KEY", "").strip()
+    contenido = _build_user_content(pairs, batch_idx)
+    if api_key:
+        for model in _modelos_groq():
+            elapsed = time.time() - _groq_last_call_ts
+            if elapsed < GROQ_RATE_LIMIT_DELAY:
+                time.sleep(GROQ_RATE_LIMIT_DELAY - elapsed)
+            _groq_last_call_ts = time.time()
+            _groq_esperar_cupo(_tokens_estimados(SYSTEM_PROMPT + contenido))
+            lineas, error, _ = _chat(GROQ_URL, api_key, model, contenido, "tlgames-qa/1.0 (+https://localhost:8765/qa)")
+            if lineas is not None:
+                return lineas
+            if error == "per day" or error == "429 persistente":
+                _groq_agotados.add(model)
+                print(f"  {model}: cupo diario agotado → siguiente modelo", flush=True)
+                continue
+            return [f"[ERROR] Groq {model} {error}"]
+    key_openai = os.environ.get("OPENAI_API_KEY", "").strip()
+    if OPENAI_QA_FALLBACK and key_openai:
+        lineas, error, usage = _chat(OPENAI_URL, key_openai, OPENAI_QA_MODEL, contenido, "tlgames-qa/1.0")
+        if lineas is not None:
+            _openai_tokens["in"] += int(usage.get("prompt_tokens", 0)); _openai_tokens["out"] += int(usage.get("completion_tokens", 0))
+            return lineas
+        return [f"[ERROR] OpenAI {OPENAI_QA_MODEL} {error}"]
+    if not api_key:
+        return ["[ERROR] GROQ_API_KEY no configurada en .env"]
+    return ["[ERROR] Groq HTTP 429: cupo diario agotado en todos los modelos (tokens per day) y sin respaldo OpenAI"]
+
+
+def gasto_openai_qa() -> dict:
+    usd = _openai_tokens["in"] / 1e6 * 0.10 + _openai_tokens["out"] / 1e6 * 0.40
+    return {"in": _openai_tokens["in"], "out": _openai_tokens["out"], "usd": round(usd, 4)}
 
 
 _RETRY_MSG_RE = re.compile(r"try again in ([\d.]+)(m|s|ms)")

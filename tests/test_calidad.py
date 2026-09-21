@@ -221,3 +221,28 @@ def test_qa_se_corta_limpio_si_groq_agota_el_cupo_diario(tmp_path, monkeypatch):
     assert not any(i.startswith("[ERROR]") for i in res[0]["issues"]) and len(llamadas) == 2
     with pytest.raises(qa_renpy.CupoAgotado):
         qa_renpy.qa_file(tmp_path / "c.rpy")
+
+
+def test_qa_rota_modelos_groq_y_cae_a_openai(monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "g"); monkeypatch.setenv("OPENAI_API_KEY", "o")
+    monkeypatch.setattr(qa_renpy, "GROQ_MODELS", ["m1", "m2"]); monkeypatch.setattr(qa_renpy, "GROQ_MODEL", "m1")
+    monkeypatch.setattr(qa_renpy, "OPENAI_QA_FALLBACK", True)
+    qa_renpy._groq_agotados.clear(); qa_renpy._groq_ventana.clear(); qa_renpy._openai_tokens.update({"in": 0, "out": 0})
+    monkeypatch.setattr(qa_renpy.time, "sleep", lambda s: None)
+    llamadas = []
+    def chat(url, key, model, contenido, ua):
+        llamadas.append((url.split("/")[2], model))
+        if model == "m1": return None, "per day", {}
+        if model == "m2": return ["[1] CALCO: a → b"], "", {}
+        return ["[2] GÉNERO: c → d"], "", {"prompt_tokens": 1000, "completion_tokens": 100}
+    monkeypatch.setattr(qa_renpy, "_chat", chat)
+    pares = [{"location": "x", "source": "Hello there friend", "target": "Hola ahí amigo"}]
+    assert qa_renpy.groq_qa(pares, 0) == ["[1] CALCO: a → b"] and llamadas == [("api.groq.com", "m1"), ("api.groq.com", "m2")]
+    assert qa_renpy.groq_qa(pares, 1) == ["[1] CALCO: a → b"] and llamadas[-1] == ("api.groq.com", "m2")   # m1 ya no se intenta
+    qa_renpy._groq_agotados.add("m2")
+    assert qa_renpy.groq_qa(pares, 2) == ["[2] GÉNERO: c → d"] and llamadas[-1] == ("api.openai.com", "gpt-4.1-nano")
+    assert qa_renpy.gasto_openai_qa() == {"in": 1000, "out": 100, "usd": 0.0001}
+    monkeypatch.setattr(qa_renpy, "OPENAI_QA_FALLBACK", False)
+    assert qa_renpy.groq_qa(pares, 3)[0].startswith("[ERROR] Groq HTTP 429: cupo diario agotado")
+    assert "(x)" not in qa_renpy._build_user_content(pares, 0)      # sin ubicación: menos tokens por par
+    qa_renpy._groq_agotados.clear()

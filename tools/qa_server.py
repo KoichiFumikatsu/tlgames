@@ -90,6 +90,8 @@ class QAHandler(BaseHTTPRequestHandler):
             self.send_json(200, {
                 "issues_total": total_issues,
                 "parcial": next((r["parcial"] for r in results if r.get("parcial")), ""),
+                "openai": qa_renpy.gasto_openai_qa(),
+                "groq_agotados": sorted(qa_renpy._groq_agotados),
                 "fixed_total": sum(r.get("fixed", 0) for r in results),
                 "files": len(results),
                 "report": report,
