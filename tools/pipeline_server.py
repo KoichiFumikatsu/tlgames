@@ -418,7 +418,7 @@ def detect_engine(path: Path) -> dict:
 
 # ── Game info detection (version, OS, runtime) ────────────────────────────────
 
-_VER_RE = re.compile(r'[._\-]([vV]?(\d+\.\d+(?:\.\d+)*[a-zA-Z\d]*))')
+_VER_RE = re.compile(r'(?:^|[\s._\-(\[])([vV]?(\d+\.\d+(?:\.\d+)*[a-zA-Z\d]*))')   # "… - v0.5.0c" → 0.5.0c (antes el "." de "0.5" partía en "5.0c")
 _VER_BARE = re.compile(r'(\d+\.\d+(?:\.\d+)*[a-zA-Z\d]*)')
 
 
@@ -487,7 +487,7 @@ def detect_game_info(path: Path, engine: str) -> dict:
     if not info["version"]:
         m = _VER_RE.search(path.name) or _VER_BARE.search(path.name)
         if m:
-            info["version"] = m.group(2) if m.lastindex and m.lastindex >= 2 else m.group(1)
+            info["version"] = m.group(2) if m.re.groups >= 2 else m.group(1)   # sin la "v" (lastindex engañaba: el grupo interno cierra antes)
             info["version_source"] = "folder"
 
     # ── Sistema operativo ─────────────────────────────────────────────────────
@@ -2011,7 +2011,7 @@ def _v2_package(job, game_path: Path, settings: dict, tracker: StageTracker):
     tracker.set_pct("package", 50, current="empaquetando zip")
     ginfo = job.get("game_info") or {}
     ver = ginfo.get("version") or ""
-    safe_name = game_path.name + (f"-v{ver}" if ver else "") + "-spanish.zip"
+    safe_name = game_path.name + (f"-v{ver}" if ver and ver not in game_path.name else "") + "-spanish.zip"   # sin repetir la versión si ya está en el nombre
     zip_path = output_dir / safe_name
     pending_zip = zip_path.with_suffix(".zip.part")
 
@@ -2082,7 +2082,7 @@ def _v2_port_android(job: dict, game_path: Path, output_dir: Path, tracker: Stag
         return None
     tracker.set_pct("package", 96, current="apk android")
     ver = (job.get("game_info") or {}).get("version") or ""
-    apk_out = output_dir / (game_path.name + (f"-v{ver}" if ver else "") + "-spanish.apk")
+    apk_out = output_dir / (game_path.name + (f"-v{ver}" if ver and ver not in game_path.name else "") + "-spanish.apk")
     pending = output_dir / f".{apk_out.stem}.part.apk"   # el firmador exige extensión .apk; oculto hasta terminar
     try:
         res = apk_patch.portar(sdk, game_path, apk_in, pending, (job.get("lang") or "Spanish").lower(), log=lambda m: job["progress"].append(f"  {m}"))
