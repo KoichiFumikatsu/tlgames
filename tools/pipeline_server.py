@@ -590,35 +590,68 @@ def detect_unity_json_tl(path: Path) -> dict | None:
 
 # ── Ren'Py SDK ───────────────────────────────────────────────────────────────
 
-def find_renpy_sdk() -> Path | None:
-    """Busca renpy.sh en: RENPY_SDK env var, luego ubicaciones comunes."""
+_SDK_VER_RE = re.compile(r"renpy-(\d+)\.(\d+)(?:\.(\d+))?")
+
+
+def _version_sdk(sh: Path) -> tuple[int, ...]:
+    m = _SDK_VER_RE.search(sh.parent.name)
+    return tuple(int(x or 0) for x in m.groups()) if m else (0,)
+
+
+def version_renpy_juego(game_path: Path | None) -> tuple[int, ...] | None:
+    """Versión del Ren'Py que trae el juego (renpy/vc_version.py o renpy/__init__.py)."""
+    if not game_path:
+        return None
+    for rel in ("renpy/vc_version.py", "renpy/__init__.py"):
+        p = Path(game_path) / rel
+        if p.exists():
+            m = re.search(r"version_tuple\s*=\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)", p.read_text(encoding="utf-8", errors="replace"))
+            if m:
+                return tuple(int(x) for x in m.groups())
+    return None
+
+
+def sdks_disponibles() -> list[Path]:
+    """Todos los renpy.sh: RENPY_SDK, ~/apps/renpy-*-sdk y ubicaciones comunes."""
+    out: list[Path] = []
     sdk_env = os.environ.get("RENPY_SDK", "")
     if sdk_env:
         p = Path(sdk_env)
-        # Puede ser la carpeta raíz del SDK o la ruta directa al ejecutable
-        if p.is_file() and p.suffix == ".sh":
-            return p
-        if (p / "renpy.sh").exists():
-            return p / "renpy.sh"
-
+        sh = p if p.is_file() and p.suffix == ".sh" else p / "renpy.sh"
+        if sh.exists():
+            out.append(sh)
     home = Path.home()
-    candidates: list[Path] = []
-    for base in [home, home / "Downloads", home / "opt", Path("/opt")]:
+    for base in [home / "apps", home, home / "Downloads", home / "opt", Path("/opt")]:
         if base.is_dir():
-            for d in base.iterdir():
-                if d.is_dir() and "renpy" in d.name.lower():
-                    sh = d / "renpy.sh"
-                    if sh.exists():
-                        candidates.append(sh)
-    candidates += [
-        home / "renpy-sdk" / "renpy.sh",
-        home / "renpy" / "renpy.sh",
-        home / "Ren'Py" / "renpy.sh",
-    ]
-    for c in candidates:
+            for d in sorted(base.iterdir()):
+                if d.is_dir() and "renpy" in d.name.lower() and (d / "renpy.sh").exists():
+                    out.append(d / "renpy.sh")
+    for c in (home / "renpy-sdk" / "renpy.sh", home / "renpy" / "renpy.sh", home / "Ren'Py" / "renpy.sh"):
         if c.exists():
-            return c
-    return None
+            out.append(c)
+    vistos, unicos = set(), []
+    for s in out:
+        r = s.resolve()
+        if r not in vistos:
+            vistos.add(r); unicos.append(s)
+    return unicos
+
+
+def find_renpy_sdk(game_path: Path | None = None) -> Path | None:
+    """SDK para este juego: misma versión mayor.menor que el Ren'Py del juego si la hay; si no, el SDK más nuevo
+    que sea >= la del juego (un SDK viejo no parsea scripts nuevos, p. ej. 8.3 con un juego 8.5); si no, el más nuevo."""
+    sdks = sdks_disponibles()
+    if not sdks:
+        return None
+    ver = version_renpy_juego(game_path)
+    if not ver:
+        return sdks[0]
+    con_ver = sorted(((_version_sdk(s), s) for s in sdks), key=lambda x: x[0], reverse=True)
+    for v, s in con_ver:
+        if v[:2] == tuple(ver[:2]):
+            return s
+    mayores = [(v, s) for v, s in con_ver if v[:3] >= tuple(ver[:3])]
+    return (min(mayores)[1] if mayores else con_ver[0][1])
 
 
 # ── Copia a Documents/games tl/ ──────────────────────────────────────────────
@@ -723,7 +756,7 @@ def run_renpy_pipeline(job: dict, game_path: Path, provider: str = "deepl", ntfy
 
     # ── Paso 0: generar tl/spanish/ con el SDK si no existe ──────────────────
     if not tl_path.exists():
-        sdk = find_renpy_sdk()
+        sdk = find_renpy_sdk(game_path)
         if not sdk:
             log("ERROR: No existe game/tl/spanish/ y no se encontró el SDK de Ren'Py.")
             log("  Opciones:")
@@ -1339,7 +1372,7 @@ def _v2_analyze(job, game_path: Path, engine: str, settings: dict,
     if engine == "renpy":
         tl_path = game_path / "game" / "tl" / "spanish"
         if not tl_path.exists():
-            sdk = find_renpy_sdk()
+            sdk = find_renpy_sdk(game_path)
             if not sdk:
                 tracker.end("analyze", status="error",
                             details={"reason": "renpy_sdk_no_encontrado"})
@@ -1922,7 +1955,7 @@ def _v2_lint_qa(job, game_path: Path, engine: str, settings: dict, tracker: Stag
     # Puerta final: `renpy lint` carga el juego con la traducción; si una línea traducida lo rompe, se revierte al inglés
     puerta = {}
     if _settings_get_safe("renpy.lint_gate", True):
-        sdk = find_renpy_sdk()
+        sdk = find_renpy_sdk(game_path)
         if sdk:
             tracker.set_pct("lint_qa", 95, current="renpy lint")
             try:
@@ -2035,7 +2068,7 @@ def _v2_port_android(job: dict, game_path: Path, output_dir: Path, tracker: Stag
     apk_in = apk_patch.buscar_apk(game_path)
     if not apk_in:
         return None
-    sdk = find_renpy_sdk()
+    sdk = find_renpy_sdk(game_path)
     if not sdk:
         emit_event(job, "package", "warn", message="APK: SDK de Ren'Py no encontrado; no se pudo portar")
         return None

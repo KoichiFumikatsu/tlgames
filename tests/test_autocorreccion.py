@@ -141,3 +141,27 @@ def test_diagnostico_del_job_aplica_receta_y_pide_reintento(tmp_path, monkeypatc
     # job OK sin avisos: nada
     assert ps._diagnosticar_job({"job_id": "j11", "status": "done", "events": [], "progress": []}, tmp_path) is False
     assert [i["job_id"] for i in incidencias.ultimas()] == ["j9", "j9", "j10"]
+
+
+def test_sdk_por_version_del_juego(tmp_path, monkeypatch):
+    import pipeline_server as ps
+    apps = tmp_path / "apps"
+    for v in ("8.3.7", "8.5.3", "7.4.11"):
+        (apps / f"renpy-{v}-sdk").mkdir(parents=True); (apps / f"renpy-{v}-sdk" / "renpy.sh").write_text("#!/bin/sh")
+    monkeypatch.setattr(ps.Path, "home", classmethod(lambda cls: tmp_path))
+    monkeypatch.delenv("RENPY_SDK", raising=False)
+    def juego(ver):
+        g = tmp_path / f"J{ver}"; (g / "renpy").mkdir(parents=True)
+        (g / "renpy" / "vc_version.py").write_text(f"version_tuple = ({ver.replace('.', ', ')}, vc_version)\n")
+        return g
+    assert ps.find_renpy_sdk(juego("8.5.0")).parent.name == "renpy-8.5.3-sdk"      # mismo mayor.menor
+    assert ps.find_renpy_sdk(juego("8.3.2")).parent.name == "renpy-8.3.7-sdk"
+    assert ps.find_renpy_sdk(juego("8.4.1")).parent.name == "renpy-8.5.3-sdk"      # sin 8.4: el menor SDK >= juego
+    assert ps.find_renpy_sdk(juego("7.4.11")).parent.name == "renpy-7.4.11-sdk"
+    assert ps.find_renpy_sdk(juego("9.0.0")).parent.name == "renpy-8.5.3-sdk"      # nada >=: el más nuevo
+    assert ps.find_renpy_sdk(tmp_path / "sin-renpy").parent.name in ("renpy-7.4.11-sdk", "renpy-8.3.7-sdk", "renpy-8.5.3-sdk")
+    assert ps.find_renpy_sdk(None) is not None
+    monkeypatch.setenv("RENPY_SDK", str(apps / "renpy-8.3.7-sdk"))
+    assert ps.find_renpy_sdk(None).parent.name == "renpy-8.3.7-sdk"                 # sin versión: RENPY_SDK manda
+    assert incidencias.analizar('renpy.sh translate spanish fallo: \nFile "game/x.rpy", line 3: expected statement.')["id"] == "renpy_version"
+    assert incidencias.analizar("[STAGE] analyze decompile_done") is None
