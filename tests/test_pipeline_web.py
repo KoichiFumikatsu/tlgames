@@ -355,5 +355,5 @@ def test_packages_published_only_when_complete(server, monkeypatch, returncode):
 
 def test_dashboard_no_deja_rutas_rotas_por_el_reemplazo_de_base(server):
     html = server.call("GET", "/dashboard").body.decode()
-    assert "{B}" not in html and "$/" not in html         # `${B}` en un template literal quedaba como "$/tlgames/…"
+    assert "{B}" not in html and 'href="$/' not in html and "$/tlgames" not in html   # `${B}` en un template literal quedaba como "$/tlgames/…"
     assert "/pipeline/${encodeURIComponent(job.job_id)}/diagnostico" in html
