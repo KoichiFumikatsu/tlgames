@@ -26,7 +26,8 @@ import urllib.request
 import subprocess
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from pipeline_web import PublicHandlerMixin, FILES_LOCK, _base, validate_auth_config
+from pipeline_web import PublicHandlerMixin, FILES_LOCK, _base, validate_auth_config, entrada_dir, safe_child
+from urllib.parse import parse_qs, urlsplit
 
 # Regex para parsear las líneas de progreso de translate_unity_json.py
 # Ejemplo: "[42/117] YuriDialogue.json | 1523/9358 strings | 35%"
@@ -1941,7 +1942,12 @@ def _v2_lint_qa(job, game_path: Path, engine: str, settings: dict, tracker: Stag
     qa_issues = 0
     qa_fixed = 0
     qa_timeout = int(_settings_get_safe("qa.timeout_sec", 600))
+    if job.get("sin_qa"):
+        job["progress"].append("  QA semántico omitido (reempaquetado tras correcciones manuales)")
+        qa_timeout = 0
     try:
+        if not qa_timeout:
+            raise RuntimeError("omitido")
         payload = json.dumps({"dir": str(tl_path), "fix": bool(_settings_get_safe("qa.autofix", True))}).encode()
         req = urllib.request.Request(
             "http://localhost:8765/qa", data=payload,
@@ -1962,8 +1968,9 @@ def _v2_lint_qa(job, game_path: Path, engine: str, settings: dict, tracker: Stag
             job["qa_parcial"] = qa_data["parcial"]
             emit_event(job, "lint_qa", "warn", message=f"QA parcial: {qa_data['parcial']} (cupo diario de Groq; el paquete sale igual)")
     except Exception as e:
-        emit_event(job, "lint_qa", "warn",
-                   message=f"qa_server no respondio en {qa_timeout}s: {e} (continuando sin QA semantico)")
+        if str(e) != "omitido":
+            emit_event(job, "lint_qa", "warn",
+                       message=f"qa_server no respondio en {qa_timeout}s: {e} (continuando sin QA semantico)")
 
     # Puerta final: `renpy lint` carga el juego con la traducción; si una línea traducida lo rompe, se revierte al inglés
     puerta = {}
@@ -2345,6 +2352,20 @@ class Handler(PublicHandlerMixin, BaseHTTPRequestHandler):
                 return
             self.send_json(200, _s.get_all())
 
+        elif path == "/revision":
+            q = parse_qs(urlsplit(self.path).query)
+            try:
+                juego = safe_child(entrada_dir(), q.get("juego", [""])[0])
+                if not juego.is_dir():
+                    return self.send_json(404, {"error": "Juego no encontrado"})
+                sys.path.insert(0, str(TL_TOOLS))
+                import revision
+                lang = (q.get("lang", ["spanish"])[0] or "spanish").lower()
+                self.send_json(200, {"juego": juego.name, **revision.listar(juego, lang, q.get("filtro", ["todo"])[0], q.get("q", [""])[0][:120],
+                                                                        q.get("hablante", [""])[0][:60], int(q.get("pagina", ["1"])[0] or 1))})
+            except (ValueError, OSError) as e:
+                self.send_json(400, {"error": str(e)})
+
         elif path == "/incidencias":
             sys.path.insert(0, str(TL_TOOLS))
             import incidencias
@@ -2410,6 +2431,27 @@ class Handler(PublicHandlerMixin, BaseHTTPRequestHandler):
 
         if path == "/entrada/apk":
             return self._vincular_apk(body)
+
+        if path in ("/revision/editar", "/revision/vaciar"):
+            try:
+                juego = safe_child(entrada_dir(), body.get("juego"))
+                if not juego.is_dir():
+                    return self.send_json(404, {"error": "Juego no encontrado"})
+                if any(j.get("status") == "running" and Path(j.get("game_path", "")).resolve() == juego.resolve() for j in self.jobs_snapshot()):
+                    return self.send_json(409, {"error": "El juego tiene una traducción en curso; espera a que termine"})
+                sys.path.insert(0, str(TL_TOOLS))
+                import revision
+                lang = (body.get("lang") or "spanish").lower()
+                with FILES_LOCK:
+                    if path == "/revision/editar":
+                        r = revision.editar(juego, str(body.get("archivo", "")), int(body.get("linea", 0)), str(body.get("texto", "")), lang)
+                        self.send_json(200, {"ok": True, **r})
+                    else:
+                        items = body.get("lineas") if isinstance(body.get("lineas"), list) else []
+                        self.send_json(200, {"ok": True, "vaciadas": revision.vaciar(juego, items[:500], lang)})
+            except (ValueError, OSError, TypeError) as e:
+                self.send_json(400, {"error": str(e)})
+            return
 
         if path == "/incidencias/aprobar":
             sys.path.insert(0, str(TL_TOOLS))
@@ -2508,6 +2550,7 @@ class Handler(PublicHandlerMixin, BaseHTTPRequestHandler):
                 "analysis": {},
                 "errors": [],
                 "warnings": [],
+                "sin_qa": bool(body.get("sin_qa")),
             }
             with _jobs_lock:
                 _jobs[job_id] = job

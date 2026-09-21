@@ -328,3 +328,15 @@ en Android), alinea con `zipalign` y firma v1+v2+v3 con `apksigner` (build-tools
 **hacerles backup**: con otra llave las actualizaciones no instalan encima). Sale
 `salida/<juego>[-vX]-spanish.apk`; el jugador debe desinstalar el original. Ren'Py 7 (Python 2):
 se inyectan `.rpy` sin compilar y el job avisa. Settings: `android.enabled`. Nunca es fatal para el job.
+
+## Revisión manual desde el taller (sección 05)
+
+Para corregir una traducción sin tocar archivos ni depender del asistente: elegir el juego,
+filtrar («Sin traducir», por hablante, búsqueda en inglés/español), editar el texto en la
+tabla y «Guardar» (`POST /revision/editar` conserva prefijo `who atributos` y sufijos como
+`nointeract`), o seleccionar líneas y «Marcar para retraducir» (`POST /revision/vaciar` deja
+el target vacío). Después: «Reempaquetar (sin QA)» lanza un trabajo con `sin_qa: true`
+(traduce solo lo vacío, postprocess + lint + `renpy lint` + zip/APK) o «Retraducir pendientes
++ QA + paquete» (trabajo normal). `GET /revision?juego=&filtro=&q=&hablante=&pagina=` devuelve
+las líneas con `resumen.hablantes` (total / sin traducir por personaje) — útil para detectar
+un personaje entero sin traducir. Las ediciones se rechazan si el juego tiene un trabajo en curso.
