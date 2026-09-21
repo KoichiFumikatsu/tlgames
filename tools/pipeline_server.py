@@ -1673,6 +1673,18 @@ def _v2_renpy_translate(job, game_path: Path, provider: str, tracker: StageTrack
 
     job["stats"]["files_done"] = files_done
 
+    # Barrido final: si algún archivo quedó a medias (un proveedor abortó a mitad y el siguiente no lo retomó),
+    # una pasada más con el último proveedor de la cadena sobre lo que siga pendiente.
+    restantes = _count_pending(tl_path)
+    if restantes > 0 and len(cadena) > 1 and not job.get("reintentado_barrido"):
+        ultimo = cadena[-1]
+        job["reintentado_barrido"] = True
+        job["progress"].append(f"  Barrido final con {ultimo}: {restantes} bloques pendientes")
+        job["stats"]["provider"] = _PROVIDER_LABEL.get(ultimo, ultimo.title())
+        for rpy in rpy_files:
+            _run_translate_file(job, rpy, ultimo)
+        job["progress"].append(f"  Tras el barrido: {_count_pending(tl_path)} bloques pendientes (nombres, onomatopeyas y marcadores quedan igual a propósito)")
+
     # Forzar idioma si el juego NO tiene selector propio
     if _settings_get_safe("renpy.force_language_if_no_selector", True):
         if not _renpy_has_language_selector(game_path):
