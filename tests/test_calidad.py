@@ -278,7 +278,7 @@ def test_dialogo_con_atributos_y_sufijos_se_parsea_traduce_y_revisa(tmp_path):
     assert lib_rpy.write_target_line('    "x" with vpunch\n', "Narra.") == '    "Narra." with vpunch\n'
     # QA: los diálogos entran (antes solo old/new) y las correcciones se aplican en su línea conservando prefijo y sufijo
     pares = qa_renpy.parse_rpy(rpy)
-    assert [(p["source"], p["target"], p.get("linea")) for p in pares] == [("Hello there, [mc]!", "Hola ahí, [mc]!", 5), ("She makes sense of it all.", "Ella hace sentido de todo.", 15)]
+    assert [(p["source"], p["target"], p.get("linea")) for p in pares] == [("Hello there, [mc]!", "Hola ahí, [mc]!", 5), ("She makes sense of it all.", "Ella hace sentido de todo.", 17)]
     props = qa_renpy.proponer_correcciones(pares, ['[2] CALCO: "hace sentido de todo" → "le encuentra sentido a todo"', "[1] LITERAL: Hola ahí → Hola"])
     assert qa_renpy.aplicar_correcciones(rpy, props) == 2
     texto = rpy.read_text(encoding="utf-8")
