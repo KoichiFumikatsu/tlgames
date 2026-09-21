@@ -211,7 +211,7 @@ def test_qa_se_corta_limpio_si_groq_agota_el_cupo_diario(tmp_path, monkeypatch):
     llamadas = []
     def dispatch(pairs, i):
         llamadas.append(i)
-        if len(llamadas) == 2:
+        if len(llamadas) >= 2:
             return ["[ERROR] Groq HTTP 429: rate limit reached ... tokens per day (TPD): Limit 200000"]
         return ['[1] GÉNERO: "La aventurero" → "El aventurero"']
     monkeypatch.setattr(qa_renpy, "_qa_dispatch", dispatch)
