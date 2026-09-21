@@ -599,15 +599,23 @@ def _version_sdk(sh: Path) -> tuple[int, ...]:
 
 
 def version_renpy_juego(game_path: Path | None) -> tuple[int, ...] | None:
-    """Versión del Ren'Py que trae el juego (renpy/vc_version.py o renpy/__init__.py)."""
+    """Versión del Ren'Py que trae el juego: renpy/vc_version.py (`version = '8.5.3.…'`, Ren'Py 8.4+),
+    `version_tuple = (…)` en renpy/__init__.py o vc_version.py (Ren'Py ≤ 8.3), o game/script_version.txt `(8, 5, 3)`."""
     if not game_path:
         return None
+    game_path = Path(game_path)
     for rel in ("renpy/vc_version.py", "renpy/__init__.py"):
-        p = Path(game_path) / rel
+        p = game_path / rel
         if p.exists():
-            m = re.search(r"version_tuple\s*=\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)", p.read_text(encoding="utf-8", errors="replace"))
+            texto = p.read_text(encoding="utf-8", errors="replace")
+            m = re.search(r"^version\s*=\s*['\"](\d+)\.(\d+)\.(\d+)", texto, re.M) or re.search(r"version_tuple\s*=\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)", texto)
             if m:
                 return tuple(int(x) for x in m.groups())
+    sv = game_path / "game" / "script_version.txt"
+    if sv.exists():
+        m = re.search(r"\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)", sv.read_text(encoding="utf-8", errors="replace"))
+        if m:
+            return tuple(int(x) for x in m.groups())
     return None
 
 

@@ -165,3 +165,17 @@ def test_sdk_por_version_del_juego(tmp_path, monkeypatch):
     assert ps.find_renpy_sdk(None).parent.name == "renpy-8.3.7-sdk"                 # sin versión: RENPY_SDK manda
     assert incidencias.analizar('renpy.sh translate spanish fallo: \nFile "game/x.rpy", line 3: expected statement.')["id"] == "renpy_version"
     assert incidencias.analizar("[STAGE] analyze decompile_done") is None
+
+
+def test_version_del_juego_renpy_84_y_script_version(tmp_path):
+    import pipeline_server as ps
+    g = tmp_path / "G"; (g / "renpy").mkdir(parents=True); (g / "game").mkdir()
+    (g / "renpy" / "vc_version.py").write_text("branch = 'fix'\nversion = '8.5.3.26051504'\nversion_name = 'x'\n")
+    (g / "renpy" / "__init__.py").write_text('version_tuple = VersionTuple(*(int(i) for i in version.split(".")))\n')
+    assert ps.version_renpy_juego(g) == (8, 5, 3)
+    (g / "renpy" / "vc_version.py").unlink(); (g / "renpy" / "__init__.py").unlink()
+    (g / "game" / "script_version.txt").write_text("(8, 5, 3)\n")
+    assert ps.version_renpy_juego(g) == (8, 5, 3)
+    import apk_patch
+    assert apk_patch.version_renpy(g) == (8, 5, 3)
+    assert ps.version_renpy_juego(tmp_path / "nada") is None
