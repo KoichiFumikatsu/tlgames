@@ -78,6 +78,14 @@ def revertir_linea(game_path: Path, archivo: str, linea: int) -> dict | None:
     if not 0 <= idx < len(lineas):
         return None
     original = texto_original(lineas, idx)
+    if original is None:
+        # El lint apunta al final de una cadena derramada ("unterminated string literal"): la línea culpable es la
+        # anterior con comillas abiertas (el `new`/diálogo donde el modelo metió saltos reales).
+        for k in range(idx - 1, max(-1, idx - 21), -1):
+            if _comillas_abiertas(lineas[k]) and texto_original(lineas, k):
+                idx, original = k, texto_original(lineas, k)
+                linea = k + 1
+                break
     if original is None or original == lineas[idx]:
         return None
     antes = lineas[idx]

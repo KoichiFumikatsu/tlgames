@@ -206,3 +206,11 @@ def test_revertir_limpia_las_lineas_derramadas_de_una_cadena_multilinea(tmp_path
     # si lo que sigue es estructural (otro bloque), no se borra nada
     f.write_text('    new "sin cerrar\n\n    # x\n    old "a"\n    new "a"\n', encoding="utf-8")
     assert gate.revertir_linea(game, "game/tl/spanish/options.rpy", 1) is None or f.read_text(encoding="utf-8").count("old") == 1
+
+
+def test_revertir_busca_hacia_arriba_si_el_lint_apunta_al_final_del_derrame(tmp_path):
+    game = tmp_path / "J2"; tl = game / "game" / "tl" / "spanish"; tl.mkdir(parents=True)
+    f = tl / "options.rpy"; f.write_text(ROTO, encoding="utf-8")
+    r = gate.revertir_linea(game, "game/tl/spanish/options.rpy", 7)   # el lint señala la línea derramada, no el `new`
+    assert r["linea"] == 6 and r["despues"] == 'new "Line one. Line two."'
+    assert "Línea dos derramada" not in f.read_text(encoding="utf-8")
