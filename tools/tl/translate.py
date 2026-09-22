@@ -690,6 +690,8 @@ def translate_batch_openai(srcs: list, cache: dict, glossary: dict, api_key: str
             tr_tok = src
         detok = normalizar_saltos(src, detokenize(tr_tok, t_mapping))
         out_text = restore_glossary(detok, g_targets)
+        # Un salto de línea real rompe el .rpy (cadena sin cerrar): siempre va escapado
+        out_text = out_text.replace("\r\n", "\\n").replace("\r", "\\n").replace("\n", "\\n")
         results.append(out_text)
     return results
 

@@ -59,8 +59,17 @@ def texto_original(lineas: list[str], idx: int) -> str | None:
     return None
 
 
+_ESTRUCTURA_RE = re.compile(r'^\w+\s+"')   # `mc "…"`, `ve neu "…"`: línea de diálogo, no texto derramado
+
+
+def _comillas_abiertas(linea: str) -> bool:
+    """True si la línea deja una cadena sin cerrar (número impar de comillas no escapadas)."""
+    return len(re.findall(r'(?<!\\)"', linea)) % 2 == 1
+
+
 def revertir_linea(game_path: Path, archivo: str, linea: int) -> dict | None:
-    """Deja la línea como el original. Devuelve {archivo, linea, antes, despues} o None si no se pudo mapear."""
+    """Deja la línea como el original. Si la traducción traía saltos de línea reales, borra también las líneas
+    sobrantes de esa cadena. Devuelve {archivo, linea, antes, despues, sobrantes} o None si no se pudo mapear."""
     ruta = game_path / archivo
     if not ruta.exists():
         return None
@@ -72,9 +81,25 @@ def revertir_linea(game_path: Path, archivo: str, linea: int) -> dict | None:
     if original is None or original == lineas[idx]:
         return None
     antes = lineas[idx]
+    sobrantes = 0
+    if _comillas_abiertas(antes):
+        # La traducción trajo saltos de línea reales: las líneas siguientes son texto suelto hasta la que cierra la
+        # comilla. Solo se borran si ninguna es estructural (translate/#/old/new/label…): si lo es, no se toca nada.
+        j, fin = idx + 1, None
+        while j < len(lineas) and j - idx <= 20:
+            s = lineas[j].strip()
+            if s.startswith(("translate ", "#", "old ", "new ", "label ", "screen ", "init ")) or _ESTRUCTURA_RE.match(s):
+                break
+            if _comillas_abiertas(lineas[j]):
+                fin = j
+                break
+            j += 1
+        if fin is not None:
+            sobrantes = fin - idx
+            del lineas[idx + 1: fin + 1]
     lineas[idx] = original
     ruta.write_text("".join(lineas), encoding="utf-8")
-    return {"archivo": archivo, "linea": linea, "antes": antes.strip(), "despues": original.strip()}
+    return {"archivo": archivo, "linea": linea, "antes": antes.strip(), "despues": original.strip(), "sobrantes": sobrantes}
 
 
 def puerta(sdk: Path, game_path: Path, lang: str = "spanish", max_intentos: int = 3, log=print) -> dict:

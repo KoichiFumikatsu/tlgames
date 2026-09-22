@@ -193,7 +193,8 @@ def write_target_line(original_line: str, new_text: str) -> str:
     return f'{indent}{prefijo + " " if prefijo else ""}"{_escape(new_text)}"{" " + sufijo if sufijo else ""}\n'
 
 def _escape(text: str) -> str:
-    """Escapa comillas internas sin tocar las ya escapadas."""
+    """Escapa comillas internas sin tocar las ya escapadas, y los saltos de línea reales (romperían el .rpy)."""
+    text = text.replace("\r\n", "\\n").replace("\r", "\\n").replace("\n", "\\n")
     # Paso 1: proteger secuencias ya escapadas
     # Simple: reemplazar " por \" si no esta ya escapado
     return re.sub(r'(?<!\\)"', r'\\"', text)

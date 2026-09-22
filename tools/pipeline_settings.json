@@ -22,7 +22,7 @@
   "package": {
     "enabled": true,
     "mode": "auto",
-    "max_size_gb": 5,
+    "max_size_gb": 20,
     "compress_below_mb": 500
   },
   "android": {

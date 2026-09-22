@@ -179,3 +179,29 @@ def test_version_del_juego_renpy_84_y_script_version(tmp_path):
     import apk_patch
     assert apk_patch.version_renpy(g) == (8, 5, 3)
     assert ps.version_renpy_juego(tmp_path / "nada") is None
+
+
+ROTO = '''# game/options.rpy:32
+translate spanish strings:
+
+    # game/options.rpy:32
+    old "Line one.\n\nLine two."
+    new "Línea uno.
+Línea dos derramada."
+
+    # game/options.rpy:40
+    old "Otra"
+    new "Otra"
+'''
+
+
+def test_revertir_limpia_las_lineas_derramadas_de_una_cadena_multilinea(tmp_path):
+    game = tmp_path / "J"; tl = game / "game" / "tl" / "spanish"; tl.mkdir(parents=True)
+    f = tl / "options.rpy"; f.write_text(ROTO, encoding="utf-8")
+    r = gate.revertir_linea(game, "game/tl/spanish/options.rpy", 6)
+    assert r["sobrantes"] == 1 and r["despues"] == 'new "Line one.\n\nLine two."'
+    texto = f.read_text(encoding="utf-8")
+    assert "Línea dos derramada" not in texto and 'new "Otra"' in texto and texto.count("translate spanish strings:") == 1
+    # si lo que sigue es estructural (otro bloque), no se borra nada
+    f.write_text('    new "sin cerrar\n\n    # x\n    old "a"\n    new "a"\n', encoding="utf-8")
+    assert gate.revertir_linea(game, "game/tl/spanish/options.rpy", 1) is None or f.read_text(encoding="utf-8").count("old") == 1
