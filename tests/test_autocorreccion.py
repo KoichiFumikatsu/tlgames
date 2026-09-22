@@ -181,25 +181,26 @@ def test_version_del_juego_renpy_84_y_script_version(tmp_path):
     assert ps.version_renpy_juego(tmp_path / "nada") is None
 
 
-ROTO = '''# game/options.rpy:32
-translate spanish strings:
-
-    # game/options.rpy:32
-    old "Line one.\n\nLine two."
-    new "Línea uno.
-Línea dos derramada."
-
-    # game/options.rpy:40
-    old "Otra"
-    new "Otra"
-'''
+ROTO = (
+    "# game/options.rpy:32\n"
+    "translate spanish strings:\n"
+    "\n"
+    "    # game/options.rpy:32\n"
+    '    old "Line one. Line two."\n'
+    '    new "Línea uno.\n'            # el modelo devolvió un salto real → cadena sin cerrar
+    'Línea dos derramada."\n'
+    "\n"
+    "    # game/options.rpy:40\n"
+    '    old "Otra"\n'
+    '    new "Otra"\n'
+)
 
 
 def test_revertir_limpia_las_lineas_derramadas_de_una_cadena_multilinea(tmp_path):
     game = tmp_path / "J"; tl = game / "game" / "tl" / "spanish"; tl.mkdir(parents=True)
     f = tl / "options.rpy"; f.write_text(ROTO, encoding="utf-8")
     r = gate.revertir_linea(game, "game/tl/spanish/options.rpy", 6)
-    assert r["sobrantes"] == 1 and r["despues"] == 'new "Line one.\n\nLine two."'
+    assert r["sobrantes"] == 1 and r["despues"] == 'new "Line one. Line two."'
     texto = f.read_text(encoding="utf-8")
     assert "Línea dos derramada" not in texto and 'new "Otra"' in texto and texto.count("translate spanish strings:") == 1
     # si lo que sigue es estructural (otro bloque), no se borra nada
