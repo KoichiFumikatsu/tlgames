@@ -67,9 +67,25 @@ def _comillas_abiertas(linea: str) -> bool:
     return len(re.findall(r'(?<!\\)"', linea)) % 2 == 1
 
 
+def _estructural(linea: str) -> bool:
+    s = linea.strip()
+    return s.startswith(("translate ", "#", "old ", "new ", "label ", "screen ", "init ", "define ", "default ")) or bool(_ESTRUCTURA_RE.match(s))
+
+
+def _derrame(lineas: list[str], idx: int) -> int:
+    """Cuántas líneas siguientes son texto derramado de la cadena de lineas[idx] (0 si no hay derrame).
+    Son derrame las líneas no estructurales hasta la que cierra la cadena (termina en comilla)."""
+    for j in range(idx + 1, min(len(lineas), idx + 21)):
+        if _estructural(lineas[j]):
+            return 0
+        if lineas[j].rstrip().endswith('"'):
+            return j - idx
+    return 0
+
+
 def revertir_linea(game_path: Path, archivo: str, linea: int) -> dict | None:
-    """Deja la línea como el original. Si la traducción traía saltos de línea reales, borra también las líneas
-    sobrantes de esa cadena. Devuelve {archivo, linea, antes, despues, sobrantes} o None si no se pudo mapear."""
+    """Deja la línea como el original y borra el texto derramado si el modelo metió saltos de línea reales.
+    Si el lint apunta al final del derrame, sube a la línea traducible culpable."""
     ruta = game_path / archivo
     if not ruta.exists():
         return None
@@ -79,32 +95,17 @@ def revertir_linea(game_path: Path, archivo: str, linea: int) -> dict | None:
         return None
     original = texto_original(lineas, idx)
     if original is None:
-        # El lint apunta al final de una cadena derramada ("unterminated string literal"): la línea culpable es la
-        # anterior con comillas abiertas (el `new`/diálogo donde el modelo metió saltos reales).
         for k in range(idx - 1, max(-1, idx - 21), -1):
-            if _comillas_abiertas(lineas[k]) and texto_original(lineas, k):
-                idx, original = k, texto_original(lineas, k)
-                linea = k + 1
+            candidato = texto_original(lineas, k)
+            if candidato and _derrame(lineas, k):
+                idx, original, linea = k, candidato, k + 1
                 break
     if original is None or original == lineas[idx]:
         return None
     antes = lineas[idx]
-    sobrantes = 0
-    if _comillas_abiertas(antes):
-        # La traducción trajo saltos de línea reales: las líneas siguientes son texto suelto hasta la que cierra la
-        # comilla. Solo se borran si ninguna es estructural (translate/#/old/new/label…): si lo es, no se toca nada.
-        j, fin = idx + 1, None
-        while j < len(lineas) and j - idx <= 20:
-            s = lineas[j].strip()
-            if s.startswith(("translate ", "#", "old ", "new ", "label ", "screen ", "init ")) or _ESTRUCTURA_RE.match(s):
-                break
-            if _comillas_abiertas(lineas[j]):
-                fin = j
-                break
-            j += 1
-        if fin is not None:
-            sobrantes = fin - idx
-            del lineas[idx + 1: fin + 1]
+    sobrantes = _derrame(lineas, idx)
+    if sobrantes:
+        del lineas[idx + 1: idx + 1 + sobrantes]
     lineas[idx] = original
     ruta.write_text("".join(lineas), encoding="utf-8")
     return {"archivo": archivo, "linea": linea, "antes": antes.strip(), "despues": original.strip(), "sobrantes": sobrantes}
